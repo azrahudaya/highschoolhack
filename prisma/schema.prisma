@@ -1,0 +1,202 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  student
+  teacher_bk
+  school_admin
+  super_admin
+}
+
+enum ProgramSlug {
+  bekal_10
+  setting_goal
+  smart_financial
+}
+
+enum ModuleStatus {
+  locked
+  not_started
+  in_progress
+  completed
+}
+
+model User {
+  id              String             @id @default(cuid())
+  email           String             @unique
+  name            String?
+  image           String?
+  passwordHash    String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  accounts        AuthAccount[]
+  memberships     SchoolMembership[]
+  studentProfiles StudentProfile[]
+  teacherProfile  TeacherProfile?
+  enrollments     ProgramEnrollment[]
+  moduleResponses ModuleResponse[]
+}
+
+model AuthAccount {
+  id                String   @id @default(cuid())
+  userId            String
+  provider          String
+  providerAccountId String
+  accessToken       String?
+  refreshToken      String?
+  expiresAt         Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model School {
+  id              String              @id @default(cuid())
+  name            String
+  slug            String              @unique
+  joinCode        String              @unique
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  classes         SchoolClass[]
+  memberships     SchoolMembership[]
+  studentProfiles StudentProfile[]
+  enrollments     ProgramEnrollment[]
+}
+
+model SchoolClass {
+  id              String           @id @default(cuid())
+  schoolId        String
+  name            String
+  grade           Int
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  school          School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentProfiles StudentProfile[]
+
+  @@unique([schoolId, name])
+  @@index([schoolId])
+}
+
+model SchoolMembership {
+  id        String   @id @default(cuid())
+  userId    String
+  schoolId  String
+  role      UserRole
+  createdAt DateTime @default(now())
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, schoolId, role])
+  @@index([schoolId, role])
+}
+
+model StudentProfile {
+  id        String       @id @default(cuid())
+  userId    String
+  schoolId  String
+  classId   String?
+  nisn      String?
+  fullName  String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  class     SchoolClass? @relation(fields: [classId], references: [id], onDelete: SetNull)
+  school    School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, schoolId])
+  @@unique([schoolId, nisn])
+  @@index([schoolId])
+  @@index([classId])
+}
+
+model TeacherProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  fullName  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Program {
+  id          String              @id @default(cuid())
+  slug        ProgramSlug         @unique
+  title       String
+  grade       Int
+  description String
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  modules     ProgramModule[]
+  enrollments ProgramEnrollment[]
+}
+
+model ProgramModule {
+  id          String           @id @default(cuid())
+  programId   String
+  slug        String
+  title       String
+  order       Int
+  description String?
+  config      Json?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  program     Program          @relation(fields: [programId], references: [id], onDelete: Cascade)
+  progress    ModuleProgress[]
+  responses   ModuleResponse[]
+
+  @@unique([programId, slug])
+  @@unique([programId, order])
+}
+
+model ProgramEnrollment {
+  id        String           @id @default(cuid())
+  userId    String
+  schoolId  String
+  programId String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  school    School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program   Program          @relation(fields: [programId], references: [id], onDelete: Cascade)
+  progress  ModuleProgress[]
+
+  @@unique([userId, schoolId, programId])
+  @@index([schoolId, programId])
+}
+
+model ModuleProgress {
+  id           String            @id @default(cuid())
+  enrollmentId String
+  moduleId     String
+  status       ModuleStatus      @default(not_started)
+  completedAt  DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  enrollment   ProgramEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  module       ProgramModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([enrollmentId, moduleId])
+  @@index([moduleId, status])
+}
+
+model ModuleResponse {
+  id        String        @id @default(cuid())
+  userId    String
+  moduleId  String
+  data      Json
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  module    ProgramModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+}

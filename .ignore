@@ -1,0 +1,7 @@
+node_modules
+client/dist
+server/dist
+server.log
+server.err.log
+playwright-report
+test-results
