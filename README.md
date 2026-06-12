@@ -62,7 +62,7 @@ Phase 0B foundation is scaffolded:
 
 - Multi-school schema has `schools`, `classes`, `school_memberships`, and school-scoped student profiles.
 - School list and class list API routes are scaffolded.
-- Student onboarding by manual school lookup is scaffolded.
+- Student onboarding by manual school and class input is scaffolded.
 - Seed script is available at `npm run db:seed`.
 
 Phase 0C auth foundation is scaffolded:

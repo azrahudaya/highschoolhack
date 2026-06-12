@@ -24,7 +24,7 @@ test('admin overview renders school metrics without overflow', async ({ page }) 
   await page.goto('/admin');
 
   await expect(page.getByRole('heading', { name: 'Ringkasan sekolah' })).toBeVisible();
-  await expect(page.getByText('Onboarding nama sekolah')).toBeVisible();
+  await expect(page.getByText('Onboarding manual')).toBeVisible();
   await expect(page.getByText('120')).toBeVisible();
   const dimensions = await page.locator('body').evaluate((body) => ({ clientWidth: body.clientWidth, scrollWidth: body.scrollWidth }));
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
@@ -85,5 +85,5 @@ test('school settings explain manual student onboarding', async ({ page }) => {
 
   await expect(page.getByRole('heading', { name: 'Pengaturan sekolah' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Onboarding siswa' })).toBeVisible();
-  await expect(page.getByText('Siswa mencari dan memilih nama sekolah saat onboarding.')).toBeVisible();
+  await expect(page.getByText('Siswa mengisi nama sekolah dan kelas secara manual saat onboarding.')).toBeVisible();
 });
