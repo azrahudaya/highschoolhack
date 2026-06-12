@@ -9,7 +9,7 @@ const admin = {
 };
 
 const overview = {
-  school: { id: 'school-1', name: 'SMA Nusantara', slug: 'sma-nusantara', joinCode: 'HSH-DEMO' },
+  school: { id: 'school-1', name: 'SMA Nusantara', slug: 'sma-nusantara' },
   metrics: { totalClasses: 3, totalStudents: 120, totalTeachers: 4, totalAdmins: 1, completedStudents: 18 },
   classes: [{ id: 'class-1', name: 'X-1', grade: 10 }, { id: 'class-2', name: 'XI-1', grade: 11 }],
 };
@@ -24,7 +24,7 @@ test('admin overview renders school metrics without overflow', async ({ page }) 
   await page.goto('/admin');
 
   await expect(page.getByRole('heading', { name: 'Ringkasan sekolah' })).toBeVisible();
-  await expect(page.getByText('HSH-DEMO')).toBeVisible();
+  await expect(page.getByText('Onboarding nama sekolah')).toBeVisible();
   await expect(page.getByText('120')).toBeVisible();
   const dimensions = await page.locator('body').evaluate((body) => ({ clientWidth: body.clientWidth, scrollWidth: body.scrollWidth }));
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
@@ -78,12 +78,12 @@ test('admin can assign a registered Guru BK account', async ({ page }) => {
   await expect(page.getByText('Akun berhasil ditetapkan sebagai Guru BK.')).toBeVisible();
 });
 
-test('school settings expose onboarding code management', async ({ page }) => {
+test('school settings explain manual student onboarding', async ({ page }) => {
   await mockAdmin(page);
   await page.route('**/api/admin/overview', (route) => route.fulfill({ json: overview }));
   await page.goto('/admin/school');
 
   await expect(page.getByRole('heading', { name: 'Pengaturan sekolah' })).toBeVisible();
-  await expect(page.getByText('HSH-DEMO')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Buat kode baru' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Onboarding siswa' })).toBeVisible();
+  await expect(page.getByText('Siswa mencari dan memilih nama sekolah saat onboarding.')).toBeVisible();
 });

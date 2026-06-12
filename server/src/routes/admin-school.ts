@@ -61,7 +61,7 @@ router.get(
     const completedStudents = enrollments.filter((enrollment) => enrollment.progress.length > 0 && enrollment.progress.every((item) => item.status === 'completed')).length;
 
     res.json({
-      school: { id: school.id, name: school.name, slug: school.slug, joinCode: school.joinCode },
+      school: { id: school.id, name: school.name, slug: school.slug },
       metrics: { totalClasses: school.classes.length, totalStudents, totalTeachers, totalAdmins, completedStudents },
       classes: school.classes,
     });

@@ -41,7 +41,7 @@ export function RegisterPage() {
   }
 
   return (
-    <AuthShell title="Buat akun HighschoolHack" subtitle="Setelah daftar, hubungkan akunmu ke sekolah menggunakan kode sekolah.">
+    <AuthShell title="Buat akun HighschoolHack" subtitle="Setelah daftar, hubungkan akunmu dengan memilih nama sekolah.">
       {googleAuthConfigured && (
         <a
           className="mb-5 flex w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:border-slate-400"

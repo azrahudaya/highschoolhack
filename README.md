@@ -62,7 +62,7 @@ Phase 0B foundation is scaffolded:
 
 - Multi-school schema has `schools`, `classes`, `school_memberships`, and school-scoped student profiles.
 - School list and class list API routes are scaffolded.
-- Student onboarding by school join code is scaffolded.
+- Student onboarding by manual school lookup is scaffolded.
 - Seed script is available at `npm run db:seed`.
 
 Phase 0C auth foundation is scaffolded:
@@ -138,18 +138,18 @@ Guru BK API:
 Provision a Guru BK account after the teacher has registered or logged in once:
 
 ```bash
-npm run teacher:assign -- guru@sekolah.id HSH-DEMO "Nama Guru"
+npm run teacher:assign -- guru@sekolah.id sma-nusantara "Nama Guru"
 ```
 
 For Heroku:
 
 ```bash
-heroku run 'npm run teacher:assign -- guru@sekolah.id HSH-DEMO "Nama Guru"' -a highschoolhack-app
+heroku run 'npm run teacher:assign -- guru@sekolah.id sma-nusantara "Nama Guru"' -a highschoolhack-app
 ```
 
 Phase 1C Admin Sekolah Basic is implemented:
 
-- School overview and onboarding join-code management.
+- School overview and manual student onboarding guidance.
 - Class create, update, and guarded delete.
 - Student profile, NISN, and class management without access to module answers.
 - Assign and revoke Guru BK access from registered accounts.
@@ -159,7 +159,6 @@ Admin API:
 
 - `GET /api/admin/overview`
 - `PATCH /api/admin/school`
-- `POST /api/admin/school/regenerate-join-code`
 - `GET|POST /api/admin/classes`
 - `PATCH|DELETE /api/admin/classes/:classId`
 - `GET /api/admin/students`
@@ -170,11 +169,11 @@ Admin API:
 Provision an Admin Sekolah account after the admin has registered or logged in once:
 
 ```bash
-npm run admin:assign -- admin@sekolah.id HSH-DEMO "Nama Admin"
+npm run admin:assign -- admin@sekolah.id sma-nusantara "Nama Admin"
 ```
 
 For Heroku:
 
 ```bash
-heroku run 'npm run admin:assign -- admin@sekolah.id HSH-DEMO "Nama Admin"' -a highschoolhack-app
+heroku run 'npm run admin:assign -- admin@sekolah.id sma-nusantara "Nama Admin"' -a highschoolhack-app
 ```

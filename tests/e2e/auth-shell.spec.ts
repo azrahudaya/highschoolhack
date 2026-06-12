@@ -25,6 +25,44 @@ test('anonymous users are redirected from student portal', async ({ page }) => {
   await expect(page).toHaveURL(/\/login$/);
 });
 
+test('student onboarding uses manual school lookup instead of join code', async ({ page }) => {
+  await page.route('**/api/auth/me', (route) => route.fulfill({
+    json: {
+      user: { id: 'student-1', email: 'siswa@example.com', name: 'Nadia', image: null, memberships: [] },
+      authenticated: true,
+      googleAuthConfigured: false,
+    },
+  }));
+  await page.route('**/api/schools/lookup?*', (route) => route.fulfill({
+    json: {
+      schools: [{
+        id: 'school-1',
+        name: 'SMA Nusantara',
+        slug: 'sma-nusantara',
+        classes: [{ id: 'class-1', name: 'X-1', grade: 10 }],
+      }],
+    },
+  }));
+  await page.route('**/api/onboarding/student', (route) => route.fulfill({
+    status: 201,
+    json: { redirectTo: '/app' },
+  }));
+
+  await page.goto('/onboarding');
+  await page.getByLabel('Nama sekolah').fill('Nusantara');
+  await page.getByTitle('Cari sekolah').click();
+  await page.getByRole('button', { name: /SMA Nusantara/ }).click();
+  await page.getByLabel('Nama lengkap').fill('Nadia Putri');
+  await page.getByLabel('Kelas').selectOption('class-1');
+
+  const onboardingRequest = page.waitForRequest((request) => request.method() === 'POST' && request.url().endsWith('/api/onboarding/student'));
+  await page.getByRole('button', { name: 'Selesaikan Onboarding' }).click();
+  const payload = (await onboardingRequest).postDataJSON();
+
+  expect(payload).toMatchObject({ fullName: 'Nadia Putri', schoolId: 'school-1', classId: 'class-1' });
+  expect(payload.schoolJoinCode).toBeUndefined();
+});
+
 test('student protected API rejects anonymous requests', async ({ request }) => {
   const response = await request.get('/api/protected/student');
 

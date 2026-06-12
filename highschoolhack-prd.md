@@ -666,7 +666,7 @@ Produk lanjutan:
 
 1. Apakah setiap sekolah akan dibuat oleh super admin, atau sekolah bisa registrasi sendiri?
 2. Apakah siswa harus masuk memakai domain Google sekolah, atau boleh Gmail pribadi?
-3. Apakah Guru BK perlu approval/manual invite untuk siswa, atau siswa boleh join memakai kode sekolah?
+3. Apakah siswa yang memilih nama sekolah perlu approval Guru BK/admin sebelum masuk dashboard?
 4. Untuk MVP, apakah Guru BK cukup melihat dashboard dan print portfolio, atau wajib export PDF/Excel?
 5. Apakah artikel akan berupa link kurasi saja, atau ingin CMS untuk menulis artikel sendiri?
 

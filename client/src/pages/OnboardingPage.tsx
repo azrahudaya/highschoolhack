@@ -6,19 +6,20 @@ import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api';
 
 type SchoolLookup = {
-  school: {
+  schools: Array<{
     id: string;
     name: string;
     slug: string;
     classes: Array<{ id: string; name: string; grade: number }>;
-  };
+  }>;
 };
 
 export function OnboardingPage() {
   const { user, refresh } = useAuth();
   const navigate = useNavigate();
-  const [joinCode, setJoinCode] = useState('');
-  const [school, setSchool] = useState<SchoolLookup['school'] | null>(null);
+  const [schoolQuery, setSchoolQuery] = useState('');
+  const [schools, setSchools] = useState<SchoolLookup['schools']>([]);
+  const [school, setSchool] = useState<SchoolLookup['schools'][number] | null>(null);
   const [fullName, setFullName] = useState(user?.name ?? '');
   const [classId, setClassId] = useState('');
   const [nisn, setNisn] = useState('');
@@ -27,18 +28,43 @@ export function OnboardingPage() {
 
   async function lookupSchool() {
     setError('');
+    setSchool(null);
+    setClassId('');
+    const query = schoolQuery.trim();
+
+    if (query.length < 2) {
+      setSchools([]);
+      setError('Masukkan minimal 2 karakter nama sekolah.');
+      return;
+    }
+
     try {
-      const result = await api<SchoolLookup>(`/api/schools/join/${encodeURIComponent(joinCode)}`);
-      setSchool(result.school);
-      setClassId(result.school.classes[0]?.id ?? '');
+      const params = new URLSearchParams({ query });
+      const result = await api<SchoolLookup>(`/api/schools/lookup?${params}`);
+      setSchools(result.schools);
+      if (!result.schools.length) setError('Sekolah tidak ditemukan. Pastikan nama sekolah sudah terdaftar.');
     } catch (requestError) {
+      setSchools([]);
       setSchool(null);
       setError(requestError instanceof Error ? requestError.message : 'Sekolah tidak ditemukan.');
     }
   }
 
+  function selectSchool(nextSchool: SchoolLookup['schools'][number]) {
+    setSchool(nextSchool);
+    setSchoolQuery(nextSchool.name);
+    setSchools([]);
+    setClassId(nextSchool.classes[0]?.id ?? '');
+    setError('');
+  }
+
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    if (!school) {
+      setError('Pilih sekolah terlebih dahulu.');
+      return;
+    }
+
     setSubmitting(true);
     setError('');
 
@@ -47,7 +73,7 @@ export function OnboardingPage() {
         method: 'POST',
         body: JSON.stringify({
           fullName,
-          schoolJoinCode: joinCode,
+          schoolId: school.id,
           classId: classId || undefined,
           nisn: nisn || undefined,
         }),
@@ -62,16 +88,21 @@ export function OnboardingPage() {
   }
 
   return (
-    <AuthShell title="Hubungkan akun ke sekolah" subtitle="Masukkan kode sekolah dari Guru BK atau admin sekolahmu.">
+    <AuthShell title="Hubungkan akun ke sekolah" subtitle="Ketik nama sekolahmu lalu pilih kelas yang tersedia.">
       <form className="space-y-4" onSubmit={handleSubmit}>
         <label className="block text-sm font-medium text-slate-700">
-          Kode sekolah
+          Nama sekolah
           <div className="mt-2 flex gap-2">
             <input
-              className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-3 uppercase outline-none focus:border-[#5b21b6]"
-              onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
+              className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-3 outline-none focus:border-[#5b21b6]"
+              onChange={(event) => {
+                setSchoolQuery(event.target.value);
+                setSchool(null);
+                setClassId('');
+              }}
+              placeholder="Contoh: SMA Nusantara"
               required
-              value={joinCode}
+              value={schoolQuery}
             />
             <button
               className="grid size-12 shrink-0 place-items-center rounded-lg border border-slate-300 bg-white text-slate-700 hover:border-slate-400"
@@ -83,6 +114,25 @@ export function OnboardingPage() {
             </button>
           </div>
         </label>
+
+        {schools.length > 0 && !school && (
+          <div className="rounded-lg border border-slate-200 bg-white p-2">
+            {schools.map((item) => (
+              <button
+                className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-3 text-left hover:bg-slate-50"
+                key={item.id}
+                onClick={() => selectSchool(item)}
+                type="button"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate font-semibold text-slate-800">{item.name}</span>
+                  <span className="mt-1 block text-sm text-slate-500">{item.classes.length} kelas tersedia</span>
+                </span>
+                <span className="shrink-0 rounded-lg border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600">Pilih</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {school && (
           <div className="flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3">
@@ -107,11 +157,12 @@ export function OnboardingPage() {
           Kelas
           <select
             className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-3 outline-none focus:border-[#5b21b6]"
-            disabled={!school}
+            disabled={!school || school.classes.length === 0}
             onChange={(event) => setClassId(event.target.value)}
             value={classId}
           >
-            {!school && <option value="">Cari sekolah terlebih dahulu</option>}
+            {!school && <option value="">Pilih sekolah terlebih dahulu</option>}
+            {school && school.classes.length === 0 && <option value="">Kelas belum tersedia</option>}
             {school?.classes.map((schoolClass) => (
               <option key={schoolClass.id} value={schoolClass.id}>
                 {schoolClass.name}

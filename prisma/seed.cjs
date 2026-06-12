@@ -147,7 +147,7 @@ async function main() {
     }
   }
 
-  console.log('Seed selesai. Kode sekolah demo: HSH-DEMO');
+  console.log('Seed selesai. Sekolah demo: SMA Nusantara (slug: sma-nusantara)');
 }
 
 main()

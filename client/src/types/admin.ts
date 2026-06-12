@@ -6,7 +6,7 @@ export type AdminClass = {
 };
 
 export type AdminOverview = {
-  school: { id: string; name: string; slug: string; joinCode: string };
+  school: { id: string; name: string; slug: string };
   metrics: {
     totalClasses: number;
     totalStudents: number;

@@ -2,9 +2,42 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma';
 import { asyncHandler } from '../middleware/async-handler';
-import { requireRole } from '../middleware/auth';
+import { requireAuth, requireRole } from '../middleware/auth';
 
 const router = Router();
+
+router.get(
+  '/lookup',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const query = z.string().trim().min(2).max(100).parse(req.query.query);
+    const schools = await prisma.school.findMany({
+      where: {
+        name: {
+          contains: query,
+          mode: 'insensitive',
+        },
+      },
+      orderBy: { name: 'asc' },
+      take: 8,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        classes: {
+          orderBy: [{ grade: 'asc' }, { name: 'asc' }],
+          select: {
+            id: true,
+            name: true,
+            grade: true,
+          },
+        },
+      },
+    });
+
+    res.json({ schools });
+  }),
+);
 
 router.get(
   '/join/:joinCode',

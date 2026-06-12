@@ -92,8 +92,8 @@ Role awal:
 Join sekolah:
 
 - Siswa login dengan Google/email.
-- Setelah login pertama, siswa mengisi profil dan memasukkan kode sekolah.
-- Untuk MVP, gunakan kode sekolah agar onboarding lebih mudah.
+- Setelah login pertama, siswa mengisi profil lalu mencari dan memilih nama sekolah.
+- Kelas yang tampil mengikuti data kelas yang dikelola admin sekolah.
 - Guru BK dan admin dibuat melalui invite atau super admin.
 
 ## 4. Auth Flow
@@ -316,7 +316,7 @@ Output:
 - Schema schools, users, memberships, classes.
 - Role guard.
 - Onboarding user.
-- Kode sekolah.
+- Lookup nama sekolah untuk onboarding siswa.
 - Seed super admin dan sekolah demo.
 
 Status:
@@ -396,7 +396,7 @@ Status:
 Output:
 
 - Ringkasan operasional sekolah.
-- Pengelolaan profil dan kode onboarding sekolah.
+- Pengelolaan profil sekolah dan alur onboarding manual berbasis nama sekolah.
 - Pengelolaan kelas.
 - Pengelolaan profil, NISN, dan kelas siswa.
 - Penetapan dan pencabutan akses Guru BK.

@@ -10,9 +10,13 @@ const router = Router();
 
 const studentOnboardingSchema = z.object({
   fullName: z.string().trim().min(2),
-  schoolJoinCode: z.string().trim().min(3),
-  classId: z.string().trim().optional(),
+  schoolId: z.string().trim().optional().transform((value) => value || undefined),
+  schoolJoinCode: z.string().trim().optional().transform((value) => value || undefined),
+  classId: z.string().trim().optional().transform((value) => value || undefined),
   nisn: z.string().trim().optional().transform((value) => value || undefined),
+}).refine((value) => value.schoolId || value.schoolJoinCode, {
+  message: 'Pilih sekolah terlebih dahulu.',
+  path: ['schoolId'],
 });
 
 router.post(
@@ -22,14 +26,14 @@ router.post(
     const payload = studentOnboardingSchema.parse(req.body);
     const userId = req.user!.id;
 
-    const school = await prisma.school.findUnique({
-      where: { joinCode: payload.schoolJoinCode.toUpperCase() },
-    });
+    const school = payload.schoolId
+      ? await prisma.school.findUnique({ where: { id: payload.schoolId } })
+      : await prisma.school.findUnique({ where: { joinCode: payload.schoolJoinCode!.toUpperCase() } });
 
     if (!school) {
       res.status(404).json({
         error: 'SchoolNotFound',
-        message: 'Kode sekolah tidak ditemukan.',
+        message: 'Sekolah tidak ditemukan.',
       });
       return;
     }
