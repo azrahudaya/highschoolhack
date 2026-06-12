@@ -13,6 +13,14 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
 
   console.error(error);
 
+  if (typeof error === 'object' && error && 'code' in error && error.code === 'P2002') {
+    res.status(409).json({
+      error: 'Conflict',
+      message: 'Data yang sama sudah terdaftar.',
+    });
+    return;
+  }
+
   const statusCode =
     typeof error === 'object' && error && 'statusCode' in error && typeof error.statusCode === 'number'
       ? error.statusCode

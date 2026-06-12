@@ -12,7 +12,7 @@ const studentOnboardingSchema = z.object({
   fullName: z.string().trim().min(2),
   schoolJoinCode: z.string().trim().min(3),
   classId: z.string().trim().optional(),
-  nisn: z.string().trim().optional(),
+  nisn: z.string().trim().optional().transform((value) => value || undefined),
 });
 
 router.post(
@@ -56,6 +56,24 @@ router.post(
       data: { name: payload.fullName },
     });
 
+    if (payload.nisn) {
+      const existingNisn = await prisma.studentProfile.findFirst({
+        where: {
+          schoolId: school.id,
+          nisn: payload.nisn,
+          NOT: { userId: user.id },
+        },
+      });
+
+      if (existingNisn) {
+        res.status(409).json({
+          error: 'NisnExists',
+          message: 'NISN sudah digunakan siswa lain di sekolah ini.',
+        });
+        return;
+      }
+    }
+
     await prisma.schoolMembership.upsert({
       where: {
         userId_schoolId_role: {
@@ -82,14 +100,14 @@ router.post(
       update: {
         fullName: payload.fullName,
         classId: payload.classId,
-        nisn: payload.nisn,
+        nisn: payload.nisn ?? null,
       },
       create: {
         userId: user.id,
         schoolId: school.id,
         fullName: payload.fullName,
         classId: payload.classId,
-        nisn: payload.nisn,
+        nisn: payload.nisn ?? null,
       },
       include: {
         class: true,
