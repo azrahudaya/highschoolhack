@@ -19,6 +19,8 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "db:seed": "node prisma/seed.cjs",
+    "admin:assign": "node scripts/assign-admin.cjs",
+    "teacher:assign": "node scripts/assign-teacher.cjs",
     "test:e2e": "playwright test"
   },
   "devDependencies": {

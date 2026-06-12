@@ -1,201 +1,139 @@
-import { useEffect, useState } from 'react';
-import { ArrowRight, BarChart3, BookOpenText, GraduationCap, Landmark, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, BarChart3, BookOpenCheck, CheckCircle2, GraduationCap, School, Target, UsersRound, WalletCards } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { PublicLayout } from '../components/PublicLayout';
+import { articles, programs } from '../data/content';
 
-type HealthResponse = {
-  status: string;
-  app: string;
-  environment: string;
-};
-
-const programs = [
-  {
-    title: 'Bekal 10',
-    grade: 'Kelas X',
-    description: 'Adaptasi SMA, pengenalan potensi diri, target akademik, dan portofolio perkembangan awal.',
-    icon: BookOpenText,
-    status: 'Phase 1',
-  },
-  {
-    title: 'Setting Goal',
-    grade: 'Kelas XI',
-    description: 'Eksplorasi jurusan, karier, SMART goals, rencana aksi, dan refleksi berkala.',
-    icon: GraduationCap,
-    status: 'Phase 2',
-  },
-  {
-    title: 'Smart Financial',
-    grade: 'Kelas XII',
-    description: 'Simulasi biaya hidup, beasiswa, financial readiness score, dan dashboard kesiapan.',
-    icon: BarChart3,
-    status: 'Phase 3',
-  },
-];
+const programIcons = [BookOpenCheck, Target, WalletCards];
 
 export function LandingPage() {
-  const [health, setHealth] = useState<HealthResponse | null>(null);
-
-  useEffect(() => {
-    fetch('/api/health')
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data: HealthResponse | null) => setHealth(data))
-      .catch(() => setHealth(null));
-  }, []);
-
   return (
-    <main className="min-h-screen bg-[#f8fbff] text-slate-950">
-      <header className="border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <a className="flex items-center gap-2 font-semibold text-slate-950" href="/">
-            <span className="grid size-9 place-items-center rounded-lg bg-[#15224a] text-white">
-              <Sparkles className="size-5" aria-hidden="true" />
-            </span>
-            HighschoolHack
-          </a>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-            <a className="hover:text-slate-950" href="#programs">
-              Program
-            </a>
-            <a className="hover:text-slate-950" href="#platform">
-              Platform
-            </a>
-            <a className="hover:text-slate-950" href="#status">
-              Status
-            </a>
-            <a className="rounded-lg border border-slate-300 px-4 py-2 text-slate-800 hover:border-slate-400" href="/login">
-              Masuk
-            </a>
-          </nav>
-        </div>
-      </header>
-
-      <section className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:py-20">
-        <div>
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#ffe08a] bg-[#fff8dd] px-3 py-1 text-sm font-medium text-[#6f5600]">
-            <ShieldCheck className="size-4" aria-hidden="true" />
-            Platform BK digital multi-sekolah
-          </div>
-          <h1 className="max-w-4xl text-4xl font-semibold leading-tight tracking-normal text-[#101b3f] md:text-6xl">
-            Pendamping siswa SMA untuk mengenali diri dan merancang masa depan.
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-            HighschoolHack menggabungkan modul bimbingan, asesmen eksploratif, portofolio perkembangan,
-            dan dashboard Guru BK dalam satu platform.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#15224a] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#22346a]"
-              href="/register"
-            >
-              Mulai Perjalanan
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </a>
-            <a
-              className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-400"
-              href="#platform"
-            >
-              Struktur Platform
-            </a>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-200/70">
-          <div className="rounded-xl bg-[#101b3f] p-5 text-white">
-            <div className="flex items-center justify-between border-b border-white/15 pb-4">
-              <div>
-                <p className="text-sm text-white/70">Dashboard Preview</p>
-                <h2 className="text-xl font-semibold">SMA Nusantara</h2>
+    <PublicLayout>
+      <main>
+        <section className="relative min-h-[calc(100svh-4rem)] overflow-hidden bg-[#101b3f]">
+          <img
+            alt="Siswa SMA merencanakan masa depan bersama"
+            className="absolute inset-0 size-full object-cover object-[64%_center]"
+            src="/images/highschoolhack-hero.png"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,17,48,0.96)_0%,rgba(8,17,48,0.88)_36%,rgba(8,17,48,0.35)_63%,rgba(8,17,48,0.05)_100%)]" />
+          <div className="relative mx-auto flex min-h-[calc(100svh-4rem)] max-w-7xl items-center px-6 pb-24 pt-14">
+            <div className="max-w-2xl text-white">
+              <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#ffe08a]">Perjalanan kelas X sampai XII</p>
+              <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-normal sm:text-5xl lg:text-6xl">
+                HighschoolHack
+              </h1>
+              <p className="mt-5 max-w-xl text-lg leading-8 text-white/80">
+                Kenali potensi diri, susun tujuan yang terarah, dan persiapkan kehidupan setelah lulus bersama Guru BK.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#ffe08a] px-5 py-3 text-sm font-semibold text-[#101b3f] hover:bg-[#ffda5c]" to="/register">
+                  Mulai perjalananmu <ArrowRight className="size-4" />
+                </Link>
+                <Link className="inline-flex items-center justify-center rounded-lg border border-white/35 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur hover:bg-white/15" to="/programs/bekal-10">
+                  Jelajahi program
+                </Link>
               </div>
-              <Landmark className="size-6 text-[#ffe08a]" aria-hidden="true" />
+              <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/70">
+                {['Multi-sekolah', 'Portofolio perkembangan', 'Dashboard Guru BK'].map((item) => (
+                  <span className="flex items-center gap-2" key={item}>
+                    <CheckCircle2 className="size-4 text-[#ffe08a]" /> {item}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="grid gap-3 py-5 sm:grid-cols-3">
-              {['3 Program', 'Multi Sekolah', 'Guru BK'].map((item) => (
-                <div key={item} className="rounded-lg bg-white/10 p-3">
-                  <p className="text-2xl font-semibold">{item.split(' ')[0]}</p>
-                  <p className="text-sm text-white/70">{item.replace(item.split(' ')[0], '').trim() || 'Utama'}</p>
+          </div>
+          <a className="absolute bottom-0 left-1/2 w-[min(92%,72rem)] -translate-x-1/2 rounded-t-xl bg-white px-5 py-4 text-sm font-medium text-[#101b3f] shadow-lg" href="#programs">
+            Tiga tahap perkembangan, satu perjalanan yang saling terhubung
+          </a>
+        </section>
+
+        <section className="bg-white py-16" id="programs">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="grid gap-6 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+              <div>
+                <p className="section-label">Program utama</p>
+                <h2 className="section-title">Pendampingan sesuai fase siswa SMA</h2>
+              </div>
+              <p className="max-w-2xl text-base leading-7 text-slate-600 lg:justify-self-end">
+                Setiap program menghasilkan data perkembangan yang dapat dilanjutkan pada tingkat berikutnya dan dipantau oleh Guru BK.
+              </p>
+            </div>
+            <div className="mt-10 grid gap-5 lg:grid-cols-3">
+              {programs.map((program, index) => {
+                const Icon = programIcons[index];
+                return (
+                  <article className="group rounded-lg border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-200/70" key={program.slug}>
+                    <div className="flex items-center justify-between">
+                      <span className="grid size-11 place-items-center rounded-lg bg-[#f1f5ff] text-[#15224a]"><Icon className="size-5" /></span>
+                      <span className="text-sm font-semibold" style={{ color: program.accent }}>{program.grade}</span>
+                    </div>
+                    <h3 className="mt-6 text-xl font-semibold text-[#101b3f]">{program.title}</h3>
+                    <p className="mt-3 min-h-28 text-sm leading-6 text-slate-600">{program.description}</p>
+                    <Link className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#15224a]" to={`/programs/${program.slug}`}>
+                      Lihat perjalanan <ArrowRight className="size-4 transition group-hover:translate-x-1" />
+                    </Link>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-y border-slate-200 bg-[#f1f5ff] py-16">
+          <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div>
+              <p className="section-label">Untuk sekolah</p>
+              <h2 className="section-title">Guru BK melihat perkembangan, bukan sekadar jawaban formulir.</h2>
+              <p className="mt-5 max-w-xl leading-7 text-slate-600">
+                Dashboard menyatukan progres program, profil minat, target, refleksi, dan indikator siswa yang memerlukan perhatian.
+              </p>
+              <Link className="mt-7 inline-flex items-center gap-2 rounded-lg bg-[#15224a] px-5 py-3 text-sm font-semibold text-white" to="/about">
+                Pelajari pendekatan kami <ArrowRight className="size-4" />
+              </Link>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                [UsersRound, 'Satu tampilan siswa', 'Cari dan filter siswa berdasarkan sekolah, kelas, serta progres.'],
+                [BarChart3, 'Insight yang relevan', 'Lihat distribusi minat, tantangan adaptasi, dan target populer.'],
+                [School, 'Multi-sekolah', 'Data setiap sekolah dipisahkan melalui role dan membership.'],
+                [GraduationCap, 'Portofolio berkelanjutan', 'Perjalanan kelas X sampai XII tetap terhubung.'],
+              ].map(([Icon, title, description]) => (
+                <div className="rounded-lg border border-slate-200 bg-white p-5" key={String(title)}>
+                  <Icon className="size-5 text-[#5b21b6]" />
+                  <h3 className="mt-4 font-semibold text-[#101b3f]">{String(title)}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{String(description)}</p>
                 </div>
               ))}
             </div>
-            <div className="space-y-3">
-              {programs.map((program, index) => (
-                <div key={program.title} className="flex items-center gap-3 rounded-lg bg-white p-3 text-slate-900">
-                  <span className="grid size-9 place-items-center rounded-md bg-[#ede9fe] text-[#5b21b6]">
-                    {index + 1}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold">{program.title}</p>
-                    <p className="truncate text-sm text-slate-500">{program.grade}</p>
+          </div>
+        </section>
+
+        <section className="bg-white py-16">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+              <div>
+                <p className="section-label">Artikel pilihan</p>
+                <h2 className="section-title">Bacaan untuk keputusan yang lebih matang</h2>
+              </div>
+              <Link className="inline-flex items-center gap-2 text-sm font-semibold text-[#5b21b6]" to="/articles">
+                Lihat semua artikel <ArrowRight className="size-4" />
+              </Link>
+            </div>
+            <div className="mt-9 grid gap-x-8 gap-y-0 md:grid-cols-2">
+              {articles.slice(0, 4).map((article) => (
+                <Link className="group border-t border-slate-200 py-6" key={article.slug} to={`/articles/${article.slug}`}>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs font-semibold uppercase tracking-[0.08em] text-[#5b21b6]">{article.category}</span>
+                    <span className="text-xs text-slate-400">{article.readTime}</span>
                   </div>
-                  <span className="rounded-full bg-[#fff8dd] px-2 py-1 text-xs font-semibold text-[#6f5600]">
-                    {program.status}
-                  </span>
-                </div>
+                  <h3 className="mt-3 text-lg font-semibold text-[#101b3f] group-hover:text-[#5b21b6]">{article.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{article.summary}</p>
+                </Link>
               ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      <section id="programs" className="mx-auto max-w-7xl px-6 py-10">
-        <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-end">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#5b21b6]">Program utama</p>
-            <h2 className="mt-2 text-3xl font-semibold text-[#101b3f]">Dibangun untuk kelas X sampai XII</h2>
-          </div>
-          <p className="max-w-xl text-sm leading-6 text-slate-600">
-            Semua program tampil dari awal, sementara implementasi lengkap dibangun bertahap agar kualitas produk tetap terjaga.
-          </p>
-        </div>
-        <div className="grid gap-5 lg:grid-cols-3">
-          {programs.map((program) => {
-            const Icon = program.icon;
-            return (
-              <article key={program.title} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="mb-5 flex items-center justify-between">
-                  <span className="grid size-11 place-items-center rounded-lg bg-[#f1f5ff] text-[#15224a]">
-                    <Icon className="size-5" aria-hidden="true" />
-                  </span>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                    {program.grade}
-                  </span>
-                </div>
-                <h3 className="text-xl font-semibold text-[#101b3f]">{program.title}</h3>
-                <p className="mt-3 min-h-24 text-sm leading-6 text-slate-600">{program.description}</p>
-                <button className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#15224a]">
-                  Buka shell program
-                  <ArrowRight className="size-4" aria-hidden="true" />
-                </button>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section id="platform" className="mx-auto max-w-7xl px-6 py-10">
-        <div className="grid gap-5 md:grid-cols-3">
-          {[
-            ['React Client', 'Public site, student app, teacher dashboard, dan admin shell.'],
-            ['Express API', 'Auth, role guard, modul, response siswa, dan dashboard data.'],
-            ['Heroku Postgres', 'Database utama untuk multi-sekolah dan progress siswa.'],
-          ].map(([title, body]) => (
-            <div key={title} className="rounded-xl border border-slate-200 bg-white p-5">
-              <h3 className="font-semibold text-[#101b3f]">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section id="status" className="mx-auto max-w-7xl px-6 pb-16 pt-8">
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <p className="text-sm font-semibold text-slate-500">API status</p>
-          <p className="mt-2 text-lg font-semibold text-[#101b3f]">
-            {health ? `${health.app} API ${health.status}` : 'API belum terhubung di dev client'}
-          </p>
-          <p className="mt-1 text-sm text-slate-500">
-            Environment: {health?.environment ?? 'unknown'}
-          </p>
-        </div>
-      </section>
-    </main>
+        </section>
+      </main>
+    </PublicLayout>
   );
 }

@@ -5,6 +5,7 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   if (error instanceof ZodError) {
     res.status(400).json({
       error: 'ValidationError',
+      message: 'Lengkapi semua jawaban wajib sebelum menyelesaikan modul.',
       issues: error.issues,
     });
     return;
@@ -12,8 +13,13 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
 
   console.error(error);
 
-  res.status(500).json({
+  const statusCode =
+    typeof error === 'object' && error && 'statusCode' in error && typeof error.statusCode === 'number'
+      ? error.statusCode
+      : 500;
+
+  res.status(statusCode).json({
     error: 'InternalServerError',
-    message: 'Terjadi kesalahan pada server.',
+    message: statusCode === 500 ? 'Terjadi kesalahan pada server.' : error instanceof Error ? error.message : 'Permintaan tidak dapat diproses.',
   });
 };

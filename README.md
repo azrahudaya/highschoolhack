@@ -93,3 +93,88 @@ Pending runtime validation:
 - Create and deploy the initial Prisma migration.
 - Run seed data.
 - Configure Google OAuth credentials.
+
+Phase 0D public website and program shell is implemented:
+
+- Final landing page with project hero visual.
+- Responsive public navbar and footer.
+- Article listing, search/filter, and article detail pages.
+- About page.
+- Detail pages for Bekal 10, Setting Goal, and Smart Financial.
+- Student dashboard shell with program progress and portfolio preview.
+- Desktop and mobile public route smoke tests.
+
+Phase 1A Bekal 10 core is implemented:
+
+- Real Bekal 10 enrollment, module progress, completion, and sequential unlock APIs.
+- Student dashboard and Bekal 10 program dashboard backed by PostgreSQL.
+- Modul 1 adaptation and reflection workflow.
+- Modul 2 original RIASEC and VARK-style learning preference assessments.
+- Database autosave with visible save state and read-only completed modules.
+- Reflective assessment result summaries.
+- Authenticated UI flows are covered with mocked Playwright API fixtures; production database flow requires deployed seed data.
+
+Bekal 10 API:
+
+- `GET /api/student/programs/bekal-10`
+- `GET /api/student/programs/bekal-10/modules/:moduleSlug`
+- `PUT /api/student/programs/bekal-10/modules/:moduleSlug`
+- `POST /api/student/programs/bekal-10/modules/:moduleSlug/complete`
+- `GET /api/student/programs/bekal-10/portfolio`
+
+Phase 1B Bekal 10 complete is implemented:
+
+- Modul 3-7: vision board, SMART development target, journey reflection, academic target, and digital learning commitment.
+- Sequential module completion through Modul 7.
+- Student portfolio with badges and print/PDF-friendly A4 layout.
+- Basic Guru BK dashboard with school metrics, result distributions, search, class filter, and read-only student detail.
+- Guru BK attention indicator combines low progress with high adaptation challenges.
+
+Guru BK API:
+
+- `GET /api/teacher/bekal-10/dashboard`
+- `GET /api/teacher/bekal-10/students/:userId`
+
+Provision a Guru BK account after the teacher has registered or logged in once:
+
+```bash
+npm run teacher:assign -- guru@sekolah.id HSH-DEMO "Nama Guru"
+```
+
+For Heroku:
+
+```bash
+heroku run 'npm run teacher:assign -- guru@sekolah.id HSH-DEMO "Nama Guru"' -a highschoolhack-app
+```
+
+Phase 1C Admin Sekolah Basic is implemented:
+
+- School overview and onboarding join-code management.
+- Class create, update, and guarded delete.
+- Student profile, NISN, and class management without access to module answers.
+- Assign and revoke Guru BK access from registered accounts.
+- All admin operations are scoped to the admin's school membership.
+
+Admin API:
+
+- `GET /api/admin/overview`
+- `PATCH /api/admin/school`
+- `POST /api/admin/school/regenerate-join-code`
+- `GET|POST /api/admin/classes`
+- `PATCH|DELETE /api/admin/classes/:classId`
+- `GET /api/admin/students`
+- `PATCH /api/admin/students/:userId`
+- `GET|POST /api/admin/teachers`
+- `DELETE /api/admin/teachers/:userId`
+
+Provision an Admin Sekolah account after the admin has registered or logged in once:
+
+```bash
+npm run admin:assign -- admin@sekolah.id HSH-DEMO "Nama Admin"
+```
+
+For Heroku:
+
+```bash
+heroku run 'npm run admin:assign -- admin@sekolah.id HSH-DEMO "Nama Admin"' -a highschoolhack-app
+```

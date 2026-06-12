@@ -31,3 +31,21 @@ test('student protected API rejects anonymous requests', async ({ request }) => 
   expect(response.status()).toBe(401);
   await expect(response.json()).resolves.toMatchObject({ error: 'Unauthorized' });
 });
+
+test('Bekal 10 APIs and module routes reject anonymous users', async ({ page, request }) => {
+  const response = await request.get('/api/student/programs/bekal-10');
+  expect(response.status()).toBe(401);
+
+  await page.goto('/app/programs/bekal-10/modules/langkah-awalku-di-sma');
+  await expect(page).toHaveURL(/\/login$/);
+});
+
+test('teacher dashboard API rejects anonymous users', async ({ request }) => {
+  const response = await request.get('/api/teacher/bekal-10/dashboard');
+  expect(response.status()).toBe(401);
+});
+
+test('admin school API rejects anonymous users', async ({ request }) => {
+  const response = await request.get('/api/admin/overview');
+  expect(response.status()).toBe(401);
+});

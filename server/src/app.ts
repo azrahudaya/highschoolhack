@@ -11,9 +11,12 @@ import { env } from './config/env';
 import { programStages } from './data/programs';
 import { errorHandler } from './middleware/error-handler';
 import { authRouter } from './routes/auth';
+import { adminSchoolRouter } from './routes/admin-school';
+import { bekal10Router } from './routes/bekal10';
 import { onboardingRouter } from './routes/onboarding';
 import { protectedRouter } from './routes/protected';
 import { schoolsRouter } from './routes/schools';
+import { teacherBekal10Router } from './routes/teacher-bekal10';
 
 export function createApp() {
   const app = express();
@@ -48,6 +51,9 @@ export function createApp() {
   });
 
   app.use('/api/auth', authRouter);
+  app.use('/api/admin', adminSchoolRouter);
+  app.use('/api/student/programs/bekal-10', bekal10Router);
+  app.use('/api/teacher/bekal-10', teacherBekal10Router);
   app.use('/api/schools', schoolsRouter);
   app.use('/api/onboarding', onboardingRouter);
   app.use('/api/protected', protectedRouter);

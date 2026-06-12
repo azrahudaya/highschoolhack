@@ -24,7 +24,72 @@ body {
   min-width: 320px;
 }
 
+img {
+  max-width: 100%;
+}
+
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.section-label {
+  color: #5b21b6;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.section-title {
+  margin-top: 0.75rem;
+  max-width: 42rem;
+  color: #101b3f;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 650;
+  line-height: 1.18;
+  letter-spacing: 0;
+}
+
+.prose-copy h2 {
+  margin-top: 2rem;
+  color: #101b3f;
+  font-size: 1.25rem;
+  font-weight: 650;
+}
+
+.prose-copy p {
+  margin-top: 0.75rem;
+  color: #475569;
+  line-height: 1.8;
+}
+
+@media print {
+  @page {
+    margin: 12mm;
+    size: A4;
+  }
+
+  body {
+    background: white;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .portfolio-document {
+    max-width: none;
+    padding: 0;
+  }
+
+  .portfolio-section {
+    break-inside: avoid;
+  }
 }

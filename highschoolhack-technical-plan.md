@@ -349,6 +349,11 @@ Output:
 - Halaman program Bekal 10, Setting Goal, Smart Financial.
 - CTA login.
 
+Status:
+
+- Landing page, shared public navigation/footer, article pages, about page, three program detail pages, and student dashboard shell are implemented.
+- Responsive desktop/mobile smoke tests are available in Playwright.
+
 ### Phase 1A: Bekal 10 Core
 
 Output:
@@ -359,6 +364,15 @@ Output:
 - Progress tracker.
 - Autosave.
 
+Status:
+
+- Dashboard siswa dan dashboard program memakai enrollment/progress nyata dari PostgreSQL.
+- Modul 1 memetakan adaptasi awal, relasi, refleksi, dan target siswa.
+- Modul 2 menyediakan inventori RIASEC original dan eksplorasi preferensi belajar VARK-style.
+- Jawaban tersimpan otomatis sebagai `ModuleResponse`, modul selesai menjadi read-only, dan modul berikutnya terbuka berurutan.
+- Hasil asesmen ditampilkan sebagai bahan refleksi, bukan diagnosis psikologis.
+- Build production, API guard, autosave, serta responsive desktop/mobile telah diverifikasi.
+
 ### Phase 1B: Bekal 10 Complete
 
 Output:
@@ -367,6 +381,33 @@ Output:
 - Portofolio siswa.
 - Print portfolio.
 - Dashboard Guru BK basic.
+
+Status:
+
+- Modul 3-7 tersedia dengan autosave, validasi, dan sequential unlock.
+- Vision Board dan Target Pengembangan dapat diperbarui berkala setelah modul selesai.
+- Portofolio siswa menggabungkan profil, hasil asesmen, target, refleksi, komitmen, badge, dan progress.
+- Portofolio memiliki layout print A4 yang juga dapat disimpan sebagai PDF melalui browser.
+- Dashboard Guru BK menampilkan metrik sekolah, distribusi hasil, pencarian/filter kelas, indikator perhatian, dan detail siswa read-only.
+- Akses Guru BK dibatasi ke siswa dari sekolah pada membership Guru BK.
+
+### Phase 1C: Admin Sekolah Basic
+
+Output:
+
+- Ringkasan operasional sekolah.
+- Pengelolaan profil dan kode onboarding sekolah.
+- Pengelolaan kelas.
+- Pengelolaan profil, NISN, dan kelas siswa.
+- Penetapan dan pencabutan akses Guru BK.
+
+Status:
+
+- Semua API admin dibatasi ke sekolah pada membership `school_admin` atau `super_admin`.
+- Kelas yang masih memiliki siswa tidak dapat dihapus.
+- Admin tidak dapat mengubah jawaban atau progress modul siswa.
+- Akun Guru BK dan admin menggunakan akun login nyata, tanpa password default.
+- Provisioning admin awal tersedia melalui command line untuk Heroku.
 
 ### Phase 2: Setting Goal
 
