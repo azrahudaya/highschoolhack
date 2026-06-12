@@ -1,4 +1,4 @@
-import { PrismaClient, ProgramSlug, UserRole } from '@prisma/client';
+const { PrismaClient, ProgramSlug, UserRole } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
@@ -43,14 +43,14 @@ const programs = [
   },
 ];
 
-function slugify(value: string) {
+function slugify(value) {
   return value
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
 }
 
-function gradeFromClassName(className: string) {
+function gradeFromClassName(className) {
   if (className.startsWith('XII')) return 12;
   if (className.startsWith('XI')) return 11;
   return 10;
@@ -146,6 +146,8 @@ async function main() {
       });
     }
   }
+
+  console.log('Seed selesai. Kode sekolah demo: HSH-DEMO');
 }
 
 main()
