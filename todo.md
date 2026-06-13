@@ -90,16 +90,17 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 
 ### Deploy and Config
 
-- [ ] Run `npm run prisma:deploy` on Heroku after pushing the new migration.
+- [x] Run `npm run prisma:deploy` on Heroku after pushing the new migration.
 - [ ] Set Heroku config vars:
   - `DEEPSEEK_API_KEY`
   - `DEEPSEEK_BASE_URL=https://api.deepseek.com`
   - `DEEPSEEK_MODEL=deepseek-v4-flash`
-- [ ] Verify Google OAuth redirect on:
+- [ ] Verify Google OAuth sign-in on:
   - `https://highschoolhack.my.id`
   - `https://www.highschoolhack.my.id`
 - [ ] Confirm Heroku only has the intended PostgreSQL add-on attached.
-- [ ] Run production smoke test after deploy: register/login, onboarding, one module autosave, admin page, chatbot fallback/API response.
+- [x] Run production HTTP smoke test after deploy: health, public page, auth config.
+- [ ] Run production logged-in smoke test after deploy: register/login, onboarding, one module autosave, admin page, chatbot fallback/API response.
 
 ### Data Privacy and AI Safety
 
