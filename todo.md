@@ -62,6 +62,17 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 - [x] Smart Financial portfolio and badge labels.
 - [x] Guru BK cross-program summary MVP.
 
+### Class XII Future Ready Board Revision
+
+- [x] Money inputs no longer force a leading `0`; empty fields can stay empty and pasted values such as `0500000` become `500000`.
+- [x] Module 3 renamed and reframed as `Future Ready Board`, closer to the `future-ready-Iya.pdf` reference flow.
+- [x] 12-step simulation is clickable; decisions update score, risk, lives, balance, badge, and autosave payload.
+- [x] Emergency card button is clickable and updates the simulation state.
+- [x] Final decision recommendation is shown from the simulation result.
+- [x] Scholarship portal exists as `/app/programs/smart-financial/scholarships` with search/filter and official links.
+- [x] Smart Financial portfolio has a direct PDF download endpoint.
+- [x] Smart Financial public CTAs preserve `/app/programs/smart-financial` so class XII users do not fall back to Bekal 10.
+
 ### Chatbot BK MVP
 
 - [x] Floating student chatbot.
@@ -84,7 +95,7 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 
 - [x] `npm.cmd run build`
 - [x] `npm.cmd run test:e2e`
-- [x] 74 Playwright tests passed across desktop and mobile Chromium.
+- [x] 78 Playwright tests passed across desktop and mobile Chromium.
 
 ## Remaining Before Production Pilot
 
@@ -114,11 +125,11 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 
 - [ ] Replace Smart Financial city select with search/autocomplete.
 - [ ] Expand city cost database and add source/update date per city.
-- [ ] Add scholarship search/filter and refresh official links.
+- [x] Add scholarship search/filter and official links.
 - [ ] Add detailed Guru BK distributions:
   - Setting Goal: active goals, career distribution, study program distribution, progress by class.
   - Smart Financial: readiness distribution, high-risk students, popular cities, after-graduation target distribution.
-- [ ] Add real PDF export. Current MVP uses browser print/save PDF.
+- [x] Add server-side PDF export for program portfolio.
 - [ ] Check portfolio print layout manually on A4 after deploy.
 
 ### Testing Debt

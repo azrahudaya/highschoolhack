@@ -68,3 +68,10 @@ test('privacy page explains AI chatbot boundaries', async ({ page }) => {
   await expect(page.getByText('Jangan menulis NISN, email, nomor telepon, alamat, atau data pribadi di chatbot.')).toBeVisible();
   await expect(page.getByText('Chatbot bukan pengganti Guru BK, psikolog, dokter, penasihat hukum, penasihat keuangan profesional, atau layanan darurat.')).toBeVisible();
 });
+
+test('Smart Financial public CTA preserves class 12 program target', async ({ page }) => {
+  await page.goto('/programs/smart-financial');
+
+  await expect(page.getByRole('link', { name: /Mulai program/ })).toHaveAttribute('href', '/register?next=%2Fapp%2Fprograms%2Fsmart-financial');
+  await expect(page.getByRole('link', { name: /Lanjutkan progres/ })).toHaveAttribute('href', '/login?next=%2Fapp%2Fprograms%2Fsmart-financial');
+});

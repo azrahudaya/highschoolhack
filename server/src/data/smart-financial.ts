@@ -26,4 +26,16 @@ export const scholarships = [
     url: 'https://lpdp.kemenkeu.go.id/',
     description: 'Referensi awal untuk memahami skema beasiswa studi lanjut dari pemerintah.',
   },
+  {
+    name: 'Beasiswa Unggulan',
+    type: 'Pemerintah',
+    url: 'https://beasiswaunggulan.kemdikbud.go.id/',
+    description: 'Referensi beasiswa pendidikan untuk pelajar/mahasiswa berprestasi sesuai ketentuan resmi.',
+  },
+  {
+    name: 'Australia Awards',
+    type: 'Internasional',
+    url: 'https://www.australiaawardsindonesia.org/',
+    description: 'Referensi beasiswa internasional untuk memahami opsi studi dan seleksi global.',
+  },
 ];

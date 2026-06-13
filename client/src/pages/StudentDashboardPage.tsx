@@ -1,19 +1,26 @@
 import { ArrowRight, CalendarCheck2, FileText, Target, WalletCards } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { StudentAppLayout } from '../components/StudentAppLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api';
+import { consumePostOnboardingNext } from '../lib/navigation';
 import type { Bekal10Dashboard } from '../types/bekal10';
 
 export function StudentDashboardPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [dashboard, setDashboard] = useState<Bekal10Dashboard | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
+    const next = consumePostOnboardingNext();
+    if (next && next !== '/app') {
+      navigate(next, { replace: true });
+      return;
+    }
     api<Bekal10Dashboard>('/api/student/programs/bekal-10').then(setDashboard).catch((requestError: Error) => setError(requestError.message));
-  }, []);
+  }, [navigate]);
 
   const current = dashboard?.program.modules.find((module) => module.slug === dashboard.program.currentModuleSlug);
 

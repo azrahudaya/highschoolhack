@@ -59,30 +59,73 @@ test('Setting Goal module autosaves choices', async ({ page }) => {
   await expect(page.getByText('Tersimpan otomatis')).toBeVisible();
 });
 
-test('Smart Financial module shows readiness score', async ({ page }) => {
+test('Smart Financial Future Ready Board is interactive and autosaves decisions', async ({ page }) => {
   await mockStudent(page);
   await page.route('**/api/student/programs/smart-financial/portfolio', (route) => route.fulfill({
     json: {
       modules: [
-        { slug: 'identitas-dan-target', data: { emergencyFund: 1000000 } },
-        { slug: 'pilih-kota-tujuan', data: { destinationCity: 'Yogyakarta' } },
+        { slug: 'identitas-dan-target', data: { monthlyAllowance: 1500000, currentSavings: 1000000, emergencyFund: 1000000 } },
+        { slug: 'pilih-kota-tujuan', data: { destinationCity: 'Yogyakarta', livingStrategy: 'Kos berbagi' } },
       ],
     },
   }));
-  await page.route('**/api/student/programs/smart-financial/modules/simulasi-financial-readiness', (route) => route.fulfill({
-    json: {
-      module: { id: 'sf3', slug: 'simulasi-financial-readiness', title: 'Simulasi Financial Readiness', order: 3, status: 'in_progress' },
-      response: { monthlySavingPlan: 500000, decisionScore: 70, riskScore: 25, simulationReflection: 'Saya perlu menekan biaya kos.' },
-      config: {
-        cities: [{ city: 'Yogyakarta', housing: 800000, food: 1000000, transport: 250000, study: 250000 }],
-        scholarships: [],
+  await page.route('**/api/student/programs/smart-financial/modules/simulasi-financial-readiness', async (route) => {
+    if (route.request().method() === 'PUT') return route.fulfill({ json: { savedAt: new Date().toISOString() } });
+    return route.fulfill({
+      json: {
+        module: { id: 'sf3', slug: 'simulasi-financial-readiness', title: 'Future Ready Board', order: 3, status: 'in_progress' },
+        response: { monthlySavingPlan: '', simulationDecisions: {}, emergencyCards: [], simulationReflection: 'Saya perlu menekan biaya kos.' },
+        config: {
+          cities: [{ city: 'Yogyakarta', housing: 800000, food: 1000000, transport: 250000, study: 250000 }],
+          scholarships: [],
+        },
       },
+    });
+  });
+
+  await page.goto('/app/programs/smart-financial/modules/simulasi-financial-readiness');
+  await expect(page.getByRole('heading', { name: 'Simulasi 12 langkah' })).toBeVisible();
+  await expect(page.getByText('Rekomendasi keputusan akhir')).toBeVisible();
+
+  const savingInput = page.getByLabel('Rencana menabung per bulan');
+  await expect(savingInput).toHaveValue('');
+  await savingInput.fill('0500000');
+  await expect(savingInput).toHaveValue('500000');
+  await savingInput.fill('');
+  await expect(savingInput).toHaveValue('');
+
+  const decisionSave = page.waitForRequest((request) => request.method() === 'PUT' && request.url().includes('/smart-financial/modules/simulasi-financial-readiness'));
+  await page.getByRole('button', { name: /Bandingkan 2 kota dan 2 kampus/ }).click();
+  await expect(page.getByText('1/12 keputusan')).toBeVisible();
+  const decisionPayload = (await decisionSave).postDataJSON();
+  expect(decisionPayload).toMatchObject({ data: { monthlySavingPlan: '', simulationDecisions: { target: 'compare' } } });
+
+  const emergencySave = page.waitForRequest((request) => request.method() === 'PUT' && request.url().includes('/smart-financial/modules/simulasi-financial-readiness'));
+  await page.getByRole('button', { name: /Ambil emergency card/ }).click();
+  await expect(page.getByText('Laptop rusak saat minggu ujian.')).toBeVisible();
+  expect((await emergencySave).postDataJSON()).toMatchObject({ data: { emergencyCards: ['laptop'] } });
+});
+
+test('Smart Financial scholarship portal and PDF portfolio entry points are available', async ({ page }) => {
+  await mockStudent(page);
+
+  await page.goto('/app/programs/smart-financial/scholarships');
+  await expect(page.getByRole('heading', { name: 'Portal Beasiswa' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'KIP Kuliah' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Resmi/ }).first()).toHaveAttribute('href', 'https://kip-kuliah.kemdikbud.go.id/');
+
+  await page.route('**/api/student/programs/smart-financial/portfolio', (route) => route.fulfill({
+    json: {
+      student: { name: 'Nadia', nisn: '0011', className: 'XII IPA 2', schoolName: 'SMA Nusantara' },
+      program: { title: 'Smart Financial', completedCount: 2, totalModules: 4 },
+      modules: [
+        { id: 'sf1', slug: 'identitas-dan-target', title: 'Identitas dan Target', order: 1, status: 'completed', data: { afterGraduationTarget: 'Kuliah di luar kota' } },
+      ],
     },
   }));
 
-  await page.goto('/app/programs/smart-financial/modules/simulasi-financial-readiness');
-  await expect(page.getByRole('heading', { name: 'Financial readiness score' })).toBeVisible();
-  await expect(page.getByText('Formula MVP')).toBeVisible();
+  await page.goto('/app/programs/smart-financial/portfolio');
+  await expect(page.getByRole('link', { name: /Unduh PDF/ })).toHaveAttribute('href', '/api/student/programs/smart-financial/portfolio.pdf');
 });
 
 test('chatbot blocks sensitive student identifiers in the client', async ({ page }) => {

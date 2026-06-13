@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthShell } from '../components/AuthShell';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api';
+import { consumePostOnboardingNext } from '../lib/navigation';
 
 export function OnboardingPage() {
   const { user, refresh } = useAuth();
@@ -37,7 +38,7 @@ export function OnboardingPage() {
         }),
       });
       await refresh();
-      navigate('/app');
+      navigate(consumePostOnboardingNext() || '/app');
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Onboarding gagal.');
     } finally {

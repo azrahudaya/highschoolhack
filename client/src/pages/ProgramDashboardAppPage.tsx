@@ -41,6 +41,7 @@ export function ProgramDashboardAppPage() {
           <div className="mt-6 flex flex-wrap gap-2">
             {dashboard?.program.currentModuleSlug && <Link className="inline-flex items-center gap-2 rounded-lg bg-[#ffe08a] px-4 py-2.5 text-sm font-semibold text-[#101b3f]" to={`/app/programs/${workflow.programSlug}/modules/${dashboard.program.currentModuleSlug}`}>Lanjutkan modul <ArrowRight className="size-4" /></Link>}
             <Link className="inline-flex items-center rounded-lg border border-white/25 px-4 py-2.5 text-sm font-semibold text-white" to={`/app/programs/${workflow.programSlug}/portfolio`}>Lihat ringkasan</Link>
+            {workflow.programSlug === 'smart-financial' && <Link className="inline-flex items-center rounded-lg border border-white/25 px-4 py-2.5 text-sm font-semibold text-white" to="/app/programs/smart-financial/scholarships">Portal Beasiswa</Link>}
           </div>
         </section>
 

@@ -6,6 +6,7 @@ import { prisma } from '../db/prisma';
 import { asyncHandler } from '../middleware/async-handler';
 import { requireRole } from '../middleware/auth';
 import { ensureProgramEnrollment, saveModuleResponse } from '../services/bekal10';
+import { createSimplePdf, currency as pdfCurrency } from '../services/simple-pdf';
 
 const router = Router();
 
@@ -66,6 +67,14 @@ function ensurePayloadHasContent(data: Record<string, unknown>) {
   if (!hasContent) throw Object.assign(new Error('Isi modul terlebih dahulu sebelum menyelesaikannya.'), { statusCode: 400 });
 }
 
+function formatPdfValue(value: unknown) {
+  if (Array.isArray(value)) return value.join(', ');
+  if (typeof value === 'number') return String(value);
+  if (typeof value === 'string') return value;
+  if (value && typeof value === 'object') return JSON.stringify(value);
+  return '-';
+}
+
 router.use(requireRole('student'));
 
 router.get('/smart-financial/cities', (_req, res) => {
@@ -113,6 +122,93 @@ router.get(
         data: responseByModuleId.get(item.moduleId)?.data ?? null,
       })),
     });
+  }),
+);
+
+router.get(
+  '/:programSlug/portfolio.pdf',
+  asyncHandler(async (req, res) => {
+    const programSlug = z.string().min(1).parse(req.params.programSlug);
+    const context = await ensureProgramEnrollment(req.user!.id, resolveProgramSlug(programSlug));
+    const responses = await prisma.moduleResponse.findMany({
+      where: { userId: req.user!.id, module: { programId: context.program.id } },
+      include: { module: true },
+    });
+    const modules = context.progress.map((item) => ({
+      slug: item.module.slug,
+      title: item.module.title,
+      data: responses.find((response) => response.moduleId === item.moduleId)?.data as Record<string, unknown> | null,
+    }));
+    const allData = Object.assign({}, ...modules.map((module) => module.data ?? {}));
+    const city = cityCosts.find((item) => item.city === String(allData.destinationCity ?? ''));
+    const monthlyCost = city ? city.housing + city.food + city.transport + city.study : 0;
+    const isSmartFinancial = programSlug === 'smart-financial';
+    const reportLines = isSmartFinancial ? [
+      { text: 'Laporan Future Ready Board', options: { bold: true, size: 24 } },
+      { text: 'Coba dulu sebelum boncos beneran.', options: { size: 13 } },
+      { text: '' },
+      { text: 'Profil Simulasi', options: { bold: true, size: 15 } },
+      { text: `Nama: ${context.profile.fullName}` },
+      { text: `Sekolah: ${context.membership.school.name}` },
+      { text: `Kelas: ${context.profile.class?.name ?? '-'}` },
+      { text: `Tanggal simulasi: ${new Date().toLocaleDateString('id-ID')}` },
+      { text: `Kota tujuan: ${allData.destinationCity ?? '-'}` },
+      { text: `Target setelah lulus: ${allData.afterGraduationTarget ?? '-'}` },
+      { text: '' },
+      { text: 'Ringkasan Biaya Hidup', options: { bold: true, size: 15 } },
+      { text: `Kos/tempat tinggal: ${city ? pdfCurrency(city.housing) : '-'}` },
+      { text: `Makan: ${city ? pdfCurrency(city.food) : '-'}` },
+      { text: `Transport: ${city ? pdfCurrency(city.transport) : '-'}` },
+      { text: `Belajar/lainnya: ${city ? pdfCurrency(city.study) : '-'}` },
+      { text: `Estimasi hidup hemat: ${monthlyCost ? `${pdfCurrency(monthlyCost)} / bulan` : '-'}` },
+      { text: '' },
+      { text: 'Hasil Akhir', options: { bold: true, size: 15 } },
+      { text: `Saldo akhir: ${pdfCurrency(allData.finalBalance)}` },
+      { text: `Dana darurat: ${pdfCurrency(allData.emergencyFund)}` },
+      { text: `Risk score: ${allData.riskScore ?? 0}` },
+      { text: `Decision score: ${allData.decisionScore ?? 0}` },
+      { text: `Lives tersisa: ${allData.lives ?? '-'}` },
+      { text: `Status akhir: ${allData.finalBalance && Number(allData.finalBalance) < 0 ? 'Defisit' : 'Terkendali'}` },
+      { text: `Badge: ${allData.badge ?? '-'}` },
+      { text: String(allData.finalDecision ?? 'Rencana perlu dicek ulang bersama Guru BK atau orang tua/wali sebelum mengambil keputusan akhir.') },
+      { text: '' },
+      { text: 'Rekomendasi Aksi', options: { bold: true, size: 15 } },
+      { text: '- Hindari paylater untuk kebutuhan konsumtif.' },
+      { text: '- Cek beasiswa, bantuan pendidikan, atau jalur vokasi yang cocok.' },
+      { text: '- Buat target dana darurat minimal Rp 500.000.' },
+      { text: '- Bandingkan biaya hidup antar kota sebelum menentukan tujuan.' },
+      { text: '- Diskusi dengan Guru BK atau orang tua/wali soal rencana setelah lulus.' },
+      { text: '' },
+      { text: 'Beasiswa yang Bisa Dicek', options: { bold: true, size: 15 } },
+      ...scholarships.map((item) => ({ text: `- ${item.name} (${item.type})` })),
+      { text: '' },
+      { text: 'Catatan edukatif: hasil ini adalah simulasi belajar, bukan penilaian pribadi. Masa depan tidak harus mahal, tapi perlu direncanakan.' },
+    ] : [
+      { text: `${context.program.title} Portfolio`, options: { bold: true, size: 24 } },
+      { text: 'Ringkasan progres program siswa.', options: { size: 13 } },
+      { text: '' },
+      { text: 'Profil Siswa', options: { bold: true, size: 15 } },
+      { text: `Nama: ${context.profile.fullName}` },
+      { text: `Sekolah: ${context.membership.school.name}` },
+      { text: `Kelas: ${context.profile.class?.name ?? '-'}` },
+      { text: `Tanggal unduh: ${new Date().toLocaleDateString('id-ID')}` },
+      { text: '' },
+      { text: 'Ringkasan Modul', options: { bold: true, size: 15 } },
+      ...modules.flatMap((module) => {
+        const entries = Object.entries(module.data ?? {});
+        if (!entries.length) return [{ text: `${module.title}: belum diisi.` }];
+        return [
+          { text: module.title, options: { bold: true, size: 12 } },
+          ...entries.slice(0, 4).map(([key, value]) => ({ text: `- ${key.replace(/([A-Z])/g, ' $1')}: ${formatPdfValue(value)}` })),
+        ];
+      }),
+      { text: '' },
+      { text: 'Catatan edukatif: portfolio ini adalah ringkasan pembelajaran siswa dan sebaiknya dibahas bersama Guru BK atau orang tua/wali.' },
+    ];
+    const pdf = createSimplePdf(reportLines);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${programSlug}-portfolio.pdf"`);
+    res.send(pdf);
   }),
 );
 

@@ -17,6 +17,7 @@ import { ProgramModuleAppPage } from './pages/ProgramModuleAppPage';
 import { ProgramPortfolioAppPage } from './pages/ProgramPortfolioAppPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { ScholarshipPortalAppPage } from './pages/ScholarshipPortalAppPage';
 import { StudentPortfolioPage } from './pages/StudentPortfolioPage';
 import { StudentProfilePage } from './pages/StudentProfilePage';
 import { StudentDashboardPage } from './pages/StudentDashboardPage';
@@ -64,6 +65,14 @@ function App() {
           element={
             <ProtectedRoute roles={['student']}>
               <Bekal10ModulePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app/programs/smart-financial/scholarships"
+          element={
+            <ProtectedRoute roles={['student']}>
+              <ScholarshipPortalAppPage />
             </ProtectedRoute>
           }
         />

@@ -1,4 +1,4 @@
-import { ArrowLeft, Award, CheckCircle2, CircleDashed, LoaderCircle, Printer } from 'lucide-react';
+import { ArrowLeft, Award, CheckCircle2, CircleDashed, Download, LoaderCircle, Printer } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { StudentAppLayout } from '../components/StudentAppLayout';
@@ -41,7 +41,10 @@ export function ProgramPortfolioAppPage() {
     <StudentAppLayout eyebrow={workflow.title} title="Ringkasan program">
       <div className="no-print mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-5 lg:px-7">
         <Link className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600" to={`/app/programs/${workflow.programSlug}`}><ArrowLeft className="size-4" /> Kembali</Link>
-        <button className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#101b3f] px-4 text-sm font-semibold text-white" disabled={!portfolio} onClick={() => window.print()} type="button"><Printer className="size-4" />Cetak / Simpan PDF</button>
+        <div className="flex flex-wrap justify-end gap-2">
+          <a className={`inline-flex h-10 items-center gap-2 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-slate-700 ${!portfolio ? 'pointer-events-none opacity-50' : ''}`} href={`/api/student/programs/${workflow.programSlug}/portfolio.pdf`}><Download className="size-4" />Unduh PDF</a>
+          <button className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#101b3f] px-4 text-sm font-semibold text-white" disabled={!portfolio} onClick={() => window.print()} type="button"><Printer className="size-4" />Cetak / Simpan PDF</button>
+        </div>
       </div>
       {error && <p className="mx-auto max-w-5xl rounded-lg bg-red-50 p-4 text-sm text-red-700">{error}</p>}
       {!portfolio && !error && <div className="grid min-h-80 place-items-center"><LoaderCircle className="size-7 animate-spin text-violet-600" /></div>}

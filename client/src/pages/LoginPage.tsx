@@ -1,9 +1,10 @@
 import { LogIn } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthShell } from '../components/AuthShell';
 import { getUserHomePath, useAuth, type AuthUser } from '../contexts/AuthContext';
 import { api } from '../lib/api';
+import { safeNextPath, storePostOnboardingNext } from '../lib/navigation';
 
 type LoginResponse = {
   user: AuthUser;
@@ -13,12 +14,14 @@ type LoginResponse = {
 export function LoginPage() {
   const { user, loading, googleAuthConfigured, refresh } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const nextPath = safeNextPath(searchParams.get('next'));
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  if (!loading && user) return <Navigate to={getUserHomePath(user)} replace />;
+  if (!loading && user) return <Navigate to={nextPath && user.memberships.length ? nextPath : getUserHomePath(user)} replace />;
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -31,7 +34,8 @@ export function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       await refresh();
-      navigate(response.redirectTo);
+      if (nextPath && response.user.memberships.length) navigate(nextPath);
+      else navigate(response.redirectTo);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Login gagal.');
     } finally {
@@ -45,6 +49,7 @@ export function LoginPage() {
         <a
           className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:border-slate-400"
           href="/api/auth/google"
+          onClick={() => storePostOnboardingNext(nextPath)}
         >
           Masuk dengan Google
         </a>
@@ -94,7 +99,7 @@ export function LoginPage() {
       </form>
       <p className="mt-6 text-center text-sm text-slate-600">
         Belum punya akun?{' '}
-        <Link className="font-semibold text-[#5b21b6]" to="/register">
+        <Link className="font-semibold text-[#5b21b6]" to={nextPath ? `/register?next=${encodeURIComponent(nextPath)}` : '/register'}>
           Daftar
         </Link>
       </p>

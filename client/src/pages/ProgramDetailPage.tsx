@@ -9,6 +9,7 @@ export function ProgramDetailPage() {
   if (!program) return <Navigate to="/" replace />;
 
   const comingSoon = program.status === 'coming_soon';
+  const appPath = `/app/programs/${program.slug}`;
 
   return (
     <PublicLayout>
@@ -27,11 +28,11 @@ export function ProgramDetailPage() {
                     Ikuti perkembangan <ArrowRight className="size-4" />
                   </Link>
                 ) : (
-                  <Link className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#ffe08a] px-5 py-3 text-sm font-semibold text-[#101b3f]" to="/register">
+                  <Link className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#ffe08a] px-5 py-3 text-sm font-semibold text-[#101b3f]" to={`/register?next=${encodeURIComponent(appPath)}`}>
                     Mulai program <ArrowRight className="size-4" />
                   </Link>
                 )}
-                <Link className="inline-flex items-center justify-center rounded-lg border border-white/30 px-5 py-3 text-sm font-semibold" to="/login">
+                <Link className="inline-flex items-center justify-center rounded-lg border border-white/30 px-5 py-3 text-sm font-semibold" to={`/login?next=${encodeURIComponent(appPath)}`}>
                   Lanjutkan progres
                 </Link>
               </div>

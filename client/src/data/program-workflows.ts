@@ -148,12 +148,10 @@ export const smartFinancialWorkflow: Workflow = {
     },
     {
       slug: 'simulasi-financial-readiness',
-      title: 'Simulasi Financial Readiness',
-      description: 'Mainkan simulasi 12 keputusan dan lihat skor kesiapan finansial.',
+      title: 'Future Ready Board',
+      description: 'Mainkan 12 keputusan finansial, ambil kartu darurat, lalu lihat saldo, lives, badge, dan skor kesiapan.',
       fields: [
         { key: 'monthlySavingPlan', label: 'Rencana menabung per bulan', type: 'number', min: 0 },
-        { key: 'decisionScore', label: 'Skor keputusan dari simulasi', type: 'range', min: 0, max: 100 },
-        { key: 'riskScore', label: 'Skor risiko', type: 'range', min: 0, max: 100 },
         { key: 'simulationReflection', label: 'Refleksi simulasi', type: 'textarea', placeholder: 'Keputusan apa yang paling sulit dan apa pelajarannya?' },
       ],
     },
