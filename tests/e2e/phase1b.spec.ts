@@ -83,6 +83,6 @@ test('teacher can view student portfolio read-only', async ({ page }) => {
   await page.route('**/api/teacher/bekal-10/students/student-1', (route) => route.fulfill({ json: portfolio }));
   await page.goto('/teacher/students/student-1');
   await expect(page.getByRole('heading', { name: 'Nadia', level: 1 })).toBeVisible();
-  await expect(page.getByText('Mengatur waktu')).toBeVisible();
+  await expect(page.getByText('Mengatur waktu', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Cetak / Simpan PDF' })).toBeVisible();
 });

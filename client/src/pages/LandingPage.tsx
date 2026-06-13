@@ -1,9 +1,26 @@
-import { ArrowRight, BarChart3, BookOpenCheck, CheckCircle2, GraduationCap, School, Target, UsersRound, WalletCards } from 'lucide-react';
+import {
+  ArrowRight,
+  BarChart3,
+  BookOpen,
+  BookOpenCheck,
+  CheckCircle2,
+  ClipboardCheck,
+  GraduationCap,
+  Lightbulb,
+  NotebookTabs,
+  Rocket,
+  School,
+  Target,
+  TrendingUp,
+  UsersRound,
+  WalletCards,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PublicLayout } from '../components/PublicLayout';
 import { articles, programs } from '../data/content';
 
 const programIcons = [BookOpenCheck, Target, WalletCards];
+const motivationIcons = [BookOpen, Lightbulb, Rocket, Target, NotebookTabs];
 
 export function LandingPage() {
   return (
@@ -23,7 +40,10 @@ export function LandingPage() {
                 HighschoolHack
               </h1>
               <p className="mt-5 max-w-xl text-lg leading-8 text-white/80">
-                Kenali potensi diri, susun tujuan yang terarah, dan persiapkan kehidupan setelah lulus bersama Guru BK.
+                Platform pendamping siswa SMA untuk mengenali potensi diri, merencanakan masa depan, dan mempersiapkan kehidupan setelah lulus.
+              </p>
+              <p className="mt-3 max-w-xl text-base leading-7 text-[#ffe08a]">
+                Masa depan dibentuk dari langkah kecil yang kamu ambil hari ini.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#ffe08a] px-5 py-3 text-sm font-semibold text-[#101b3f] hover:bg-[#ffda5c]" to="/register">
@@ -40,6 +60,19 @@ export function LandingPage() {
                   </span>
                 ))}
               </div>
+              <div className="mt-8 grid max-w-xl gap-2 sm:grid-cols-2">
+                {([
+                  [Target, 'Target masa depan'],
+                  [ClipboardCheck, 'Checklist perkembangan'],
+                  [TrendingUp, 'Growth chart'],
+                  [GraduationCap, 'Rencana kuliah dan karier'],
+                ] as const).map(([Icon, label]) => (
+                  <span className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white/80 backdrop-blur" key={String(label)}>
+                    <Icon className="size-4 text-[#ffe08a]" />
+                    {String(label)}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
           <a className="absolute bottom-0 left-1/2 w-[min(92%,72rem)] -translate-x-1/2 rounded-t-xl bg-white px-5 py-4 text-sm font-medium text-[#101b3f] shadow-lg" href="#programs">
@@ -52,7 +85,7 @@ export function LandingPage() {
             <div className="grid gap-6 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
               <div>
                 <p className="section-label">Program utama</p>
-                <h2 className="section-title">Pendampingan sesuai fase siswa SMA</h2>
+                <h2 className="section-title">Program Utama HighschoolHack</h2>
               </div>
               <p className="max-w-2xl text-base leading-7 text-slate-600 lg:justify-self-end">
                 Setiap program menghasilkan data perkembangan yang dapat dilanjutkan pada tingkat berikutnya dan dipantau oleh Guru BK.
@@ -67,14 +100,38 @@ export function LandingPage() {
                       <span className="grid size-11 place-items-center rounded-lg bg-[#f1f5ff] text-[#15224a]"><Icon className="size-5" /></span>
                       <span className="text-sm font-semibold" style={{ color: program.accent }}>{program.grade}</span>
                     </div>
+                    <div className="mt-5 grid grid-cols-2 gap-2">
+                      {program.visualSignals.map((signal) => (
+                        <span className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600" key={signal}>{signal}</span>
+                      ))}
+                    </div>
                     <h3 className="mt-6 text-xl font-semibold text-[#101b3f]">{program.title}</h3>
                     <p className="mt-3 min-h-28 text-sm leading-6 text-slate-600">{program.description}</p>
                     <Link className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#15224a]" to={`/programs/${program.slug}`}>
-                      Lihat perjalanan <ArrowRight className="size-4 transition group-hover:translate-x-1" />
+                      {program.ctaLabel} <ArrowRight className="size-4 transition group-hover:translate-x-1" />
                     </Link>
                   </article>
                 );
               })}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white pb-16">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="rounded-lg border border-[#ffe08a]/70 bg-[#fff6d8] p-6 md:p-7">
+              <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                <p className="max-w-3xl text-xl font-semibold leading-8 text-[#101b3f]">
+                  Kesuksesan bukan tentang siapa yang paling pintar, tetapi siapa yang terus belajar dan berkembang.
+                </p>
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  {motivationIcons.map((Icon, index) => (
+                    <span className="grid size-10 place-items-center rounded-lg bg-white text-[#5b21b6] shadow-sm" key={index}>
+                      <Icon className="size-5" />
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>

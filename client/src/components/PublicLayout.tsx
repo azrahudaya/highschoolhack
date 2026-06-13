@@ -5,7 +5,7 @@ import { useAuth, getUserHomePath } from '../contexts/AuthContext';
 import { Brand } from './Brand';
 
 const navItems = [
-  ['Program', '/programs/bekal-10'],
+  ['Beranda', '/'],
   ['Artikel', '/articles'],
   ['Tentang Kami', '/about'],
 ];
@@ -82,6 +82,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
             <div className="mt-4 flex flex-col gap-3 text-sm text-white/65">
               <Link to="/articles">Artikel</Link>
               <Link to="/about">Tentang Kami</Link>
+              <Link to="/privacy">Privasi dan AI</Link>
               <Link to="/login">Masuk</Link>
             </div>
           </div>

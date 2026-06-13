@@ -9,8 +9,9 @@ import {
   Save,
   Sparkles,
 } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Cell, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { StudentAppLayout } from '../components/StudentAppLayout';
 import { advancedInitialBySlug, Bekal10AdvancedModule, type AdvancedModuleData } from '../components/Bekal10AdvancedModules';
 import { api } from '../lib/api';
@@ -22,6 +23,7 @@ type AnyModuleData = ModuleOneData | ModuleTwoData | AdvancedModuleData;
 
 type ModuleOneData = {
   learningEnvironment: string;
+  preferredStudyPlaces: string[];
   studyCompany: string;
   excitement: string[];
   challenges: string[];
@@ -55,6 +57,7 @@ type ModuleTwoData = {
 
 const moduleOneInitial: ModuleOneData = {
   learningEnvironment: '',
+  preferredStudyPlaces: [],
   studyCompany: '',
   excitement: [],
   challenges: [],
@@ -80,16 +83,18 @@ const excitementOptions = ['Pelajaran baru', 'Teman baru', 'Kegiatan sekolah', '
 const challengeOptions = ['Mengatur waktu', 'Beradaptasi', 'Memahami pelajaran', 'Berani bertanya', 'Membangun pertemanan', 'Menjaga motivasi'];
 const improvementOptions = ['Disiplin belajar', 'Percaya diri', 'Komunikasi', 'Manajemen waktu', 'Kerja sama', 'Konsistensi'];
 const targetOptions = ['Mengenal lingkungan sekolah', 'Punya rutinitas belajar', 'Aktif di kelas', 'Menemukan kegiatan yang disukai', 'Menambah teman', 'Lebih berani mencoba'];
+const indoorStudyPlaces = ['Kelas', 'Perpustakaan', 'Ruang belajar rumah', 'Laboratorium', 'Ruang BK'];
+const outdoorStudyPlaces = ['Taman sekolah', 'Lapangan', 'Kantin saat diskusi', 'Kegiatan lapangan', 'Komunitas luar sekolah'];
 const relationLabels = ['Sangat sulit', 'Sulit', 'Cukup', 'Baik', 'Sangat baik'];
-const categoryColors: Record<RiasecCategory | VarkCategory, string> = {
-  R: 'bg-amber-500',
-  I: 'bg-blue-500',
-  A: 'bg-fuchsia-500',
-  S: 'bg-emerald-500',
-  E: 'bg-orange-500',
-  C: 'bg-cyan-600',
-  V: 'bg-blue-500',
-  K: 'bg-amber-500',
+const categoryHex: Record<RiasecCategory | VarkCategory, string> = {
+  R: '#f59e0b',
+  I: '#3b82f6',
+  A: '#d946ef',
+  S: '#10b981',
+  E: '#f97316',
+  C: '#0891b2',
+  V: '#3b82f6',
+  K: '#f59e0b',
 };
 const revisableSlugs = new Set(['vision-board-sma-ku', 'target-pengembangan-diri']);
 const moduleDescriptions: Record<string, string> = {
@@ -180,6 +185,32 @@ function TextArea({
   );
 }
 
+function ModuleOneSummary({ data }: { data: ModuleOneData }) {
+  const relationAverage = Math.round(((data.friendRelation + data.teacherRelation) / 2) * 10) / 10;
+  const mainChallenge = data.challenges[0] ?? 'Belum ada tantangan utama yang dipilih';
+  const support = [...data.excitement, ...data.improvements].slice(0, 3);
+  const recommendation = data.challenges.includes('Mengatur waktu')
+    ? 'Mulai dari jadwal belajar mingguan yang ringan dan evaluasi setiap akhir pekan.'
+    : data.challenges.includes('Membangun pertemanan')
+      ? 'Coba mulai dari satu interaksi kecil setiap hari, misalnya menyapa atau bertanya tugas.'
+      : data.challenges.includes('Berani bertanya')
+        ? 'Siapkan satu pertanyaan sebelum kelas selesai agar kamu lebih mudah meminta bantuan.'
+        : 'Pilih satu langkah kecil yang bisa dilakukan konsisten selama empat minggu pertama.';
+
+  return (
+    <section className="rounded-lg border border-emerald-200 bg-emerald-50 p-5">
+      <h2 className="text-lg font-semibold text-emerald-950">Ringkasan adaptasi awal</h2>
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <div className="rounded-lg bg-white p-4"><p className="text-xs font-semibold text-emerald-700">Profil adaptasi</p><p className="mt-1 text-sm leading-6 text-emerald-950">Relasi awal berada di skor {relationAverage}/5 dengan preferensi belajar {data.learningEnvironment || 'belum dipilih'}.</p></div>
+        <div className="rounded-lg bg-white p-4"><p className="text-xs font-semibold text-emerald-700">Tantangan utama</p><p className="mt-1 text-sm leading-6 text-emerald-950">{mainChallenge}</p></div>
+        <div className="rounded-lg bg-white p-4"><p className="text-xs font-semibold text-emerald-700">Faktor pendukung</p><p className="mt-1 text-sm leading-6 text-emerald-950">{support.length ? support.join(', ') : 'Belum tersedia'}</p></div>
+        <div className="rounded-lg bg-white p-4"><p className="text-xs font-semibold text-emerald-700">Rekomendasi adaptasi</p><p className="mt-1 text-sm leading-6 text-emerald-950">{recommendation}</p></div>
+      </div>
+      <p className="mt-4 rounded-lg bg-white p-4 text-sm leading-6 text-emerald-950">Target adaptasi semester pertama: {data.targets.length ? data.targets.join(', ') : 'pilih satu target kecil dan jalankan secara konsisten.'}</p>
+    </section>
+  );
+}
+
 function SaveIndicator({ state }: { state: SaveState }) {
   const meta = {
     idle: { icon: Save, label: 'Autosave aktif', className: 'text-slate-400' },
@@ -198,18 +229,20 @@ function SaveIndicator({ state }: { state: SaveState }) {
 }
 
 function ModuleOne({ data, disabled, update }: { data: ModuleOneData; disabled: boolean; update: UpdateData }) {
+  const placeOptions = data.learningEnvironment === 'Outdoor' ? outdoorStudyPlaces : data.learningEnvironment === 'Keduanya' ? [...indoorStudyPlaces, ...outdoorStudyPlaces] : indoorStudyPlaces;
+
   return (
     <div className="space-y-5">
+      {disabled && <ModuleOneSummary data={data} />}
       <Section description="Ceritakan bagaimana kamu mengalami masa awal SMA. Tidak ada jawaban benar atau salah." title="Peta awal perjalananku">
         <div className="grid gap-5 md:grid-cols-2">
           <label>
             <FieldLabel>Lingkungan belajar yang paling nyaman</FieldLabel>
             <select className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:border-violet-500" disabled={disabled} onChange={(event) => update('learningEnvironment', event.target.value)} value={data.learningEnvironment}>
               <option value="">Pilih satu</option>
-              <option>Kelas yang tenang dan terstruktur</option>
-              <option>Kelas yang aktif dan banyak diskusi</option>
-              <option>Belajar sambil praktik</option>
-              <option>Belajar mandiri dengan arahan</option>
+              <option>Indoor</option>
+              <option>Outdoor</option>
+              <option>Keduanya</option>
             </select>
           </label>
           <label>
@@ -223,6 +256,7 @@ function ModuleOne({ data, disabled, update }: { data: ModuleOneData; disabled: 
             </select>
           </label>
         </div>
+        <div className="mt-6"><FieldLabel>Tempat belajar yang paling mendukung</FieldLabel><ChoiceGrid disabled={disabled} onChange={(value) => update('preferredStudyPlaces', value)} options={placeOptions} selected={data.preferredStudyPlaces} /></div>
         <div className="mt-6"><FieldLabel>Hal yang membuatku bersemangat</FieldLabel><ChoiceGrid disabled={disabled} onChange={(value) => update('excitement', value)} options={excitementOptions} selected={data.excitement} /></div>
         <div className="mt-6"><FieldLabel>Tantangan yang sedang kuhadapi</FieldLabel><ChoiceGrid disabled={disabled} onChange={(value) => update('challenges', value)} options={challengeOptions} selected={data.challenges} /></div>
       </Section>
@@ -257,30 +291,80 @@ function ModuleOne({ data, disabled, update }: { data: ModuleOneData; disabled: 
   );
 }
 
-function AssessmentBar({ color, label, max, value }: { color: string; label: string; max: number; value: number }) {
-  return (
-    <div>
-      <div className="mb-1.5 flex justify-between text-sm"><span className="font-medium text-slate-700">{label}</span><span className="text-slate-400">{value}</span></div>
-      <div className="h-2.5 overflow-hidden rounded-full bg-slate-100"><div className={`h-full rounded-full ${color}`} style={{ width: `${Math.round((value / max) * 100)}%` }} /></div>
-    </div>
-  );
+function recommendationForRiasec(category?: RiasecCategory) {
+  const recommendations: Record<RiasecCategory, string> = {
+    R: 'Coba kegiatan praktik, proyek berbasis alat, eksperimen, olahraga, atau aktivitas yang menghasilkan karya konkret.',
+    I: 'Latih rasa ingin tahu lewat riset kecil, membaca sumber tepercaya, eksperimen, dan diskusi berbasis bukti.',
+    A: 'Bangun ruang ekspresi melalui desain, tulisan, musik, visual, presentasi kreatif, atau proyek karya.',
+    S: 'Kembangkan peran membantu orang lain, tutor sebaya, komunitas, organisasi, atau kegiatan mentoring.',
+    E: 'Coba peran memimpin, membuat acara, berjualan kecil, debat, presentasi, atau menggerakkan tim.',
+    C: 'Manfaatkan kekuatan struktur lewat jadwal, data, dokumentasi, administrasi, dan target yang terukur.',
+  };
+  return category ? recommendations[category] : 'Gunakan hasil ini sebagai bahan mencoba aktivitas baru, bukan sebagai batas pilihan.';
+}
+
+function recommendationForVark(category?: VarkCategory) {
+  const recommendations: Record<VarkCategory, string> = {
+    V: 'Gunakan mind map, diagram, warna, timeline, dan gambar untuk menghubungkan konsep.',
+    A: 'Coba menjelaskan ulang materi dengan suara, diskusi, tanya jawab, atau rekaman singkat.',
+    R: 'Perkuat belajar dengan catatan, daftar istilah, rangkuman, dan membaca ulang secara aktif.',
+    K: 'Gunakan praktik, simulasi, contoh nyata, gerakan, atau proyek kecil agar materi terasa konkret.',
+  };
+  return category ? recommendations[category] : 'Gabungkan beberapa cara belajar sesuai jenis materi dan situasi.';
 }
 
 function Results({ config, results }: { config: NonNullable<Bekal10ModuleResponse['config']>; results: NonNullable<ModuleTwoData['results']> }) {
+  const riasecData = (Object.entries(results.riasec.scores) as Array<[RiasecCategory, number]>).map(([category, score]) => ({
+    category,
+    label: config.riasec.labels[category],
+    score,
+  }));
+  const varkData = (Object.entries(results.vark.scores) as Array<[VarkCategory, number]>).map(([category, score]) => ({
+    category,
+    label: config.vark.labels[category],
+    score,
+  }));
+  const topRiasec = results.riasec.dominant[0]?.category;
+  const topVark = results.vark.dominant.category;
+
   return (
     <div className="space-y-5">
       <section className="rounded-lg bg-[#101b3f] p-6 text-white">
         <Sparkles className="size-6 text-[#ffe08a]" />
         <h2 className="mt-4 text-2xl font-semibold">Peta kecenderungan dirimu</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65">Hasil ini adalah bahan refleksi, bukan label atau diagnosis. Gunakan untuk mencoba cara belajar dan aktivitas yang lebih sesuai.</p>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65">Hasil ini untuk eksplorasi diri, bukan diagnosis psikologis. Gunakan untuk mencoba cara belajar dan aktivitas yang lebih sesuai.</p>
       </section>
       <div className="grid gap-5 lg:grid-cols-2">
         <Section description={`Tiga kecenderungan teratas: ${results.riasec.dominant.map((item) => item.label).join(', ')}.`} title="Minat RIASEC">
-          <div className="space-y-4">{(Object.entries(results.riasec.scores) as Array<[RiasecCategory, number]>).map(([category, score]) => <AssessmentBar color={categoryColors[category]} key={category} label={`${category} - ${config.riasec.labels[category]}`} max={35} value={score} />)}</div>
+          <div className="h-72">
+            <ResponsiveContainer height="100%" width="100%">
+              <RadarChart data={riasecData}>
+                <PolarGrid />
+                <PolarAngleAxis dataKey="category" tick={{ fill: '#475569', fontSize: 12 }} />
+                <PolarRadiusAxis angle={90} domain={[0, 35]} tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                <Radar dataKey="score" fill="#5b21b6" fillOpacity={0.28} stroke="#5b21b6" strokeWidth={2} />
+                <Tooltip formatter={(value, _name, item) => [String(value), item.payload.label]} />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="mt-4 rounded-lg border border-violet-200 bg-violet-50 p-3 text-sm leading-6 text-violet-950">{recommendationForRiasec(topRiasec)}</p>
         </Section>
         <Section description={`Preferensi paling kuat saat ini: ${results.vark.dominant.label}.`} title="Preferensi belajar VARK">
-          <div className="space-y-4">{(Object.entries(results.vark.scores) as Array<[VarkCategory, number]>).map(([category, score]) => <AssessmentBar color={categoryColors[category]} key={category} label={`${category} - ${config.vark.labels[category]}`} max={16} value={score} />)}</div>
-          <p className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-800">Preferensi belajar dapat berubah sesuai materi dan situasi. Jangan membatasi diri hanya pada satu cara belajar.</p>
+          <div className="h-72">
+            <ResponsiveContainer height="100%" width="100%">
+              <PieChart>
+                <Pie data={varkData} dataKey="score" innerRadius={62} nameKey="label" outerRadius={98} paddingAngle={3}>
+                  {varkData.map((item) => <Cell fill={categoryHex[item.category]} key={item.category} />)}
+                </Pie>
+                <Tooltip formatter={(value, _name, item) => [String(value), item.payload.label]} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {varkData.map((item) => <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600" key={item.category}>{item.category} - {item.label}: {item.score}</span>)}
+          </div>
+          <p className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm leading-6 text-blue-950">{recommendationForVark(topVark)}</p>
+          <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-800">Preferensi belajar dapat berubah sesuai materi dan situasi. Jangan membatasi diri hanya pada satu cara belajar.</p>
         </Section>
       </div>
     </div>
@@ -376,6 +460,20 @@ export function Bekal10ModulePage() {
     return () => window.clearTimeout(timeout);
   }, [data, saveNow, saveState]);
 
+  useEffect(() => {
+    if (saveState !== 'dirty' && saveState !== 'saving') return;
+    const handler = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [saveState]);
+
+  function guardNavigation(event: MouseEvent<HTMLAnchorElement>) {
+    if (saveState === 'saving' && !window.confirm('Perubahan sedang disimpan. Tetap keluar dari modul?')) event.preventDefault();
+  }
+
   function updateData(key: string, value: unknown) {
     setData((current) => {
       const next = { ...current, [key]: value } as AnyModuleData;
@@ -400,7 +498,7 @@ export function Bekal10ModulePage() {
         dataRef.current = merged;
         setData(merged);
       } else if (moduleSlug === 'komitmen-akademikku') {
-        navigate('/app/portfolio');
+        navigate('/app/portfolio?completed=bekal-10');
       } else {
         navigate('/app/programs/bekal-10');
       }
@@ -415,7 +513,7 @@ export function Bekal10ModulePage() {
     <StudentAppLayout eyebrow="Bekal 10" title={moduleData?.module.title ?? 'Memuat modul'}>
       <div className="mx-auto max-w-6xl px-5 py-6 lg:px-7">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <Link className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-violet-700" to="/app/programs/bekal-10"><ArrowLeft className="size-4" /> Kembali ke program</Link>
+          <Link className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-violet-700" onClick={guardNavigation} to="/app/programs/bekal-10"><ArrowLeft className="size-4" /> Kembali ke program</Link>
           {readOnly ? <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700"><CheckCircle2 className="size-4" /> Modul selesai - mode baca</span> : <div className="flex items-center gap-3">{completed && <span className="text-xs font-semibold text-emerald-700">Modul selesai - dapat diperbarui</span>}<SaveIndicator state={saveState} /></div>}
         </div>
 
@@ -431,6 +529,7 @@ export function Bekal10ModulePage() {
         {moduleData && !isModuleOne && !isModuleTwo && !isAdvancedModule && <div className="rounded-lg border border-slate-200 bg-white p-8 text-center"><BookOpenCheck className="mx-auto size-8 text-slate-400" /><h2 className="mt-4 font-semibold text-[#101b3f]">Konten modul belum tersedia</h2></div>}
 
         {moduleData && !completed && (isModuleOne || isModuleTwo || isAdvancedModule) && <div className="sticky bottom-4 mt-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white/95 p-4 shadow-lg backdrop-blur"><div><p className="text-sm font-semibold text-[#101b3f]">Sudah menyelesaikan semua bagian?</p><p className="text-xs text-slate-500">Jawaban akan divalidasi sebelum tahap berikutnya dibuka.</p></div><button className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#101b3f] px-5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60" disabled={completing} onClick={completeModule} type="button">{completing ? <LoaderCircle className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}{isModuleTwo ? 'Selesaikan dan lihat hasil' : moduleSlug === 'komitmen-akademikku' ? 'Selesaikan dan buka portofolio' : 'Selesaikan modul'}</button></div>}
+        {saveState === 'saved' && !readOnly && <div aria-live="polite" className="fixed bottom-5 right-5 z-40 rounded-lg border border-emerald-200 bg-white px-4 py-3 text-sm font-semibold text-emerald-700 shadow-lg">Data berhasil disimpan otomatis</div>}
       </div>
     </StudentAppLayout>
   );

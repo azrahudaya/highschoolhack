@@ -34,3 +34,22 @@ export type AdminTeacher = {
   fullName: string;
   joinedAt: string;
 };
+
+export type AdminSchoolCleanupOption = {
+  id: string;
+  name: string;
+  slug: string;
+  classCount: number;
+  studentCount: number;
+  membershipCount: number;
+};
+
+export type AdminAuditLog = {
+  id: string;
+  action: string;
+  entityType: string;
+  entityId: string | null;
+  metadata: unknown;
+  createdAt: string;
+  actorName: string;
+};

@@ -21,13 +21,17 @@ export async function getStudentContext(userId: string) {
 }
 
 export async function ensureBekal10Enrollment(userId: string) {
+  return ensureProgramEnrollment(userId, ProgramSlug.bekal_10);
+}
+
+export async function ensureProgramEnrollment(userId: string, slug: ProgramSlug) {
   const { membership, profile } = await getStudentContext(userId);
   const program = await prisma.program.findUnique({
-    where: { slug: ProgramSlug.bekal_10 },
+    where: { slug },
     include: { modules: { orderBy: { order: 'asc' } } },
   });
 
-  if (!program) throw Object.assign(new Error('Program Bekal 10 belum tersedia. Jalankan seed database.'), { statusCode: 503 });
+  if (!program) throw Object.assign(new Error('Program belum tersedia. Jalankan seed database.'), { statusCode: 503 });
 
   const enrollment = await prisma.programEnrollment.upsert({
     where: { userId_schoolId_programId: { userId, schoolId: membership.schoolId, programId: program.id } },

@@ -41,7 +41,7 @@ test('real Bekal 10 dashboard renders progress without overflow', async ({ page 
   await mockStudent(page);
   await page.goto('/app/programs/bekal-10');
 
-  await expect(page.getByRole('heading', { name: 'Kenali dirimu, mulai langkahmu.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Kenali Dirimu, Mulai Langkahmu, Wujudkan Versi Terbaik Dirimu' })).toBeVisible();
   await expect(page.getByText('14%')).toBeVisible();
   await expect(page.getByText('Mengenal Diriku Lebih Dekat')).toBeVisible();
 

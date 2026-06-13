@@ -39,7 +39,7 @@ const programs = [
     title: 'Smart Financial',
     grade: 12,
     description: 'Simulasi finansial, beasiswa, financial readiness score, dan dashboard kesiapan.',
-    modules: ['Identitas dan Target', 'Pilih Kota Tujuan', 'Simulasi Financial Readiness'],
+    modules: ['Identitas dan Target', 'Pilih Kota Tujuan', 'Simulasi Financial Readiness', 'Hasil dan Rekomendasi'],
   },
 ];
 

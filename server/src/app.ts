@@ -13,10 +13,13 @@ import { errorHandler } from './middleware/error-handler';
 import { authRouter } from './routes/auth';
 import { adminSchoolRouter } from './routes/admin-school';
 import { bekal10Router } from './routes/bekal10';
+import { chatbotRouter } from './routes/chatbot';
 import { onboardingRouter } from './routes/onboarding';
 import { protectedRouter } from './routes/protected';
 import { schoolsRouter } from './routes/schools';
+import { studentProgramsRouter } from './routes/student-programs';
 import { teacherBekal10Router } from './routes/teacher-bekal10';
+import { teacherProgramsRouter } from './routes/teacher-programs';
 
 export function createApp() {
   const app = express();
@@ -52,8 +55,11 @@ export function createApp() {
 
   app.use('/api/auth', authRouter);
   app.use('/api/admin', adminSchoolRouter);
+  app.use('/api/chatbot', chatbotRouter);
   app.use('/api/student/programs/bekal-10', bekal10Router);
+  app.use('/api/student/programs', studentProgramsRouter);
   app.use('/api/teacher/bekal-10', teacherBekal10Router);
+  app.use('/api/teacher/programs', teacherProgramsRouter);
   app.use('/api/schools', schoolsRouter);
   app.use('/api/onboarding', onboardingRouter);
   app.use('/api/protected', protectedRouter);

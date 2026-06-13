@@ -100,6 +100,13 @@ export type TeacherBekal10Dashboard = {
     developmentAreas: Record<string, number>;
     difficultSubjects: Record<string, number>;
   };
+  classSummaries: Array<{
+    classId: string | null;
+    className: string;
+    totalStudents: number;
+    averageProgress: number;
+    completionRate: number;
+  }>;
   students: Array<{
     userId: string;
     name: string;
@@ -108,5 +115,6 @@ export type TeacherBekal10Dashboard = {
     completedCount: number;
     progressPercentage: number;
     needsAttention: boolean;
+    attentionReasons: string[];
   }>;
 };

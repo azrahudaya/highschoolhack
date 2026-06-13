@@ -28,19 +28,22 @@ enum ModuleStatus {
 }
 
 model User {
-  id              String             @id @default(cuid())
-  email           String             @unique
-  name            String?
-  image           String?
-  passwordHash    String?
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-  accounts        AuthAccount[]
-  memberships     SchoolMembership[]
-  studentProfiles StudentProfile[]
-  teacherProfile  TeacherProfile?
-  enrollments     ProgramEnrollment[]
-  moduleResponses ModuleResponse[]
+  id                   String              @id @default(cuid())
+  email                String              @unique
+  name                 String?
+  image                String?
+  passwordHash         String?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  accounts             AuthAccount[]
+  memberships          SchoolMembership[]
+  studentProfiles      StudentProfile[]
+  teacherProfile       TeacherProfile?
+  enrollments          ProgramEnrollment[]
+  moduleResponses      ModuleResponse[]
+  teacherNotesAuthored TeacherNote[]       @relation("TeacherNotesAuthored")
+  teacherNotesReceived TeacherNote[]       @relation("TeacherNotesReceived")
+  auditLogsAuthored    AuditLog[]          @relation("AuditActor")
 }
 
 model AuthAccount {
@@ -70,6 +73,8 @@ model School {
   memberships     SchoolMembership[]
   studentProfiles StudentProfile[]
   enrollments     ProgramEnrollment[]
+  teacherNotes    TeacherNote[]
+  auditLogs       AuditLog[]
 }
 
 model SchoolClass {
@@ -199,4 +204,38 @@ model ModuleResponse {
   user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, moduleId])
+}
+
+model TeacherNote {
+  id            String    @id @default(cuid())
+  schoolId      String
+  studentUserId String
+  teacherUserId String
+  category      String    @default("general")
+  note          String
+  followUpAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  school        School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  student       User      @relation("TeacherNotesReceived", fields: [studentUserId], references: [id], onDelete: Cascade)
+  teacher       User      @relation("TeacherNotesAuthored", fields: [teacherUserId], references: [id], onDelete: Cascade)
+
+  @@index([schoolId, studentUserId])
+  @@index([teacherUserId])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  schoolId    String?
+  action      String
+  entityType  String
+  entityId    String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  actor       User?    @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  school      School?  @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+
+  @@index([schoolId, createdAt])
+  @@index([actorUserId, createdAt])
 }

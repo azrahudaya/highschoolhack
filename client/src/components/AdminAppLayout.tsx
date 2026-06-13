@@ -1,4 +1,4 @@
-import { GraduationCap, LayoutDashboard, LogOut, Menu, School, Settings, Sparkles, UsersRound, X } from 'lucide-react';
+import { GraduationCap, LayoutDashboard, Lightbulb, LogOut, Menu, School, Settings, UsersRound, X } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -24,8 +24,9 @@ export function AdminAppLayout({ children, title = 'Admin Sekolah' }: { children
   }
 
   return <div className="min-h-screen bg-[#f4f7fb] text-slate-950 lg:grid lg:grid-cols-[15.5rem_1fr]">
+    {menuOpen && <button aria-label="Tutup menu" className="fixed inset-0 z-40 bg-slate-950/40 lg:hidden" onClick={() => setMenuOpen(false)} type="button" />}
     <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#101b3f] p-4 text-white transition-transform lg:static lg:w-auto lg:translate-x-0 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-      <div className="flex items-center justify-between"><Link className="flex items-center gap-2 font-semibold" to="/"><Sparkles className="size-5 text-[#ffe08a]" />HighschoolHack</Link><button className="grid size-9 place-items-center lg:hidden" onClick={() => setMenuOpen(false)} type="button"><X className="size-5" /></button></div>
+      <div className="flex items-center justify-between"><Link className="flex items-center gap-2 font-semibold" to="/"><Lightbulb className="size-5 text-[#ffe08a]" />HighschoolHack</Link><button className="grid size-9 place-items-center lg:hidden" onClick={() => setMenuOpen(false)} type="button"><X className="size-5" /></button></div>
       <nav className="mt-9 space-y-1 text-sm">{links.map(({ icon: Icon, label, path }) => {
         const active = path === '/admin' ? location.pathname === path : location.pathname.startsWith(path);
         return <Link className={`flex items-center gap-3 rounded-lg px-3 py-3 ${active ? 'bg-white/12 text-white' : 'text-white/60 hover:bg-white/8 hover:text-white'}`} key={path} onClick={() => setMenuOpen(false)} to={path}><Icon className="size-4" />{label}</Link>;

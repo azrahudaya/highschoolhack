@@ -1,0 +1,229 @@
+import { ModuleStatus, Prisma, ProgramSlug } from '@prisma/client';
+import { Router } from 'express';
+import { z } from 'zod';
+import { cityCosts, scholarships } from '../data/smart-financial';
+import { prisma } from '../db/prisma';
+import { asyncHandler } from '../middleware/async-handler';
+import { requireRole } from '../middleware/auth';
+import { ensureProgramEnrollment, saveModuleResponse } from '../services/bekal10';
+
+const router = Router();
+
+const autosaveSchema = z.object({
+  data: z.record(z.string(), z.unknown()),
+});
+
+const supportedPrograms: Record<string, ProgramSlug> = {
+  'setting-goal': ProgramSlug.setting_goal,
+  'smart-financial': ProgramSlug.smart_financial,
+};
+
+function resolveProgramSlug(value: string) {
+  const slug = supportedPrograms[value];
+  if (!slug) throw Object.assign(new Error('Program tidak tersedia.'), { statusCode: 404 });
+  return slug;
+}
+
+function serializeDashboard(context: Awaited<ReturnType<typeof ensureProgramEnrollment>>) {
+  const completedCount = context.progress.filter((item) => item.status === ModuleStatus.completed).length;
+  const progressPercentage = Math.round((completedCount / context.progress.length) * 100);
+  const current = context.progress.find((item) => item.status === ModuleStatus.in_progress || item.status === ModuleStatus.not_started);
+
+  return {
+    student: {
+      name: context.profile.fullName,
+      className: context.profile.class?.name ?? null,
+      schoolName: context.membership.school.name,
+    },
+    program: {
+      slug: context.program.slug,
+      title: context.program.title,
+      description: context.program.description,
+      progressPercentage,
+      completedCount,
+      totalModules: context.progress.length,
+      currentModuleSlug: current?.module.slug ?? null,
+      modules: context.progress.map((item) => ({
+        id: item.module.id,
+        slug: item.module.slug,
+        title: item.module.title,
+        order: item.module.order,
+        status: item.status,
+        completedAt: item.completedAt,
+      })),
+    },
+  };
+}
+
+function ensurePayloadHasContent(data: Record<string, unknown>) {
+  const hasContent = Object.values(data).some((value) => {
+    if (typeof value === 'string') return value.trim().length >= 2;
+    if (typeof value === 'number') return true;
+    if (Array.isArray(value)) return value.length > 0;
+    if (value && typeof value === 'object') return Object.keys(value).length > 0;
+    return false;
+  });
+  if (!hasContent) throw Object.assign(new Error('Isi modul terlebih dahulu sebelum menyelesaikannya.'), { statusCode: 400 });
+}
+
+router.use(requireRole('student'));
+
+router.get('/smart-financial/cities', (_req, res) => {
+  res.json({ cities: cityCosts, scholarships });
+});
+
+router.get(
+  '/:programSlug',
+  asyncHandler(async (req, res) => {
+    const programSlug = z.string().min(1).parse(req.params.programSlug);
+    const context = await ensureProgramEnrollment(req.user!.id, resolveProgramSlug(programSlug));
+    res.json(serializeDashboard(context));
+  }),
+);
+
+router.get(
+  '/:programSlug/portfolio',
+  asyncHandler(async (req, res) => {
+    const programSlug = z.string().min(1).parse(req.params.programSlug);
+    const context = await ensureProgramEnrollment(req.user!.id, resolveProgramSlug(programSlug));
+    const responses = await prisma.moduleResponse.findMany({
+      where: { userId: req.user!.id, module: { programId: context.program.id } },
+      include: { module: true },
+    });
+    const responseByModuleId = new Map(responses.map((response) => [response.moduleId, response]));
+    res.json({
+      student: {
+        userId: req.user!.id,
+        name: context.profile.fullName,
+        nisn: context.profile.nisn,
+        className: context.profile.class?.name ?? null,
+        schoolName: context.membership.school.name,
+      },
+      program: {
+        title: context.program.title,
+        completedCount: context.progress.filter((item) => item.status === ModuleStatus.completed).length,
+        totalModules: context.progress.length,
+      },
+      modules: context.progress.map((item) => ({
+        id: item.module.id,
+        slug: item.module.slug,
+        title: item.module.title,
+        order: item.module.order,
+        status: item.status,
+        data: responseByModuleId.get(item.moduleId)?.data ?? null,
+      })),
+    });
+  }),
+);
+
+router.get(
+  '/:programSlug/modules/:moduleSlug',
+  asyncHandler(async (req, res) => {
+    const programSlug = z.string().min(1).parse(req.params.programSlug);
+    const moduleSlug = z.string().min(1).parse(req.params.moduleSlug);
+    const context = await ensureProgramEnrollment(req.user!.id, resolveProgramSlug(programSlug));
+    const progress = context.progress.find((item) => item.module.slug === moduleSlug);
+
+    if (!progress) {
+      res.status(404).json({ error: 'ModuleNotFound', message: 'Modul tidak ditemukan.' });
+      return;
+    }
+
+    if (progress.status === ModuleStatus.locked) {
+      res.status(403).json({ error: 'ModuleLocked', message: 'Selesaikan modul sebelumnya terlebih dahulu.' });
+      return;
+    }
+
+    const response = await prisma.moduleResponse.findUnique({
+      where: { userId_moduleId: { userId: req.user!.id, moduleId: progress.moduleId } },
+    });
+
+    res.json({
+      module: {
+        id: progress.module.id,
+        slug: progress.module.slug,
+        title: progress.module.title,
+        order: progress.module.order,
+        status: progress.status,
+      },
+      response: response?.data ?? null,
+      config: programSlug === 'smart-financial' ? { cities: cityCosts, scholarships } : null,
+    });
+  }),
+);
+
+router.put(
+  '/:programSlug/modules/:moduleSlug',
+  asyncHandler(async (req, res) => {
+    const programSlug = z.string().min(1).parse(req.params.programSlug);
+    const moduleSlug = z.string().min(1).parse(req.params.moduleSlug);
+    const payload = autosaveSchema.parse(req.body);
+    const context = await ensureProgramEnrollment(req.user!.id, resolveProgramSlug(programSlug));
+    const progress = context.progress.find((item) => item.module.slug === moduleSlug);
+
+    if (!progress) {
+      res.status(404).json({ error: 'ModuleNotFound', message: 'Modul tidak ditemukan.' });
+      return;
+    }
+
+    if (progress.status === ModuleStatus.locked) {
+      res.status(403).json({ error: 'ModuleLocked', message: 'Modul masih terkunci.' });
+      return;
+    }
+
+    await saveModuleResponse(req.user!.id, progress.moduleId, payload.data as Prisma.InputJsonValue);
+    if (progress.status === ModuleStatus.not_started) {
+      await prisma.moduleProgress.update({ where: { id: progress.id }, data: { status: ModuleStatus.in_progress } });
+    }
+
+    res.json({ savedAt: new Date().toISOString() });
+  }),
+);
+
+router.post(
+  '/:programSlug/modules/:moduleSlug/complete',
+  asyncHandler(async (req, res) => {
+    const programSlug = z.string().min(1).parse(req.params.programSlug);
+    const moduleSlug = z.string().min(1).parse(req.params.moduleSlug);
+    const context = await ensureProgramEnrollment(req.user!.id, resolveProgramSlug(programSlug));
+    const progressIndex = context.progress.findIndex((item) => item.module.slug === moduleSlug);
+    const progress = context.progress[progressIndex];
+
+    if (!progress) {
+      res.status(404).json({ error: 'ModuleNotFound', message: 'Modul tidak ditemukan.' });
+      return;
+    }
+
+    if (progress.status === ModuleStatus.locked) {
+      res.status(403).json({ error: 'ModuleLocked', message: 'Modul masih terkunci.' });
+      return;
+    }
+
+    const stored = await prisma.moduleResponse.findUnique({
+      where: { userId_moduleId: { userId: req.user!.id, moduleId: progress.moduleId } },
+    });
+
+    if (!stored?.data || typeof stored.data !== 'object' || Array.isArray(stored.data)) {
+      res.status(400).json({ error: 'IncompleteModule', message: 'Isi modul terlebih dahulu sebelum menyelesaikannya.' });
+      return;
+    }
+
+    ensurePayloadHasContent(stored.data as Record<string, unknown>);
+
+    await prisma.$transaction(async (transaction) => {
+      await transaction.moduleProgress.update({
+        where: { id: progress.id },
+        data: { status: ModuleStatus.completed, completedAt: new Date() },
+      });
+      const next = context.progress[progressIndex + 1];
+      if (next?.status === ModuleStatus.locked) {
+        await transaction.moduleProgress.update({ where: { id: next.id }, data: { status: ModuleStatus.not_started } });
+      }
+    });
+
+    const refreshed = await ensureProgramEnrollment(req.user!.id, resolveProgramSlug(programSlug));
+    res.json(serializeDashboard(refreshed));
+  }),
+);
+
+export const studentProgramsRouter = router;

@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { LandingPage } from './pages/LandingPage';
@@ -9,10 +9,16 @@ import { AdminSchoolPage } from './pages/AdminSchoolPage';
 import { Bekal10DashboardPage } from './pages/Bekal10DashboardPage';
 import { Bekal10ModulePage } from './pages/Bekal10ModulePage';
 import { LoginPage } from './pages/LoginPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { ProgramDetailPage } from './pages/ProgramDetailPage';
+import { ProgramDashboardAppPage } from './pages/ProgramDashboardAppPage';
+import { ProgramModuleAppPage } from './pages/ProgramModuleAppPage';
+import { ProgramPortfolioAppPage } from './pages/ProgramPortfolioAppPage';
+import { PrivacyPage } from './pages/PrivacyPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { StudentPortfolioPage } from './pages/StudentPortfolioPage';
+import { StudentProfilePage } from './pages/StudentProfilePage';
 import { StudentDashboardPage } from './pages/StudentDashboardPage';
 import { TeacherDashboardPage } from './pages/TeacherDashboardPage';
 import { TeacherStudentDetailPage } from './pages/TeacherStudentDetailPage';
@@ -25,6 +31,7 @@ function App() {
         <Route path="/articles" element={<ArticlesPage />} />
         <Route path="/articles/:slug" element={<ArticleDetailPage />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/programs/:slug" element={<ProgramDetailPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -61,10 +68,42 @@ function App() {
           }
         />
         <Route
+          path="/app/programs/:programSlug"
+          element={
+            <ProtectedRoute roles={['student']}>
+              <ProgramDashboardAppPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app/programs/:programSlug/modules/:moduleSlug"
+          element={
+            <ProtectedRoute roles={['student']}>
+              <ProgramModuleAppPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app/programs/:programSlug/portfolio"
+          element={
+            <ProtectedRoute roles={['student']}>
+              <ProgramPortfolioAppPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/app/portfolio"
           element={
             <ProtectedRoute roles={['student']}>
               <StudentPortfolioPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app/profile"
+          element={
+            <ProtectedRoute roles={['student']}>
+              <StudentProfilePage />
             </ProtectedRoute>
           }
         />
@@ -104,7 +143,7 @@ function App() {
         <Route path="/admin/students" element={<ProtectedRoute roles={['school_admin', 'super_admin']}><AdminSchoolPage section="students" /></ProtectedRoute>} />
         <Route path="/admin/teachers" element={<ProtectedRoute roles={['school_admin', 'super_admin']}><AdminSchoolPage section="teachers" /></ProtectedRoute>} />
         <Route path="/admin/school" element={<ProtectedRoute roles={['school_admin', 'super_admin']}><AdminSchoolPage section="school" /></ProtectedRoute>} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </AuthProvider>
   );

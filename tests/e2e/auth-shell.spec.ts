@@ -44,7 +44,7 @@ test('student onboarding accepts manual school and class input', async ({ page }
   await page.getByLabel('Kelas').fill('X-1');
 
   const onboardingRequest = page.waitForRequest((request) => request.method() === 'POST' && request.url().endsWith('/api/onboarding/student'));
-  await page.getByRole('button', { name: 'Selesaikan Onboarding' }).click();
+  await page.getByRole('button', { name: 'Masuk ke Bekal 10' }).click();
   const payload = (await onboardingRequest).postDataJSON();
 
   expect(payload).toMatchObject({ fullName: 'Nadia Putri', schoolName: 'SMA Nusantara Baru', className: 'X-1' });

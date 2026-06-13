@@ -1,12 +1,16 @@
-import { Bell, BookOpenCheck, FileText, LayoutDashboard, LogOut, Menu, Sparkles, X } from 'lucide-react';
+import { BookOpenCheck, FileText, LayoutDashboard, Lightbulb, LogOut, Menu, Target, UserRound, WalletCards, X } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { StudentChatbot } from './StudentChatbot';
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: 'Ringkasan', path: '/app' },
   { icon: BookOpenCheck, label: 'Bekal 10', path: '/app/programs/bekal-10' },
+  { icon: Target, label: 'Setting Goal', path: '/app/programs/setting-goal' },
+  { icon: WalletCards, label: 'Smart Financial', path: '/app/programs/smart-financial' },
   { icon: FileText, label: 'Portofolio', path: '/app/portfolio' },
+  { icon: UserRound, label: 'Profil', path: '/app/profile' },
 ];
 
 export function StudentAppLayout({ children, eyebrow = 'Dashboard siswa', title }: { children: ReactNode; eyebrow?: string; title?: string }) {
@@ -23,9 +27,10 @@ export function StudentAppLayout({ children, eyebrow = 'Dashboard siswa', title 
 
   return (
     <div className="min-h-screen bg-[#f4f7fb] text-slate-950 lg:grid lg:grid-cols-[15.5rem_1fr]">
+      {menuOpen && <button aria-label="Tutup menu" className="no-print fixed inset-0 z-40 bg-slate-950/40 lg:hidden" onClick={() => setMenuOpen(false)} type="button" />}
       <aside className={`no-print fixed inset-y-0 left-0 z-50 w-64 border-r border-slate-200 bg-[#101b3f] p-4 text-white transition-transform lg:static lg:w-auto lg:translate-x-0 ${menuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-between">
-          <Link className="flex items-center gap-2 font-semibold" to="/"><Sparkles className="size-5 text-[#ffe08a]" /> HighschoolHack</Link>
+          <Link className="flex items-center gap-2 font-semibold" to="/"><Lightbulb className="size-5 text-[#ffe08a]" /> HighschoolHack</Link>
           <button className="grid size-9 place-items-center lg:hidden" onClick={() => setMenuOpen(false)} type="button"><X className="size-5" /></button>
         </div>
         <nav className="mt-9 space-y-1 text-sm">
@@ -51,12 +56,12 @@ export function StudentAppLayout({ children, eyebrow = 'Dashboard siswa', title 
             <div className="min-w-0"><p className="text-xs text-slate-500">{eyebrow}</p><p className="truncate text-sm font-semibold text-[#101b3f]">{title ?? user?.name ?? user?.email}</p></div>
           </div>
           <div className="flex items-center gap-2">
-            <button className="grid size-9 place-items-center rounded-lg border border-slate-200 text-slate-600" title="Notifikasi" type="button"><Bell className="size-4" /></button>
             <button className="grid size-9 place-items-center rounded-lg border border-slate-200 text-slate-600" onClick={handleLogout} title="Keluar" type="button"><LogOut className="size-4" /></button>
           </div>
         </header>
         {children}
       </main>
+      <StudentChatbot />
     </div>
   );
 }

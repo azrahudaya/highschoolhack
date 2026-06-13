@@ -1,4 +1,4 @@
-import { ArrowUpRight, Search } from 'lucide-react';
+import { ArrowUpRight, Bookmark, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PublicLayout } from '../components/PublicLayout';
@@ -7,7 +7,8 @@ import { articles } from '../data/content';
 export function ArticlesPage() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('Semua');
-  const categories = ['Semua', ...new Set(articles.map((article) => article.category))];
+  const preferredOrder = ['Pendidikan', 'Karier', 'Kuliah', 'Finansial', 'Inspirasi'];
+  const categories = ['Semua', ...preferredOrder.filter((item) => articles.some((article) => article.category === item))];
   const filtered = useMemo(
     () => articles.filter((article) => (category === 'Semua' || article.category === category) && `${article.title} ${article.summary}`.toLowerCase().includes(query.toLowerCase())),
     [category, query],
@@ -34,14 +35,20 @@ export function ArticlesPage() {
         <section className="mx-auto max-w-7xl px-6 py-14">
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {filtered.map((article) => (
-              <article className="flex min-h-72 flex-col rounded-lg border border-slate-200 bg-white p-6" key={article.slug}>
-                <div className="flex items-center justify-between text-xs"><span className="font-semibold uppercase tracking-[0.08em] text-[#5b21b6]">{article.category}</span><span className="text-slate-400">{article.readTime}</span></div>
+              <article className="flex min-h-80 flex-col overflow-hidden rounded-lg border border-slate-200 bg-white" key={article.slug}>
+                <div className="flex min-h-24 items-end p-5 text-white" style={{ background: `linear-gradient(135deg, ${article.accent}, #101b3f)` }}>
+                  <Bookmark className="size-6" />
+                </div>
+                <div className="flex flex-1 flex-col p-6">
+                  <div className="flex items-center justify-between text-xs"><span className="font-semibold uppercase tracking-[0.08em]" style={{ color: article.accent }}>{article.category}</span><span className="text-slate-400">{article.readTime}</span></div>
                 <h2 className="mt-5 text-xl font-semibold text-[#101b3f]">{article.title}</h2>
                 <p className="mt-3 flex-1 text-sm leading-6 text-slate-600">{article.summary}</p>
                 <Link className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#15224a]" to={`/articles/${article.slug}`}>Baca ringkasan <ArrowUpRight className="size-4" /></Link>
+                </div>
               </article>
             ))}
           </div>
+          {!filtered.length && <div className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">Tidak ada artikel sesuai pencarian.</div>}
         </section>
       </main>
     </PublicLayout>
