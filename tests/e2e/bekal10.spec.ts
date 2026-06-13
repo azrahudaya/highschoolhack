@@ -97,9 +97,40 @@ test('module two renders assessments on mobile without overflow', async ({ page 
   }));
 
   await page.goto('/app/programs/bekal-10/modules/mengenal-diriku-lebih-dekat');
+  await expect(page.getByRole('heading', { name: 'Petunjuk skala dan alur tes' })).toBeVisible();
+  await expect(page.getByText(/1\s*Sangat tidak sesuai/)).toBeVisible();
+  await expect(page.getByText(/5\s*Sangat sesuai/)).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Asesmen minat RIASEC - 0/1' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Preferensi belajar - 0/1' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Hasil tes belum siap' })).toBeVisible();
+
+  await page.getByTitle('Sangat sesuai').click();
+  await page.getByText('melihat diagram').click();
+  await expect(page.getByRole('heading', { name: 'Peta kecenderungan dirimu' })).toBeVisible();
+  await expect(page.getByText('Realistic menunjukkan ketertarikan pada kegiatan praktik').first()).toBeVisible();
+  await expect(page.getByText('Contoh jurusan').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Refleksi mengenal diri' })).toBeVisible();
 
   const dimensions = await page.locator('body').evaluate((body) => ({ clientWidth: body.clientWidth, scrollWidth: body.scrollWidth }));
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
+});
+
+test('module four explains SMART goal before the form', async ({ page }) => {
+  await mockStudent(page);
+  await page.route('**/api/student/programs/bekal-10/modules/target-pengembangan-diri', (route) => route.fulfill({
+    json: {
+      module: { id: 'm4', slug: 'target-pengembangan-diri', title: 'Target Pengembangan Diri', order: 4, status: 'in_progress' },
+      response: null,
+      config: null,
+    },
+  }));
+
+  await page.goto('/app/programs/bekal-10/modules/target-pengembangan-diri');
+  await expect(page.getByRole('heading', { name: 'SMART goal-ku' })).toBeVisible();
+  await expect(page.getByText('SMART goal adalah cara menulis target agar tidak berhenti sebagai niat umum.')).toBeVisible();
+  await expect(page.getByText('Target jelas: apa yang ingin dicapai dan dalam konteks apa.')).toBeVisible();
+  await expect(page.getByText('Ada ukuran kemajuan, misalnya nilai, jumlah latihan, frekuensi, atau bukti karya.')).toBeVisible();
+  await expect(page.getByText('Masuk akal dengan waktu, kemampuan, dukungan, dan kondisi saat ini.')).toBeVisible();
+  await expect(page.getByText('Penting untuk tujuan diri sendiri, bukan sekadar ikut orang lain.')).toBeVisible();
+  await expect(page.getByText('Punya batas waktu agar bisa dievaluasi.')).toBeVisible();
 });

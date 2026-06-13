@@ -54,6 +54,8 @@ type ModuleTwoData = {
     };
   };
 };
+type ModuleTwoResults = NonNullable<ModuleTwoData['results']>;
+type ModuleTwoConfig = NonNullable<Bekal10ModuleResponse['config']>;
 
 const moduleOneInitial: ModuleOneData = {
   learningEnvironment: '',
@@ -105,6 +107,70 @@ const moduleDescriptions: Record<string, string> = {
   'belajar-dari-perjalanan': 'Tarik kekuatan dan pelajaran dari pengalaman yang sudah kamu lalui.',
   'merancang-target-prestasi': 'Petakan prioritas pelajaran dan strategi untuk target akademik semester.',
   'komitmen-akademikku': 'Tutup perjalanan Bekal 10 dengan kontrak belajar yang konkret.',
+};
+
+const riasecProfiles: Record<RiasecCategory, { summary: string; strengths: string; majors: string[]; careers: string[]; nextStep: string }> = {
+  R: {
+    summary: 'Realistic menunjukkan ketertarikan pada kegiatan praktik, alat, benda nyata, aktivitas lapangan, dan hasil yang bisa terlihat langsung.',
+    strengths: 'Kuat di praktik langsung, observasi konkret, ketahanan kerja, dan menyelesaikan tugas yang punya bentuk nyata.',
+    majors: ['Teknik', 'Vokasi/terapan', 'Arsitektur', 'Pertanian', 'Ilmu olahraga'],
+    careers: ['Engineer', 'Teknisi', 'Arsitek', 'Desainer produk', 'Analis lapangan'],
+    nextStep: 'Coba ikut proyek praktik, eksperimen, kegiatan lapangan, atau membuat karya fisik/digital sederhana.',
+  },
+  I: {
+    summary: 'Investigative menunjukkan minat pada analisis, riset, eksperimen, data, dan mencari alasan di balik suatu masalah.',
+    strengths: 'Kuat di berpikir kritis, membaca pola, bertanya mendalam, dan membandingkan bukti sebelum mengambil kesimpulan.',
+    majors: ['Sains', 'Kedokteran', 'Informatika', 'Data science', 'Psikologi riset'],
+    careers: ['Peneliti', 'Data analyst', 'Dokter', 'Analis laboratorium', 'Software engineer'],
+    nextStep: 'Coba proyek riset kecil, membaca sumber tepercaya, eksperimen, atau diskusi berbasis data.',
+  },
+  A: {
+    summary: 'Artistic menunjukkan minat pada ekspresi ide, desain, cerita, visual, musik, tulisan, dan cara baru menyelesaikan sesuatu.',
+    strengths: 'Kuat di imajinasi, orisinalitas, komunikasi visual, bercerita, dan melihat kemungkinan yang belum terpikir orang lain.',
+    majors: ['DKV', 'Desain produk', 'Seni', 'Sastra', 'Ilmu komunikasi'],
+    careers: ['Desainer', 'Penulis', 'Content creator', 'Illustrator', 'Creative strategist'],
+    nextStep: 'Coba membuat portofolio kecil berisi desain, tulisan, video, musik, presentasi, atau karya kreatif lain.',
+  },
+  S: {
+    summary: 'Social menunjukkan minat membantu, mengajar, mendampingi, mendengarkan, dan membuat orang lain berkembang.',
+    strengths: 'Kuat di empati, komunikasi, kerja kelompok, mentoring, dan membaca kebutuhan orang lain.',
+    majors: ['Pendidikan', 'Psikologi', 'Kesehatan masyarakat', 'Keperawatan', 'Konseling'],
+    careers: ['Guru', 'Konselor', 'HR', 'Pekerja sosial', 'Community officer'],
+    nextStep: 'Coba menjadi tutor sebaya, terlibat komunitas, organisasi pelayanan, atau kegiatan mentoring.',
+  },
+  E: {
+    summary: 'Enterprising menunjukkan minat memimpin, memengaruhi, menyusun strategi, bernegosiasi, dan menggerakkan orang.',
+    strengths: 'Kuat di inisiatif, keberanian mengambil keputusan, presentasi, persuasi, dan membangun peluang.',
+    majors: ['Manajemen', 'Bisnis', 'Ilmu komunikasi', 'Hukum', 'Hubungan internasional'],
+    careers: ['Entrepreneur', 'Project manager', 'Marketing strategist', 'Sales lead', 'Public relations'],
+    nextStep: 'Coba memimpin proyek kecil, membuat acara, latihan presentasi, debat, atau simulasi bisnis sederhana.',
+  },
+  C: {
+    summary: 'Conventional menunjukkan minat pada keteraturan, data, angka, administrasi, dokumen, prosedur, dan pekerjaan yang butuh ketelitian.',
+    strengths: 'Kuat di konsistensi, detail, membuat sistem rapi, mengelola data, mengikuti aturan, dan menjaga kualitas pekerjaan.',
+    majors: ['Akuntansi', 'Statistika', 'Administrasi bisnis', 'Sistem informasi', 'Perpajakan'],
+    careers: ['Akuntan', 'Auditor', 'Data administrator', 'Finance operations', 'Analis administrasi'],
+    nextStep: 'Coba membuat sistem catatan, spreadsheet sederhana, checklist proyek, atau dokumentasi kegiatan sekolah.',
+  },
+};
+
+const varkProfiles: Record<VarkCategory, { summary: string; strategies: string[] }> = {
+  V: {
+    summary: 'Visual berarti kamu lebih mudah menangkap hubungan antarkonsep lewat gambar, warna, diagram, peta konsep, dan tampilan terstruktur.',
+    strategies: ['Ubah catatan menjadi mind map atau flowchart.', 'Gunakan warna untuk menandai ide utama.', 'Cari diagram, infografik, atau video visual saat materi terasa abstrak.'],
+  },
+  A: {
+    summary: 'Aural berarti kamu terbantu oleh suara, penjelasan lisan, diskusi, tanya jawab, dan mengulang materi dengan berbicara.',
+    strategies: ['Jelaskan ulang materi dengan suara sendiri.', 'Belajar lewat diskusi atau tanya jawab.', 'Rekam rangkuman singkat lalu dengarkan kembali.'],
+  },
+  R: {
+    summary: 'Read/write berarti kamu nyaman memahami materi lewat teks, catatan, daftar, rangkuman, instruksi tertulis, dan kata kunci.',
+    strategies: ['Buat rangkuman satu halaman setelah belajar.', 'Susun daftar istilah dan contoh soal.', 'Baca instruksi/rubrik lalu tulis ulang dengan bahasamu sendiri.'],
+  },
+  K: {
+    summary: 'Kinesthetic berarti kamu lebih paham saat mencoba langsung, memakai contoh nyata, simulasi, latihan soal, atau proyek praktik.',
+    strategies: ['Mulai dari contoh soal atau studi kasus.', 'Gunakan simulasi, eksperimen, atau praktik kecil.', 'Hubungkan materi dengan pengalaman sehari-hari.'],
+  },
 };
 
 function mergeModuleData<T extends object>(initial: T, response: Record<string, unknown> | null): T {
@@ -313,7 +379,35 @@ function recommendationForVark(category?: VarkCategory) {
   return category ? recommendations[category] : 'Gabungkan beberapa cara belajar sesuai jenis materi dan situasi.';
 }
 
-function Results({ config, results }: { config: NonNullable<Bekal10ModuleResponse['config']>; results: NonNullable<ModuleTwoData['results']> }) {
+function buildRiasecResult(config: ModuleTwoConfig, answers: Record<string, number>) {
+  const complete = config.riasec.items.every((item) => typeof answers[item.id] === 'number');
+  if (!complete) return null;
+  const scores = Object.fromEntries(Object.keys(config.riasec.labels).map((item) => [item, 0])) as Record<RiasecCategory, number>;
+  for (const item of config.riasec.items) scores[item.category] += answers[item.id] ?? 0;
+  const dominant = (Object.entries(scores) as Array<[RiasecCategory, number]>)
+    .sort(([, left], [, right]) => right - left)
+    .slice(0, 3)
+    .map(([category]) => ({ category, label: config.riasec.labels[category] }));
+  return { scores, dominant };
+}
+
+function buildVarkResult(config: ModuleTwoConfig, answers: Record<string, VarkCategory>) {
+  const complete = config.vark.items.every((item) => answers[item.id] !== undefined);
+  if (!complete) return null;
+  const scores = Object.fromEntries(Object.keys(config.vark.labels).map((item) => [item, 0])) as Record<VarkCategory, number>;
+  for (const category of Object.values(answers)) scores[category] += 1;
+  const dominantCategory = (Object.entries(scores) as Array<[VarkCategory, number]>).sort(([, left], [, right]) => right - left)[0][0];
+  return { scores, dominant: { category: dominantCategory, label: config.vark.labels[dominantCategory] } };
+}
+
+function buildAssessmentPreview(config: ModuleTwoConfig, data: ModuleTwoData): ModuleTwoResults | null {
+  const riasec = buildRiasecResult(config, data.riasecAnswers);
+  const vark = buildVarkResult(config, data.varkAnswers);
+  if (!riasec || !vark) return null;
+  return { riasec, vark };
+}
+
+function Results({ config, results }: { config: ModuleTwoConfig; results: ModuleTwoResults }) {
   const riasecData = (Object.entries(results.riasec.scores) as Array<[RiasecCategory, number]>).map(([category, score]) => ({
     category,
     label: config.riasec.labels[category],
@@ -326,13 +420,27 @@ function Results({ config, results }: { config: NonNullable<Bekal10ModuleRespons
   }));
   const topRiasec = results.riasec.dominant[0]?.category;
   const topVark = results.vark.dominant.category;
+  const topRiasecProfile = topRiasec ? riasecProfiles[topRiasec] : null;
+  const topVarkProfile = varkProfiles[topVark];
 
   return (
     <div className="space-y-5">
       <section className="rounded-lg bg-[#101b3f] p-6 text-white">
         <Sparkles className="size-6 text-[#ffe08a]" />
         <h2 className="mt-4 text-2xl font-semibold">Peta kecenderungan dirimu</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65">Hasil ini untuk eksplorasi diri, bukan diagnosis psikologis. Gunakan untuk mencoba cara belajar dan aktivitas yang lebih sesuai.</p>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65">Hasil ini untuk eksplorasi diri, bukan diagnosis psikologis. Gunakan sebagai bahan memilih aktivitas, cara belajar, dan topik yang layak kamu coba.</p>
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          <div className="rounded-lg bg-white/10 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-white/50">RIASEC utama</p>
+            <p className="mt-2 text-lg font-semibold">{results.riasec.dominant[0]?.label ?? '-'}</p>
+            <p className="mt-2 text-xs leading-5 text-white/65">{topRiasecProfile?.summary ?? 'Lengkapi jawaban untuk melihat narasi minat.'}</p>
+          </div>
+          <div className="rounded-lg bg-white/10 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-white/50">VARK utama</p>
+            <p className="mt-2 text-lg font-semibold">{results.vark.dominant.label}</p>
+            <p className="mt-2 text-xs leading-5 text-white/65">{topVarkProfile.summary}</p>
+          </div>
+        </div>
       </section>
       <div className="grid gap-5 lg:grid-cols-2">
         <Section description={`Tiga kecenderungan teratas: ${results.riasec.dominant.map((item) => item.label).join(', ')}.`} title="Minat RIASEC">
@@ -364,21 +472,54 @@ function Results({ config, results }: { config: NonNullable<Bekal10ModuleRespons
             {varkData.map((item) => <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600" key={item.category}>{item.category} - {item.label}: {item.score}</span>)}
           </div>
           <p className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm leading-6 text-blue-950">{recommendationForVark(topVark)}</p>
+          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-6 text-slate-600">
+            {topVarkProfile.strategies.map((strategy) => <li key={strategy}>{strategy}</li>)}
+          </ul>
           <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-800">Preferensi belajar dapat berubah sesuai materi dan situasi. Jangan membatasi diri hanya pada satu cara belajar.</p>
         </Section>
       </div>
+      <Section description="Gunakan bagian ini sebagai bahan awal eksplorasi. Jurusan dan pekerjaan di bawah bukan batasan, melainkan contoh arah yang bisa kamu cek lebih lanjut." title="Narasi hasil RIASEC">
+        <div className="grid gap-4 md:grid-cols-3">
+          {results.riasec.dominant.map((item, index) => {
+            const profile = riasecProfiles[item.category];
+            return (
+              <article className="rounded-lg border border-slate-200 p-4" key={item.category}>
+                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-violet-700">{index === 0 ? 'Dominan utama' : `Kecenderungan ${index + 1}`}</p>
+                <h3 className="mt-2 font-semibold text-[#101b3f]">{item.label}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{profile.summary}</p>
+                <p className="mt-3 text-sm leading-6 text-slate-600"><span className="font-semibold text-slate-800">Kekuatan:</span> {profile.strengths}</p>
+                <div className="mt-3">
+                  <p className="text-xs font-semibold text-slate-500">Contoh jurusan</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-700">{profile.majors.join(', ')}</p>
+                </div>
+                <div className="mt-3">
+                  <p className="text-xs font-semibold text-slate-500">Contoh karier</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-700">{profile.careers.join(', ')}</p>
+                </div>
+                <p className="mt-3 rounded-lg bg-slate-50 p-3 text-xs leading-5 text-slate-600">{profile.nextStep}</p>
+              </article>
+            );
+          })}
+        </div>
+      </Section>
     </div>
   );
 }
 
-function ModuleTwo({ config, data, disabled, update }: { config: NonNullable<Bekal10ModuleResponse['config']>; data: ModuleTwoData; disabled: boolean; update: UpdateData }) {
+function ModuleTwo({ config, data, disabled, update }: { config: ModuleTwoConfig; data: ModuleTwoData; disabled: boolean; update: UpdateData }) {
   const [category, setCategory] = useState<RiasecCategory>('R');
   const categories = Object.keys(config.riasec.labels) as RiasecCategory[];
   const categoryItems = config.riasec.items.filter((item) => item.category === category);
+  const assessmentResults = data.results ?? buildAssessmentPreview(config, data);
 
   return (
     <div className="space-y-5">
-      {disabled && data.results && <Results config={config} results={data.results} />}
+      <Section description="RIASEC memakai skala kesesuaian 1-5. Angka kecil berarti pernyataan kurang menggambarkan dirimu, angka besar berarti semakin menggambarkan dirimu." title="Petunjuk skala dan alur tes">
+        <div className="grid gap-3 sm:grid-cols-5">
+          {config.riasec.scale.map((scale) => <div className="rounded-lg border border-slate-200 p-3 text-center" key={scale.value}><p className="text-xl font-semibold text-[#101b3f]">{scale.value}</p><p className="mt-1 text-xs leading-5 text-slate-500">{scale.label}</p></div>)}
+        </div>
+        <p className="mt-4 rounded-lg bg-slate-50 p-3 text-sm leading-6 text-slate-600">Alurnya: isi semua pernyataan RIASEC, pilih preferensi belajar VARK, baca hasil dan narasinya, lalu tulis refleksi berdasarkan hasil tersebut.</p>
+      </Section>
       <Section description="Nilai seberapa sesuai setiap pernyataan dengan dirimu saat ini." title={`Asesmen minat RIASEC - ${Object.keys(data.riasecAnswers).length}/${config.riasec.items.length}`}>
         <div className="mb-5 grid grid-cols-3 gap-2 sm:grid-cols-6">{categories.map((item) => <button className={`h-10 rounded-lg border text-sm font-semibold ${category === item ? 'border-violet-600 bg-violet-600 text-white' : 'border-slate-200 text-slate-500'}`} key={item} onClick={() => setCategory(item)} type="button">{item}</button>)}</div>
         <div className="space-y-4">
@@ -396,14 +537,19 @@ function ModuleTwo({ config, data, disabled, update }: { config: NonNullable<Bek
         <div className="space-y-4">{config.vark.items.map((item, index) => <fieldset className="rounded-lg border border-slate-200 p-4" disabled={disabled} key={item.id}><legend className="text-sm font-semibold leading-6 text-slate-700">{index + 1}. {item.text}</legend><div className="mt-3 grid gap-2 md:grid-cols-2">{item.options.map((option) => <label className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm leading-5 ${data.varkAnswers[item.id] === option.category ? 'border-blue-300 bg-blue-50 text-blue-900' : 'border-slate-200 text-slate-600'}`} key={option.category}><input checked={data.varkAnswers[item.id] === option.category} className="mt-0.5 size-4 accent-blue-600" disabled={disabled} name={item.id} onChange={() => update('varkAnswers', { ...data.varkAnswers, [item.id]: option.category })} type="radio" /><span><strong>{option.category}</strong> - {option.text}</span></label>)}</div></fieldset>)}</div>
       </Section>
 
-      <Section description="Hubungkan hasil asesmen dengan pengalaman nyata. Masing-masing jawaban minimal 10 karakter." title="Refleksi mengenal diri">
+      {assessmentResults ? <Results config={config} results={assessmentResults} /> : <Section description="Hasil akan muncul setelah semua item RIASEC dan VARK selesai diisi." title="Hasil tes belum siap"><p className="rounded-lg bg-amber-50 p-4 text-sm leading-6 text-amber-800">Selesaikan RIASEC ({Object.keys(data.riasecAnswers).length}/{config.riasec.items.length}) dan VARK ({Object.keys(data.varkAnswers).length}/{config.vark.items.length}) terlebih dahulu. Setelah hasil muncul, bagian refleksi akan terbuka.</p></Section>}
+
+      {assessmentResults && <Section description="Hubungkan hasil asesmen dengan pengalaman nyata. Masing-masing jawaban minimal 10 karakter." title="Refleksi mengenal diri">
+        <div className="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-900">
+          Kamu bisa mulai dari hasil dominan: {assessmentResults.riasec.dominant[0]?.label ?? '-'} dan gaya belajar {assessmentResults.vark.dominant.label}. Tulis mana yang terasa sesuai, mana yang ingin diuji lagi, dan aktivitas apa yang ingin kamu coba.
+        </div>
         <div className="space-y-5">
           <label><FieldLabel>Bagian hasil yang paling terasa sesuai</FieldLabel><TextArea disabled={disabled} onChange={(value) => update('reflectionFit', value)} placeholder="Apa yang terasa paling menggambarkan dirimu?" value={data.reflectionFit} /></label>
           <label><FieldLabel>Aktivitas yang paling kusukai</FieldLabel><TextArea disabled={disabled} onChange={(value) => update('favoriteActivities', value)} placeholder="Aktivitas apa yang membuatmu bersemangat dan mengapa?" value={data.favoriteActivities} /></label>
           <label><FieldLabel>Hal yang ingin kukembangkan</FieldLabel><TextArea disabled={disabled} onChange={(value) => update('developmentWish', value)} placeholder="Kecenderungan atau cara belajar apa yang ingin kamu coba?" value={data.developmentWish} /></label>
           <label><FieldLabel>Wawasan baru tentang diriku</FieldLabel><TextArea disabled={disabled} onChange={(value) => update('selfInsight', value)} placeholder="Apa satu hal baru yang kamu pahami tentang dirimu?" value={data.selfInsight} /></label>
         </div>
-      </Section>
+      </Section>}
     </div>
   );
 }

@@ -27,6 +27,14 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 - [x] Admin sekolah basic: profile, classes, students, Guru BK assignment, duplicate class/school cleanup.
 - [x] Responsive desktop/mobile polish and E2E coverage for public, auth, student, teacher, admin.
 
+### Class X Bekal 10 Revision
+
+- [x] Module 2 explains the RIASEC 1-5 scale before students answer.
+- [x] Module 2 flow is now assessment first, result and narrative second, reflection third.
+- [x] Module 2 RIASEC results include fuller narratives, strengths, example majors, example careers, and next exploration steps.
+- [x] Module 2 VARK results include learning-style explanation and concrete study strategies.
+- [x] Module 4 explains SMART goal before the form, including S/M/A/R/T meaning and a clear example.
+
 ### Phase 2 - Setting Goal MVP
 
 - [x] `/app/programs/setting-goal`.
@@ -95,7 +103,7 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 
 - [x] `npm.cmd run build`
 - [x] `npm.cmd run test:e2e`
-- [x] 78 Playwright tests passed across desktop and mobile Chromium.
+- [x] 80 Playwright tests passed across desktop and mobile Chromium.
 
 ## Remaining Before Production Pilot
 
