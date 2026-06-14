@@ -131,6 +131,11 @@ export async function createFutureReadyBoardPdf(input: FutureReadyBoardPdfInput)
   const contentWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
   const pageBottom = () => doc.page.height - doc.page.margins.bottom - 24;
 
+  function resetCursor(y = doc.y) {
+    doc.x = doc.page.margins.left;
+    doc.y = y;
+  }
+
   function footer() {
     const y = pageBottom() + 10;
     doc.font('Helvetica').fontSize(8).fillColor(colors.muted)
@@ -142,7 +147,7 @@ export async function createFutureReadyBoardPdf(input: FutureReadyBoardPdfInput)
     footer();
     doc.addPage();
     pageNumber += 1;
-    doc.y = doc.page.margins.top;
+    resetCursor(doc.page.margins.top);
   }
 
   function ensureSpace(height: number) {
@@ -151,13 +156,17 @@ export async function createFutureReadyBoardPdf(input: FutureReadyBoardPdfInput)
 
   function sectionTitle(title: string, subtitle?: string) {
     ensureSpace(subtitle ? 50 : 34);
+    resetCursor();
     doc.moveDown(0.4);
-    doc.font('Helvetica-Bold').fontSize(15).fillColor(colors.ink).text(title);
+    doc.font('Helvetica-Bold').fontSize(15).fillColor(colors.ink)
+      .text(title, doc.page.margins.left, doc.y, { width: contentWidth });
     if (subtitle) {
       doc.moveDown(0.15);
-      doc.font('Helvetica').fontSize(9.5).fillColor(colors.muted).text(subtitle, { lineGap: 2 });
+      doc.font('Helvetica').fontSize(9.5).fillColor(colors.muted)
+        .text(subtitle, doc.page.margins.left, doc.y, { width: contentWidth, lineGap: 2 });
     }
     doc.moveDown(0.7);
+    resetCursor();
   }
 
   function card(x: number, y: number, width: number, height: number, fill = '#ffffff', stroke = colors.line) {
@@ -166,10 +175,48 @@ export async function createFutureReadyBoardPdf(input: FutureReadyBoardPdfInput)
     doc.restore();
   }
 
+  function studentSummaryCard() {
+    const height = 118;
+    ensureSpace(height + 18);
+    resetCursor();
+    const x = doc.page.margins.left;
+    const y = doc.y;
+    card(x, y, contentWidth, height, '#ffffff');
+
+    doc.font('Helvetica').fontSize(9).fillColor(colors.muted)
+      .text('Nama siswa', x + 18, y + 18, { width: 250 });
+    doc.font('Helvetica-Bold').fontSize(18).fillColor(colors.ink)
+      .text(input.student.name, x + 18, y + 42, { width: 258, lineGap: 1 });
+    doc.font('Helvetica').fontSize(9.5).fillColor(colors.muted)
+      .text(input.student.nisn ? `NISN ${input.student.nisn}` : 'Portfolio pribadi', x + 18, y + 86, { width: 258 });
+
+    const dividerX = x + 296;
+    doc.moveTo(dividerX, y + 18).lineTo(dividerX, y + height - 18).strokeColor(colors.line).lineWidth(1).stroke();
+
+    doc.font('Helvetica').fontSize(8.5).fillColor(colors.muted)
+      .text('Sekolah', dividerX + 18, y + 18, { width: contentWidth - 332 });
+    doc.font('Helvetica-Bold').fontSize(13).fillColor(colors.ink)
+      .text(input.student.schoolName, dividerX + 18, y + 38, { width: contentWidth - 332, lineGap: 1 });
+    doc.font('Helvetica').fontSize(8.5).fillColor(colors.muted)
+      .text('Kelas', dividerX + 18, y + 78, { width: 78 });
+    doc.font('Helvetica-Bold').fontSize(10.5).fillColor(colors.ink)
+      .text(input.student.className ?? '-', dividerX + 18, y + 94, { width: 78 });
+    doc.font('Helvetica').fontSize(8.5).fillColor(colors.muted)
+      .text('Tanggal cetak', dividerX + 110, y + 78, { width: 100 });
+    doc.font('Helvetica-Bold').fontSize(10.5).fillColor(colors.ink)
+      .text(dateLabel(input.generatedAt), dividerX + 110, y + 94, { width: 100 });
+
+    resetCursor(y + height + 18);
+  }
+
   function metricCards(items: Array<{ label: string; value: string; note?: string; tint?: string }>, columns = 3) {
     const gap = 10;
     const cardWidth = (contentWidth - gap * (columns - 1)) / columns;
-    const height = 82;
+    const height = 92;
+    const rowCount = Math.ceil(items.length / columns);
+    const totalHeight = rowCount * height + (rowCount - 1) * gap + 14;
+    ensureSpace(totalHeight);
+    resetCursor();
     let x = doc.page.margins.left;
     let y = doc.y;
 
@@ -178,18 +225,17 @@ export async function createFutureReadyBoardPdf(input: FutureReadyBoardPdfInput)
         x = doc.page.margins.left;
         y += height + gap;
       }
-      ensureSpace(height + gap);
       card(x, y, cardWidth, height, item.tint ?? '#ffffff');
       doc.font('Helvetica').fontSize(8.5).fillColor(colors.muted).text(item.label, x + 14, y + 13, { width: cardWidth - 28 });
-      doc.font('Helvetica-Bold').fontSize(15).fillColor(colors.ink).text(item.value, x + 14, y + 32, { width: cardWidth - 28, lineGap: 1 });
+      const valueSize = item.value.length > 20 ? 12 : item.value.length > 14 ? 13.5 : 15;
+      doc.font('Helvetica-Bold').fontSize(valueSize).fillColor(colors.ink).text(item.value, x + 14, y + 34, { width: cardWidth - 28, lineGap: 0 });
       if (item.note) {
-        doc.font('Helvetica').fontSize(8).fillColor(colors.muted).text(item.note, x + 14, y + 58, { width: cardWidth - 28 });
+        doc.font('Helvetica').fontSize(8).fillColor(colors.muted).text(item.note, x + 14, y + 70, { width: cardWidth - 28 });
       }
       x += cardWidth + gap;
     });
 
-    const rowCount = Math.ceil(items.length / columns);
-    doc.y = y + height + gap + (rowCount > 1 ? 0 : 4);
+    resetCursor(y + height + 14);
   }
 
   function textCard(title: string, body: string, fill = '#ffffff', accent = colors.navy) {
@@ -208,7 +254,7 @@ export async function createFutureReadyBoardPdf(input: FutureReadyBoardPdfInput)
     doc.rect(x, y, 5, height).fill(accent);
     doc.font('Helvetica-Bold').fontSize(12).fillColor(colors.ink).text(title, x + 16, y + 14, { width: bodyWidth });
     doc.font('Helvetica').fontSize(10).fillColor(colors.ink).text(body, x + 16, y + 36, { width: bodyWidth, lineGap: 2 });
-    doc.y = y + height + 12;
+    resetCursor(y + height + 12);
   }
 
   function bulletList(title: string, items: string[], fill = '#ffffff') {
@@ -241,7 +287,7 @@ export async function createFutureReadyBoardPdf(input: FutureReadyBoardPdfInput)
         .text(value, x + contentWidth - 160, rowY, { width: 136, align: 'right' });
       rowY += 26;
     });
-    doc.y = y + height + 12;
+    resetCursor(y + height + 12);
   }
 
   async function qrCard() {
@@ -257,7 +303,7 @@ export async function createFutureReadyBoardPdf(input: FutureReadyBoardPdfInput)
     doc.font('Helvetica').fontSize(10).fillColor(colors.muted)
       .text('Scan QR untuk membuka halaman portfolio siswa di HighschoolHack. Link ini tetap membutuhkan login agar data siswa tidak terbuka publik.', x + 122, y + 46, { width: contentWidth - 150, lineGap: 2 });
     doc.font('Helvetica').fontSize(8.5).fillColor(colors.violet).text(input.portfolioUrl, x + 122, y + 91, { width: contentWidth - 150 });
-    doc.y = y + height + 12;
+    resetCursor(y + height + 12);
   }
 
   const data = input.data;
@@ -282,12 +328,8 @@ export async function createFutureReadyBoardPdf(input: FutureReadyBoardPdfInput)
   doc.font('Helvetica-Bold').fontSize(38).fillColor(scoreColor).text(String(readiness), 432, 72, { width: 96, align: 'center' });
   doc.font('Helvetica-Bold').fontSize(9).fillColor(colors.ink).text(status, 424, 118, { width: 112, align: 'center' });
 
-  doc.y = 214;
-  metricCards([
-    { label: 'Nama siswa', value: input.student.name, note: input.student.nisn ? `NISN ${input.student.nisn}` : 'Portfolio pribadi' },
-    { label: 'Sekolah', value: input.student.schoolName, note: input.student.className ?? '-' },
-    { label: 'Tanggal cetak', value: dateLabel(input.generatedAt), note: 'Generated by HighschoolHack' },
-  ], 3);
+  resetCursor(214);
+  studentSummaryCard();
 
   sectionTitle('Profil Simulasi', 'Data dasar yang dipakai untuk menghitung kesiapan finansial.');
   metricCards([
