@@ -2,6 +2,7 @@ import { UserPlus } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthShell } from '../components/AuthShell';
+import { GoogleIcon } from '../components/GoogleIcon';
 import { getUserHomePath, useAuth, type AuthUser } from '../contexts/AuthContext';
 import { api } from '../lib/api';
 import { safeNextPath, storePostOnboardingNext } from '../lib/navigation';
@@ -48,10 +49,11 @@ export function RegisterPage() {
     <AuthShell title="Buat akun HighschoolHack" subtitle="Setelah daftar, hubungkan akunmu dengan mengisi nama sekolah.">
       {googleAuthConfigured && (
         <a
-          className="mb-5 flex w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:border-slate-400"
+          className="mb-5 flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:border-slate-400"
           href="/api/auth/google"
           onClick={() => storePostOnboardingNext(nextPath)}
         >
+          <GoogleIcon className="size-5" />
           Daftar dengan Google
         </a>
       )}

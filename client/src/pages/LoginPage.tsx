@@ -2,6 +2,7 @@ import { LogIn } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthShell } from '../components/AuthShell';
+import { GoogleIcon } from '../components/GoogleIcon';
 import { getUserHomePath, useAuth, type AuthUser } from '../contexts/AuthContext';
 import { api } from '../lib/api';
 import { safeNextPath, storePostOnboardingNext } from '../lib/navigation';
@@ -51,6 +52,7 @@ export function LoginPage() {
           href="/api/auth/google"
           onClick={() => storePostOnboardingNext(nextPath)}
         >
+          <GoogleIcon className="size-5" />
           Masuk dengan Google
         </a>
       ) : (
