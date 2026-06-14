@@ -129,7 +129,7 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 - [x] Add password reset, email verification, and clearer Google/email account-linking behavior before inviting real schools.
 - [x] Add Sentry or equivalent error monitoring, structured logs, and log redaction for auth, onboarding, module save, PDF export, and chatbot errors.
 - [x] Add Heroku Postgres backup/restore runbook.
-- [ ] Confirm automated Heroku Postgres backup schedule before pilot.
+- [x] Confirm automated Heroku Postgres backup schedule before pilot. Production `DATABASE_URL` now runs daily at 03:00 Asia/Jakarta.
 
 ### P1 - UX Bugs and Product Fit
 
