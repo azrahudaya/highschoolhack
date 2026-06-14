@@ -8,6 +8,7 @@ import { ArticlesPage } from './pages/ArticlesPage';
 import { AdminSchoolPage } from './pages/AdminSchoolPage';
 import { Bekal10DashboardPage } from './pages/Bekal10DashboardPage';
 import { Bekal10ModulePage } from './pages/Bekal10ModulePage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { LoginPage } from './pages/LoginPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { OnboardingPage } from './pages/OnboardingPage';
@@ -17,12 +18,14 @@ import { ProgramModuleAppPage } from './pages/ProgramModuleAppPage';
 import { ProgramPortfolioAppPage } from './pages/ProgramPortfolioAppPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { ScholarshipPortalAppPage } from './pages/ScholarshipPortalAppPage';
 import { StudentPortfolioPage } from './pages/StudentPortfolioPage';
 import { StudentProfilePage } from './pages/StudentProfilePage';
 import { StudentDashboardPage } from './pages/StudentDashboardPage';
 import { TeacherDashboardPage } from './pages/TeacherDashboardPage';
 import { TeacherStudentDetailPage } from './pages/TeacherStudentDetailPage';
+import { VerifyEmailPage } from './pages/VerifyEmailPage';
 
 function App() {
   return (
@@ -36,6 +39,9 @@ function App() {
         <Route path="/programs/:slug" element={<ProgramDetailPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route
           path="/onboarding"
           element={

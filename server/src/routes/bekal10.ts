@@ -8,6 +8,7 @@ import { asyncHandler } from '../middleware/async-handler';
 import { requireRole } from '../middleware/auth';
 import { ensureBekal10Enrollment, saveModuleResponse } from '../services/bekal10';
 import { buildStudentPortfolio } from '../services/portfolio';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -174,6 +175,11 @@ router.put(
     }
 
     await saveModuleResponse(req.user!.id, context.enrollment.id, progress.moduleId, payload.data as Prisma.InputJsonValue);
+    logger.info('bekal10.moduleSaved', {
+      userId: req.user!.id,
+      schoolId: context.membership.schoolId,
+      moduleSlug,
+    });
     if (progress.status === ModuleStatus.not_started) {
       await prisma.moduleProgress.update({ where: { id: progress.id }, data: { status: ModuleStatus.in_progress } });
     }

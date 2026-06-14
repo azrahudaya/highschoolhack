@@ -12,14 +12,23 @@ type LoginResponse = {
   redirectTo: string;
 };
 
+const googleErrorMessages: Record<string, string> = {
+  GoogleAccountNeedsExplicitLink: 'Email ini sudah punya akun password. Login dengan email/password dulu, lalu hubungkan Google dari profil akun.',
+  GoogleEmailMismatch: 'Email Google harus sama dengan email akun yang sedang login untuk proses linking.',
+  GoogleAccountAlreadyLinked: 'Akun Google ini sudah terhubung ke akun lain.',
+  google: 'Login Google gagal. Coba lagi atau gunakan email/password.',
+  'google-not-configured': 'Google OAuth belum dikonfigurasi.',
+};
+
 export function LoginPage() {
   const { user, loading, googleAuthConfigured, refresh } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const nextPath = safeNextPath(searchParams.get('next'));
+  const googleError = searchParams.get('error');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(googleError ? googleErrorMessages[googleError] ?? 'Login Google gagal.' : '');
   const [submitting, setSubmitting] = useState(false);
 
   if (!loading && user) return <Navigate to={nextPath && user.memberships.length ? nextPath : getUserHomePath(user)} replace />;
@@ -89,6 +98,11 @@ export function LoginPage() {
             value={password}
           />
         </label>
+        <div className="text-right">
+          <Link className="text-xs font-semibold text-[#5b21b6]" to="/forgot-password">
+            Lupa password?
+          </Link>
+        </div>
         {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
         <button
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#15224a] px-4 py-3 text-sm font-semibold text-white hover:bg-[#22346a] disabled:opacity-60"

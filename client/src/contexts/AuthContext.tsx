@@ -8,6 +8,7 @@ export type AuthUser = {
   email: string;
   name: string | null;
   image: string | null;
+  emailVerifiedAt: string | null;
   memberships: Array<{
     id: string;
     role: UserRole;

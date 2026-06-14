@@ -7,6 +7,10 @@ import { isGoogleAuthConfigured, passport } from '../auth/passport';
 import { env } from '../config/env';
 import { prisma } from '../db/prisma';
 import { asyncHandler } from '../middleware/async-handler';
+import { requireAuth } from '../middleware/auth';
+import { consumeEmailVerificationToken, consumePasswordResetToken, createEmailVerificationToken, createPasswordResetToken } from '../services/auth-tokens';
+import { sendEmailVerificationEmail, sendPasswordResetEmail } from '../services/email';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -18,6 +22,26 @@ const credentialsSchema = z.object({
 const registerSchema = credentialsSchema.extend({
   name: z.string().trim().min(2).max(120),
 });
+
+const emailSchema = z.object({
+  email: z.string().trim().email(),
+});
+
+const passwordResetConfirmSchema = z.object({
+  token: z.string().trim().min(20),
+  password: z.string().min(8).max(128),
+});
+
+const tokenSchema = z.object({
+  token: z.string().trim().min(20),
+});
+
+function authDevTokenResponse(token: string | null, extra: Record<string, unknown> = {}) {
+  return {
+    ...extra,
+    ...(env.NODE_ENV !== 'production' && token ? { devToken: token } : {}),
+  };
+}
 
 router.get('/me', (req, res) => {
   res.json({
@@ -53,6 +77,7 @@ router.post(
         email: true,
         name: true,
         image: true,
+        emailVerifiedAt: true,
         memberships: {
           select: {
             id: true,
@@ -69,6 +94,10 @@ router.post(
       },
     });
 
+    const verification = await createEmailVerificationToken(user.id);
+    const delivery = await sendEmailVerificationEmail(user.email, verification.token, verification.expiresInHours);
+    logger.info('auth.register', { userId: user.id, email: user.email, emailVerificationQueued: delivery.queued });
+
     req.login(user, (error) => {
       if (error) {
         next(error);
@@ -78,6 +107,7 @@ router.post(
       res.status(201).json({
         user,
         redirectTo: '/onboarding',
+        ...authDevTokenResponse(verification.token, { emailVerificationQueued: delivery.queued }),
       });
     });
   }),
@@ -137,13 +167,115 @@ router.post('/logout', (req, res, next) => {
   });
 });
 
+router.post(
+  '/password-reset/request',
+  asyncHandler(async (req, res) => {
+    const payload = emailSchema.parse(req.body);
+    const user = await prisma.user.findUnique({ where: { email: payload.email.toLowerCase() } });
+    let devToken: string | null = null;
+
+    if (user?.passwordHash) {
+      const reset = await createPasswordResetToken(user.id);
+      devToken = reset.token;
+      await sendPasswordResetEmail(user.email, reset.token, reset.expiresInMinutes);
+    }
+    logger.info('auth.passwordResetRequested', { email: payload.email, matchedUser: Boolean(user?.passwordHash) });
+
+    res.status(202).json(authDevTokenResponse(devToken, {
+      message: 'Jika email terdaftar, instruksi reset password akan dikirim.',
+    }));
+  }),
+);
+
+router.post(
+  '/password-reset/confirm',
+  asyncHandler(async (req, res) => {
+    const payload = passwordResetConfirmSchema.parse(req.body);
+    const token = await consumePasswordResetToken(payload.token);
+    if (!token) {
+      res.status(400).json({ error: 'InvalidToken', message: 'Token reset password tidak valid atau sudah kedaluwarsa.' });
+      return;
+    }
+
+    await prisma.user.update({
+      where: { id: token.userId },
+      data: { passwordHash: await bcrypt.hash(payload.password, 12) },
+    });
+    logger.info('auth.passwordResetConfirmed', { userId: token.userId });
+    res.json({ message: 'Password berhasil diperbarui. Silakan login kembali.' });
+  }),
+);
+
+router.post(
+  '/email-verification/request',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
+    if (!user) {
+      res.status(404).json({ error: 'UserNotFound', message: 'Akun tidak ditemukan.' });
+      return;
+    }
+    if (user.emailVerifiedAt) {
+      res.json({ message: 'Email sudah terverifikasi.' });
+      return;
+    }
+
+    const verification = await createEmailVerificationToken(user.id);
+    const delivery = await sendEmailVerificationEmail(user.email, verification.token, verification.expiresInHours);
+    logger.info('auth.emailVerificationRequested', { userId: user.id, queued: delivery.queued });
+    res.status(202).json(authDevTokenResponse(verification.token, {
+      message: 'Instruksi verifikasi email telah dikirim.',
+      emailVerificationQueued: delivery.queued,
+    }));
+  }),
+);
+
+router.post(
+  '/email-verification/confirm',
+  asyncHandler(async (req, res) => {
+    const payload = tokenSchema.parse(req.body);
+    const token = await consumeEmailVerificationToken(payload.token);
+    if (!token) {
+      res.status(400).json({ error: 'InvalidToken', message: 'Token verifikasi email tidak valid atau sudah kedaluwarsa.' });
+      return;
+    }
+
+    await prisma.user.update({
+      where: { id: token.userId },
+      data: { emailVerifiedAt: new Date() },
+    });
+    logger.info('auth.emailVerified', { userId: token.userId });
+    res.json({ message: 'Email berhasil diverifikasi.' });
+  }),
+);
+
 if (isGoogleAuthConfigured) {
   router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+  router.get('/google/link', requireAuth, (req, res, next) => {
+    req.session.googleLinkUserId = req.user!.id;
+    passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+  });
   router.get(
     '/google/callback',
-    passport.authenticate('google', { failureRedirect: `${env.CLIENT_URL}/login?error=google` }),
-    (req, res) => {
-      res.redirect(`${env.CLIENT_URL}${req.user ? getDefaultAppPath(req.user) : '/login'}`);
+    (req, res, next) => {
+      passport.authenticate('google', (error: Error | null, user: Express.User | false, info?: { message?: string }) => {
+        if (error) {
+          next(error);
+          return;
+        }
+        if (!user) {
+          const code = info?.message ?? 'google';
+          res.redirect(`${env.CLIENT_URL}/login?error=${encodeURIComponent(code)}`);
+          return;
+        }
+        req.login(user, (loginError) => {
+          if (loginError) {
+            next(loginError);
+            return;
+          }
+          res.redirect(`${env.CLIENT_URL}${getDefaultAppPath(user)}`);
+        });
+      })(req, res, next);
     },
   );
 } else {

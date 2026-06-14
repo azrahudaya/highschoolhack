@@ -10,6 +10,8 @@ import { safeNextPath, storePostOnboardingNext } from '../lib/navigation';
 type RegisterResponse = {
   user: AuthUser;
   redirectTo: string;
+  emailVerificationQueued?: boolean;
+  devToken?: string;
 };
 
 export function RegisterPage() {
@@ -21,6 +23,7 @@ export function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   if (!loading && user) return <Navigate to={nextPath && user.memberships.length ? nextPath : getUserHomePath(user)} replace />;
@@ -29,12 +32,14 @@ export function RegisterPage() {
     event.preventDefault();
     setSubmitting(true);
     setError('');
+    setNotice('');
 
     try {
       const response = await api<RegisterResponse>('/api/auth/register', {
         method: 'POST',
         body: JSON.stringify({ name, email, password }),
       });
+      setNotice(response.emailVerificationQueued ? 'Email verifikasi sudah dikirim.' : 'Akun dibuat. Verifikasi email belum dikirim karena SMTP belum dikonfigurasi.');
       await refresh();
       storePostOnboardingNext(nextPath);
       navigate(response.redirectTo);
@@ -88,6 +93,7 @@ export function RegisterPage() {
             value={password}
           />
         </label>
+        {notice && <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{notice}</p>}
         {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
         <button
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#15224a] px-4 py-3 text-sm font-semibold text-white hover:bg-[#22346a] disabled:opacity-60"

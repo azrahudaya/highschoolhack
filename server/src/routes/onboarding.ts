@@ -6,6 +6,7 @@ import { getAuthUser } from '../auth/user';
 import { prisma } from '../db/prisma';
 import { asyncHandler } from '../middleware/async-handler';
 import { requireAuth } from '../middleware/auth';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -209,6 +210,13 @@ router.post(
         class: true,
         school: true,
       },
+    });
+
+    logger.info('onboarding.studentCompleted', {
+      userId: user.id,
+      schoolId: school.id,
+      classId: resolvedClassId,
+      createdSchoolByName: Boolean(payload.schoolName),
     });
 
     res.status(201).json({

@@ -1,6 +1,8 @@
 import { Award, BookOpenCheck, GraduationCap, LoaderCircle, Target, UserRound } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { GoogleIcon } from '../components/GoogleIcon';
 import { StudentAppLayout } from '../components/StudentAppLayout';
+import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api';
 import type { Bekal10Dashboard, Bekal10Portfolio } from '../types/bekal10';
 
@@ -26,6 +28,7 @@ function ProfileItem({ label, value }: { label: string; value: string | number }
 }
 
 export function StudentProfilePage() {
+  const { googleAuthConfigured, user } = useAuth();
   const [dashboard, setDashboard] = useState<Bekal10Dashboard | null>(null);
   const [portfolio, setPortfolio] = useState<Bekal10Portfolio | null>(null);
   const [error, setError] = useState('');
@@ -129,6 +132,21 @@ export function StudentProfilePage() {
                 <p className="mt-1 text-sm text-slate-500">Status portofolio</p>
               </div>
             </section>
+
+            {googleAuthConfigured && user && !user.emailVerifiedAt && (
+              <section className="mt-6 rounded-lg border border-slate-200 bg-white p-5">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <h2 className="font-semibold text-[#101b3f]">Hubungkan Google</h2>
+                    <p className="mt-1 text-sm leading-6 text-slate-500">Gunakan akun Google dengan email yang sama untuk membantu verifikasi dan login lebih cepat.</p>
+                  </div>
+                  <a className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-slate-400" href="/api/auth/google/link">
+                    <GoogleIcon className="size-4" />
+                    Hubungkan Google
+                  </a>
+                </div>
+              </section>
+            )}
           </>
         )}
       </div>

@@ -10,6 +10,7 @@ export async function getAuthUser(userId: string): Promise<AuthUser | null> {
       email: true,
       name: true,
       image: true,
+      emailVerifiedAt: true,
       memberships: {
         select: {
           id: true,

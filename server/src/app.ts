@@ -21,6 +21,8 @@ import { studentProgramsRouter } from './routes/student-programs';
 import { teacherBekal10Router } from './routes/teacher-bekal10';
 import { teacherProgramsRouter } from './routes/teacher-programs';
 import { originProtection } from './middleware/origin-protection';
+import { setupSentryErrorHandler } from './monitoring/sentry';
+import { redactUrl } from './utils/redaction';
 
 export function createApp() {
   const app = express();
@@ -36,7 +38,11 @@ export function createApp() {
   );
   app.use(compression());
   app.use(express.json({ limit: '1mb' }));
-  app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+  morgan.token('safe-url', (req) => redactUrl(('originalUrl' in req && typeof req.originalUrl === 'string') ? req.originalUrl : req.url));
+  const logFormat = env.NODE_ENV === 'production'
+    ? ':remote-addr - :remote-user [:date[clf]] ":method :safe-url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"'
+    : ':method :safe-url :status :response-time ms - :res[content-length]';
+  app.use(morgan(logFormat));
   app.use(createSessionMiddleware());
   app.use(passport.initialize());
   app.use(passport.session());
@@ -89,6 +95,7 @@ export function createApp() {
     });
   }
 
+  setupSentryErrorHandler(app);
   app.use(errorHandler);
 
   return app;

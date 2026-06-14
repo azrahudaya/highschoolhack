@@ -5,6 +5,7 @@ import { asyncHandler } from '../middleware/async-handler';
 import { requireAuth } from '../middleware/auth';
 import { createRateLimit } from '../middleware/rate-limit';
 import { containsSensitiveStudentData } from '../utils/sensitive-data';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -45,6 +46,7 @@ router.post(
     const payload = messageSchema.parse(req.body);
 
     if (containsSensitiveStudentData(payload.message)) {
+      logger.warn('chatbot.sensitiveDataBlocked', { userId: req.user!.id, topic: payload.topic });
       res.status(400).json({
         error: 'SensitiveData',
         message: 'Jangan kirim NISN, email, nomor telepon, atau data pribadi ke chatbot. Tulis ulang pertanyaan secara umum.',
@@ -53,6 +55,7 @@ router.post(
     }
 
     if (!env.DEEPSEEK_API_KEY) {
+      logger.info('chatbot.fallbackNoApiKey', { userId: req.user!.id, topic: payload.topic });
       res.json({ answer: fallbackAnswer(payload.message), provider: 'fallback' });
       return;
     }
@@ -83,6 +86,7 @@ router.post(
     });
 
     if (!response.ok) {
+      logger.warn('chatbot.providerFailed', { userId: req.user!.id, topic: payload.topic, status: response.status });
       res.json({ answer: fallbackAnswer(payload.message), provider: 'fallback' });
       return;
     }

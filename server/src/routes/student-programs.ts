@@ -9,6 +9,7 @@ import { ensureProgramEnrollment, getStudentContext, saveModuleResponse } from '
 import { createFutureReadyBoardPdf } from '../services/future-ready-pdf';
 import { createSimplePdf } from '../services/simple-pdf';
 import { env } from '../config/env';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -305,6 +306,7 @@ router.get(
         scholarships,
         portfolioUrl,
       });
+      logger.info('studentProgram.pdfExported', { userId: req.user!.id, programSlug, schoolId: context.membership.schoolId, bytes: pdf.length });
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'attachment; filename="future-ready-board-portfolio.pdf"');
       res.send(pdf);
@@ -334,6 +336,7 @@ router.get(
       { text: 'Catatan edukatif: portfolio ini adalah ringkasan pembelajaran siswa dan sebaiknya dibahas bersama Guru BK atau orang tua/wali.' },
     ];
     const pdf = createSimplePdf(reportLines);
+    logger.info('studentProgram.pdfExported', { userId: req.user!.id, programSlug, schoolId: context.membership.schoolId, bytes: pdf.length });
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${programSlug}-portfolio.pdf"`);
     res.send(pdf);
@@ -401,6 +404,12 @@ router.put(
     }
 
     await saveModuleResponse(req.user!.id, context.enrollment.id, progress.moduleId, payload.data as Prisma.InputJsonValue);
+    logger.info('studentProgram.moduleSaved', {
+      userId: req.user!.id,
+      schoolId: context.membership.schoolId,
+      programSlug,
+      moduleSlug,
+    });
     if (progress.status === ModuleStatus.not_started) {
       await prisma.moduleProgress.update({ where: { id: progress.id }, data: { status: ModuleStatus.in_progress } });
     }

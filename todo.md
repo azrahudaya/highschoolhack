@@ -118,7 +118,7 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 - [x] Scope `ModuleResponse` by school/enrollment, not only `userId + moduleId`, so the same student cannot accidentally share answers across different schools or repeated enrollments.
 - [x] Add backend validation schemas per module for Setting Goal and Smart Financial. Generic payload validation can mark modules complete even when required fields are still shallow or default-only.
 - [x] Decide and enforce completed-module edit behavior for Setting Goal and Smart Financial. Current generic modules are still editable after completion, while Bekal 10 is read-only.
-- [ ] Add backend permission tests for cross-school isolation: student, teacher BK, school admin, and super admin.
+- [x] Add backend permission tests for cross-school isolation: student, teacher BK, school admin, and super admin. Tests run against a real database when `DATABASE_URL` is available and skip explicitly in DB-less local runs.
 
 ### P0 - Production Security and Stability
 
@@ -126,9 +126,10 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 - [x] Resolve the high-severity dependency warning shown during Heroku deploy before school pilot.
 - [x] Add CSRF or strict origin protection for cookie-authenticated state-changing routes.
 - [x] Strengthen chatbot PII guard for Indonesian phone formats with spaces/dashes, addresses, NISN variants, and pasted student identity text.
-- [ ] Add password reset, email verification, and clearer Google/email account-linking behavior before inviting real schools.
-- [ ] Add Sentry or equivalent error monitoring, structured logs, and log redaction for auth, onboarding, module save, PDF export, and chatbot errors.
-- [ ] Add Heroku Postgres backup/restore runbook and confirm automated backups before pilot.
+- [x] Add password reset, email verification, and clearer Google/email account-linking behavior before inviting real schools.
+- [x] Add Sentry or equivalent error monitoring, structured logs, and log redaction for auth, onboarding, module save, PDF export, and chatbot errors.
+- [x] Add Heroku Postgres backup/restore runbook.
+- [ ] Confirm automated Heroku Postgres backup schedule before pilot.
 
 ### P1 - UX Bugs and Product Fit
 
@@ -190,6 +191,14 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
   - `DEEPSEEK_API_KEY`
   - `DEEPSEEK_BASE_URL=https://api.deepseek.com`
   - `DEEPSEEK_MODEL=deepseek-v4-flash`
+  - `SMTP_HOST`
+  - `SMTP_PORT=587`
+  - `SMTP_SECURE=false`
+  - `SMTP_USER`
+  - `SMTP_PASS`
+  - `SMTP_FROM`
+  - `SENTRY_DSN`
+  - `SENTRY_TRACES_SAMPLE_RATE=0.05`
 - [ ] Verify Google OAuth sign-in on:
   - `https://highschoolhack.my.id`
   - `https://www.highschoolhack.my.id`
