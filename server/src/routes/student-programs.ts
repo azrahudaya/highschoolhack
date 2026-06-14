@@ -6,7 +6,9 @@ import { prisma } from '../db/prisma';
 import { asyncHandler } from '../middleware/async-handler';
 import { requireRole } from '../middleware/auth';
 import { ensureProgramEnrollment, getStudentContext, saveModuleResponse } from '../services/bekal10';
-import { createSimplePdf, currency as pdfCurrency } from '../services/simple-pdf';
+import { createFutureReadyBoardPdf } from '../services/future-ready-pdf';
+import { createSimplePdf } from '../services/simple-pdf';
+import { env } from '../config/env';
 
 const router = Router();
 
@@ -286,47 +288,30 @@ router.get(
     const city = cityCosts.find((item) => item.city === String(allData.destinationCity ?? ''));
     const monthlyCost = city ? city.housing + city.food + city.transport + city.study : 0;
     const isSmartFinancial = programSlug === 'smart-financial';
-    const reportLines = isSmartFinancial ? [
-      { text: 'Laporan Future Ready Board', options: { bold: true, size: 24 } },
-      { text: 'Coba dulu sebelum boncos beneran.', options: { size: 13 } },
-      { text: '' },
-      { text: 'Profil Simulasi', options: { bold: true, size: 15 } },
-      { text: `Nama: ${context.profile.fullName}` },
-      { text: `Sekolah: ${context.membership.school.name}` },
-      { text: `Kelas: ${context.profile.class?.name ?? '-'}` },
-      { text: `Tanggal simulasi: ${new Date().toLocaleDateString('id-ID')}` },
-      { text: `Kota tujuan: ${allData.destinationCity ?? '-'}` },
-      { text: `Target setelah lulus: ${allData.afterGraduationTarget ?? '-'}` },
-      { text: '' },
-      { text: 'Ringkasan Biaya Hidup', options: { bold: true, size: 15 } },
-      { text: `Kos/tempat tinggal: ${city ? pdfCurrency(city.housing) : '-'}` },
-      { text: `Makan: ${city ? pdfCurrency(city.food) : '-'}` },
-      { text: `Transport: ${city ? pdfCurrency(city.transport) : '-'}` },
-      { text: `Belajar/lainnya: ${city ? pdfCurrency(city.study) : '-'}` },
-      { text: `Estimasi hidup hemat: ${monthlyCost ? `${pdfCurrency(monthlyCost)} / bulan` : '-'}` },
-      { text: '' },
-      { text: 'Hasil Akhir', options: { bold: true, size: 15 } },
-      { text: `Saldo akhir: ${pdfCurrency(allData.finalBalance)}` },
-      { text: `Dana darurat: ${pdfCurrency(allData.emergencyFund)}` },
-      { text: `Risk score: ${allData.riskScore ?? 0}` },
-      { text: `Decision score: ${allData.decisionScore ?? 0}` },
-      { text: `Lives tersisa: ${allData.lives ?? '-'}` },
-      { text: `Status akhir: ${allData.finalBalance && Number(allData.finalBalance) < 0 ? 'Defisit' : 'Terkendali'}` },
-      { text: `Badge: ${allData.badge ?? '-'}` },
-      { text: String(allData.finalDecision ?? 'Rencana perlu dicek ulang bersama Guru BK atau orang tua/wali sebelum mengambil keputusan akhir.') },
-      { text: '' },
-      { text: 'Rekomendasi Aksi', options: { bold: true, size: 15 } },
-      { text: '- Hindari paylater untuk kebutuhan konsumtif.' },
-      { text: '- Cek beasiswa, bantuan pendidikan, atau jalur vokasi yang cocok.' },
-      { text: '- Buat target dana darurat minimal Rp 500.000.' },
-      { text: '- Bandingkan biaya hidup antar kota sebelum menentukan tujuan.' },
-      { text: '- Diskusi dengan Guru BK atau orang tua/wali soal rencana setelah lulus.' },
-      { text: '' },
-      { text: 'Beasiswa yang Bisa Dicek', options: { bold: true, size: 15 } },
-      ...scholarships.map((item) => ({ text: `- ${item.name} (${item.type})` })),
-      { text: '' },
-      { text: 'Catatan edukatif: hasil ini adalah simulasi belajar, bukan penilaian pribadi. Masa depan tidak harus mahal, tapi perlu direncanakan.' },
-    ] : [
+
+    if (isSmartFinancial) {
+      const portfolioUrl = new URL('/app/programs/smart-financial/portfolio', env.CLIENT_URL).toString();
+      const pdf = await createFutureReadyBoardPdf({
+        student: {
+          name: context.profile.fullName,
+          nisn: context.profile.nisn,
+          schoolName: context.membership.school.name,
+          className: context.profile.class?.name ?? null,
+        },
+        generatedAt: new Date(),
+        data: allData,
+        city,
+        monthlyCost,
+        scholarships,
+        portfolioUrl,
+      });
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="future-ready-board-portfolio.pdf"');
+      res.send(pdf);
+      return;
+    }
+
+    const reportLines = [
       { text: `${context.program.title} Portfolio`, options: { bold: true, size: 24 } },
       { text: 'Ringkasan progres program siswa.', options: { size: 13 } },
       { text: '' },

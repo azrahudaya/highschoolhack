@@ -157,8 +157,8 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 
 ### P1 - Portfolio and PDF Quality
 
-- [ ] Replace the simple one-page PDF writer with a multi-page PDF renderer. Current PDF can silently truncate long content.
-- [ ] Add cover, student profile, school/class, date, score summary, recommendation, conclusion, and QR code to Smart Financial PDF as described in the prompt.
+- [x] Replace the simple one-page PDF writer for Smart Financial with a multi-page PDF renderer. Current Future Ready Board export no longer uses the plain text MVP PDF.
+- [x] Add cover, student profile, school/class, date, score summary, recommendation, conclusion, and QR code to Smart Financial PDF as described in the prompt.
 - [ ] Verify A4 print/export visually on mobile and desktop for Bekal 10, Setting Goal, and Smart Financial.
 - [ ] Add automated PDF content tests so key answers and recommendations are not missing from exports.
 
