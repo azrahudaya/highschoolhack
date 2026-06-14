@@ -106,6 +106,8 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 - [x] 84 Playwright tests passed across desktop and mobile Chromium.
 - [x] `npm.cmd audit --omit=dev --audit-level=high`
 - [x] 0 production dependency vulnerabilities after `npm audit fix`.
+- [x] Heroku release `v24` deployed from commit `b320c20`.
+- [x] Heroku release command applied migration `20260614000000_scope_module_response_by_enrollment`.
 
 ## Audit 2026-06-14
 
@@ -182,7 +184,7 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 
 ### Deploy and Config
 
-- [ ] Push and deploy current audit-fix changes, then run `npm run prisma:deploy` on Heroku for migration `20260614000000_scope_module_response_by_enrollment`.
+- [x] Push and deploy current audit-fix changes, then run `npm run prisma:deploy` on Heroku for migration `20260614000000_scope_module_response_by_enrollment`.
 - [ ] Set Heroku config vars:
   - `DEEPSEEK_API_KEY`
   - `DEEPSEEK_BASE_URL=https://api.deepseek.com`
@@ -190,7 +192,7 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 - [ ] Verify Google OAuth sign-in on:
   - `https://highschoolhack.my.id`
   - `https://www.highschoolhack.my.id`
-- [ ] Confirm Heroku only has the intended PostgreSQL add-on attached.
+- [ ] Resolve duplicate Heroku PostgreSQL add-on. Current app has `DATABASE` and `HEROKU_POSTGRESQL_SILVER`, both `essential-0`.
 - [x] Run production HTTP smoke test after deploy: health, public page, auth config.
 - [ ] Run production logged-in smoke test after deploy: register/login, onboarding, one module autosave, admin page, chatbot fallback/API response.
 
