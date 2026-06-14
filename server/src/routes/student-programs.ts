@@ -61,7 +61,7 @@ const requiredShortText = z.string().trim().min(2);
 const requiredStringArray = z.array(z.string().trim().min(1)).min(1);
 const requiredNumber = z.preprocess((value) => value === '' ? undefined : value, z.coerce.number().min(0));
 const requiredRange = (min: number, max: number) => z.preprocess((value) => value === '' ? undefined : value, z.coerce.number().min(min).max(max));
-const requiredSimulationStepIds = ['target', 'housing', 'food', 'transport', 'books', 'laundry', 'phone', 'organization', 'emergency', 'side-income', 'review', 'ready'];
+const requiredSimulationStepIds = ['target', 'housing', 'food', 'transport', 'study-tools', 'laundry', 'phone', 'community', 'emergency', 'side-income', 'review', 'ready'];
 const requiredSimulationDecisions = z.record(z.string(), z.string()).refine(
   (value) => requiredSimulationStepIds.every((stepId) => typeof value[stepId] === 'string' && value[stepId].trim().length > 0),
   { message: 'Pilih satu keputusan pada semua 12 langkah simulasi.' },
