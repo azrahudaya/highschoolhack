@@ -66,10 +66,10 @@ export async function ensureProgramEnrollment(userId: string, slug: ProgramSlug)
   return { membership, profile, program, enrollment, progress };
 }
 
-export async function saveModuleResponse(userId: string, moduleId: string, data: Prisma.InputJsonValue) {
+export async function saveModuleResponse(userId: string, enrollmentId: string, moduleId: string, data: Prisma.InputJsonValue) {
   return prisma.moduleResponse.upsert({
-    where: { userId_moduleId: { userId, moduleId } },
+    where: { enrollmentId_moduleId: { enrollmentId, moduleId } },
     update: { data },
-    create: { userId, moduleId, data },
+    create: { userId, enrollmentId, moduleId, data },
   });
 }

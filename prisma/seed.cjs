@@ -39,7 +39,12 @@ const programs = [
     title: 'Smart Financial',
     grade: 12,
     description: 'Simulasi finansial, beasiswa, financial readiness score, dan dashboard kesiapan.',
-    modules: ['Identitas dan Target', 'Pilih Kota Tujuan', 'Simulasi Financial Readiness', 'Hasil dan Rekomendasi'],
+    modules: [
+      'Identitas dan Target',
+      'Pilih Kota Tujuan',
+      { title: 'Future Ready Board', slug: 'simulasi-financial-readiness' },
+      'Hasil dan Rekomendasi',
+    ],
   },
 ];
 
@@ -125,7 +130,9 @@ async function main() {
       },
     });
 
-    for (const [index, moduleTitle] of programSeed.modules.entries()) {
+    for (const [index, moduleSeed] of programSeed.modules.entries()) {
+      const moduleTitle = typeof moduleSeed === 'string' ? moduleSeed : moduleSeed.title;
+      const moduleSlug = typeof moduleSeed === 'string' ? slugify(moduleSeed) : moduleSeed.slug;
       await prisma.programModule.upsert({
         where: {
           programId_order: {
@@ -135,19 +142,19 @@ async function main() {
         },
         update: {
           title: moduleTitle,
-          slug: slugify(moduleTitle),
+          slug: moduleSlug,
         },
         create: {
           programId: program.id,
           title: moduleTitle,
-          slug: slugify(moduleTitle),
+          slug: moduleSlug,
           order: index + 1,
         },
       });
     }
   }
 
-  console.log('Seed selesai. Sekolah demo: SMA Nusantara (slug: sma-nusantara)');
+  console.log('Seed selesai. Sekolah demo: SMA Nusantara Demo (slug: sma-nusantara-demo)');
 }
 
 main()

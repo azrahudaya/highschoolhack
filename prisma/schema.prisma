@@ -173,6 +173,7 @@ model ProgramEnrollment {
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   program   Program          @relation(fields: [programId], references: [id], onDelete: Cascade)
   progress  ModuleProgress[]
+  responses ModuleResponse[]
 
   @@unique([userId, schoolId, programId])
   @@index([schoolId, programId])
@@ -194,16 +195,19 @@ model ModuleProgress {
 }
 
 model ModuleResponse {
-  id        String        @id @default(cuid())
-  userId    String
-  moduleId  String
-  data      Json
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  module    ProgramModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String             @id @default(cuid())
+  userId       String
+  enrollmentId String?
+  moduleId     String
+  data         Json
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  enrollment   ProgramEnrollment? @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  module       ProgramModule      @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, moduleId])
+  @@unique([enrollmentId, moduleId])
+  @@index([userId, moduleId])
 }
 
 model TeacherNote {

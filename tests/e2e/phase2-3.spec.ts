@@ -44,6 +44,34 @@ test('Setting Goal dashboard renders real module shell', async ({ page }) => {
   await expect(page.getByRole('link', { name: /Buka modul/ })).toBeVisible();
 });
 
+test('Setting Goal dashboard explains locked modules with previous-module action', async ({ page }) => {
+  await mockStudent(page);
+  await page.route('**/api/student/programs/setting-goal', (route) => route.fulfill({
+    json: {
+      student: { name: 'Nadia', className: 'XI-1', grade: 11, schoolName: 'SMA Nusantara' },
+      program: {
+        slug: 'setting-goal',
+        title: 'Setting Goal',
+        description: 'Eksplorasi program studi dan karier.',
+        progressPercentage: 12,
+        completedCount: 1,
+        totalModules: 8,
+        currentModuleSlug: 'eksplorasi-program-studi',
+        modules: [
+          { id: 'sg1', slug: 'kenali-diriku', title: 'Kenali Diriku', order: 1, status: 'completed', completedAt: null },
+          { id: 'sg2', slug: 'eksplorasi-program-studi', title: 'Eksplorasi Program Studi', order: 2, status: 'locked', completedAt: null },
+        ],
+      },
+    },
+  }));
+
+  await page.goto('/app/programs/setting-goal');
+  await page.getByRole('button', { name: /Selesaikan tahap sebelumnya/ }).click();
+  await expect(page.getByRole('heading', { name: 'Modul Masih Terkunci' })).toBeVisible();
+  await expect(page.getByText('Modul 2: Eksplorasi Program Studi')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Ke Modul Sebelumnya' })).toHaveAttribute('href', '/app/programs/setting-goal/modules/kenali-diriku');
+});
+
 test('Setting Goal module autosaves choices', async ({ page }) => {
   await mockStudent(page);
   await page.route('**/api/student/programs/setting-goal/portfolio', (route) => route.fulfill({ json: { modules: [] } }));
@@ -128,11 +156,55 @@ test('Smart Financial scholarship portal and PDF portfolio entry points are avai
   await expect(page.getByRole('link', { name: /Unduh PDF/ })).toHaveAttribute('href', '/api/student/programs/smart-financial/portfolio.pdf');
 });
 
+test('student home dashboard highlights the grade recommended program', async ({ page }) => {
+  await mockStudent(page);
+  await page.route('**/api/student/programs/home', (route) => route.fulfill({
+    json: {
+      student: { name: 'Nadia', className: 'XII IPA 2', grade: 12, schoolName: 'SMA Nusantara' },
+      recommendedProgram: {
+        pathSlug: 'smart-financial',
+        title: 'Smart Financial',
+        gradeLabel: 'Kelas XII',
+        theme: 'Latih keputusan finansial sebelum hidup mandiri setelah lulus.',
+        accent: '#b45309',
+        portfolioPath: '/app/programs/smart-financial/portfolio',
+      },
+      program: {
+        slug: 'smart-financial',
+        title: 'Smart Financial',
+        description: 'Simulasi finansial.',
+        progressPercentage: 25,
+        completedCount: 1,
+        totalModules: 4,
+        currentModuleSlug: 'simulasi-financial-readiness',
+        modules: [
+          { id: 'sf1', slug: 'identitas-dan-target', title: 'Identitas dan Target', order: 1, status: 'completed', completedAt: null },
+          { id: 'sf3', slug: 'simulasi-financial-readiness', title: 'Future Ready Board', order: 3, status: 'in_progress', completedAt: null },
+        ],
+      },
+    },
+  }));
+
+  await page.goto('/app');
+  await expect(page.getByRole('heading', { name: 'Lanjutkan Smart Financial-mu.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Lanjutkan modul/ })).toHaveAttribute('href', '/app/programs/smart-financial/modules/simulasi-financial-readiness');
+  await expect(page.getByText('Program utama: Kelas XII')).toBeVisible();
+  await expect(page.getByText('Utama', { exact: true })).toBeVisible();
+});
+
 test('chatbot blocks sensitive student identifiers in the client', async ({ page }) => {
   await mockStudent(page);
-  await page.route('**/api/student/programs/bekal-10', (route) => route.fulfill({
+  await page.route('**/api/student/programs/home', (route) => route.fulfill({
     json: {
-      student: { name: 'Nadia', className: 'X-1', schoolName: 'SMA Nusantara' },
+      student: { name: 'Nadia', className: 'X-1', grade: 10, schoolName: 'SMA Nusantara' },
+      recommendedProgram: {
+        pathSlug: 'bekal-10',
+        title: 'Bekal 10',
+        gradeLabel: 'Kelas X',
+        theme: 'Demo',
+        accent: '#5b21b6',
+        portfolioPath: '/app/portfolio',
+      },
       program: { slug: 'bekal-10', title: 'Bekal 10', description: 'Demo', progressPercentage: 0, completedCount: 0, totalModules: 7, currentModuleSlug: null, modules: [] },
     },
   }));
@@ -140,7 +212,7 @@ test('chatbot blocks sensitive student identifiers in the client', async ({ page
   await page.goto('/app');
   await page.getByTitle('Buka Chatbot BK').click();
   await page.getByRole('button', { name: 'Saya paham dan lanjut' }).click();
-  await page.getByPlaceholder('Tulis pertanyaan umum...').fill('email saya nadia@example.com, bagaimana belajar?');
+  await page.getByPlaceholder('Tulis pertanyaan umum...').fill('nomor wa saya 0812-3456-7890, bagaimana belajar?');
   await page.getByTitle('Kirim').click();
   await expect(page.getByText('Jangan kirim NISN, email, nomor telepon, atau data pribadi ke chatbot.')).toBeVisible();
 });

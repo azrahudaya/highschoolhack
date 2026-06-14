@@ -128,7 +128,7 @@ router.get(
     }
 
     const response = await prisma.moduleResponse.findUnique({
-      where: { userId_moduleId: { userId: req.user!.id, moduleId: progress.moduleId } },
+      where: { enrollmentId_moduleId: { enrollmentId: context.enrollment.id, moduleId: progress.moduleId } },
     });
 
     res.json({
@@ -173,7 +173,7 @@ router.put(
       return;
     }
 
-    await saveModuleResponse(req.user!.id, progress.moduleId, payload.data as Prisma.InputJsonValue);
+    await saveModuleResponse(req.user!.id, context.enrollment.id, progress.moduleId, payload.data as Prisma.InputJsonValue);
     if (progress.status === ModuleStatus.not_started) {
       await prisma.moduleProgress.update({ where: { id: progress.id }, data: { status: ModuleStatus.in_progress } });
     }
@@ -211,7 +211,7 @@ router.post(
     }
 
     const stored = await prisma.moduleResponse.findUnique({
-      where: { userId_moduleId: { userId: req.user!.id, moduleId: progress.moduleId } },
+      where: { enrollmentId_moduleId: { enrollmentId: context.enrollment.id, moduleId: progress.moduleId } },
     });
     const rawData = stored?.data;
 
@@ -248,9 +248,9 @@ router.post(
 
     await prisma.$transaction(async (transaction) => {
       await transaction.moduleResponse.upsert({
-        where: { userId_moduleId: { userId: req.user!.id, moduleId: progress.moduleId } },
+        where: { enrollmentId_moduleId: { enrollmentId: context.enrollment.id, moduleId: progress.moduleId } },
         update: { data: finalData },
-        create: { userId: req.user!.id, moduleId: progress.moduleId, data: finalData },
+        create: { userId: req.user!.id, enrollmentId: context.enrollment.id, moduleId: progress.moduleId, data: finalData },
       });
       await transaction.moduleProgress.update({
         where: { id: progress.id },

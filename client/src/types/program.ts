@@ -4,6 +4,7 @@ export type StudentProgramDashboard = {
   student: {
     name: string;
     className: string | null;
+    grade?: number | null;
     schoolName: string;
   };
   program: {
@@ -22,6 +23,17 @@ export type StudentProgramDashboard = {
       status: ModuleStatus;
       completedAt: string | null;
     }>;
+  };
+};
+
+export type StudentHomeDashboard = StudentProgramDashboard & {
+  recommendedProgram: {
+    pathSlug: 'bekal-10' | 'setting-goal' | 'smart-financial';
+    title: string;
+    gradeLabel: string;
+    theme: string;
+    accent: string;
+    portfolioPath: string;
   };
 };
 

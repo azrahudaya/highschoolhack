@@ -4,6 +4,7 @@ import { env } from '../config/env';
 import { asyncHandler } from '../middleware/async-handler';
 import { requireAuth } from '../middleware/auth';
 import { createRateLimit } from '../middleware/rate-limit';
+import { containsSensitiveStudentData } from '../utils/sensitive-data';
 
 const router = Router();
 
@@ -18,10 +19,6 @@ const chatbotRateLimit = createRateLimit({
   windowMs: 60_000,
   message: 'Terlalu banyak pesan dalam waktu singkat. Tunggu sebentar sebelum bertanya lagi.',
 });
-
-function containsSensitiveStudentData(message: string) {
-  return /\b\d{10,}\b/.test(message) || /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(message);
-}
 
 function fallbackAnswer(message: string) {
   const lower = message.toLowerCase();

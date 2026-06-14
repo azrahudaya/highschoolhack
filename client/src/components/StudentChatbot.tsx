@@ -1,6 +1,7 @@
 import { Bot, LoaderCircle, Send, X } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { api } from '../lib/api';
+import { hasSensitiveStudentData } from '../lib/sensitive-data';
 
 type ChatMessage = {
   role: 'user' | 'assistant';
@@ -13,10 +14,6 @@ const quickPrompts = [
   'Cara belajar apa yang cocok kalau aku cepat bosan?',
   'Apa yang harus aku diskusikan dengan Guru BK?',
 ];
-
-function hasSensitiveData(value: string) {
-  return /\b\d{10,}\b/.test(value) || /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(value);
-}
 
 export function StudentChatbot() {
   const [open, setOpen] = useState(false);
@@ -34,7 +31,7 @@ export function StudentChatbot() {
   async function sendMessage(value: string) {
     const message = value.trim();
     if (!message || sending) return;
-    if (hasSensitiveData(message)) {
+    if (hasSensitiveStudentData(message)) {
       setError('Jangan kirim NISN, email, nomor telepon, atau data pribadi ke chatbot.');
       return;
     }

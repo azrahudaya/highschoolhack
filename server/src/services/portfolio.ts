@@ -34,10 +34,12 @@ export async function buildStudentPortfolio(userId: string, schoolId: string, op
     where: { userId_schoolId_programId: { userId, schoolId, programId: program.id } },
     include: { progress: { include: { module: true }, orderBy: { module: { order: 'asc' } } } },
   });
-  const responses = await prisma.moduleResponse.findMany({
-    where: { userId, module: { programId: program.id } },
-    include: { module: true },
-  });
+  const responses = enrollment
+    ? await prisma.moduleResponse.findMany({
+      where: { enrollmentId: enrollment.id },
+      include: { module: true },
+    })
+    : [];
   const responseByModule = new Map(responses.map((response) => [response.moduleId, jsonObject(response.data)]));
   const progressByModule = new Map(enrollment?.progress.map((item) => [item.moduleId, item]));
   const completedCount = enrollment?.progress.filter((item) => item.status === ModuleStatus.completed).length ?? 0;

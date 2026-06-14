@@ -20,6 +20,7 @@ import { schoolsRouter } from './routes/schools';
 import { studentProgramsRouter } from './routes/student-programs';
 import { teacherBekal10Router } from './routes/teacher-bekal10';
 import { teacherProgramsRouter } from './routes/teacher-programs';
+import { originProtection } from './middleware/origin-protection';
 
 export function createApp() {
   const app = express();
@@ -39,6 +40,7 @@ export function createApp() {
   app.use(createSessionMiddleware());
   app.use(passport.initialize());
   app.use(passport.session());
+  app.use(originProtection);
 
   app.get('/api/health', (_req, res) => {
     res.json({

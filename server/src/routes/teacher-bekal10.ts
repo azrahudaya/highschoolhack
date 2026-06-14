@@ -58,16 +58,16 @@ router.get(
       prisma.studentProfile.findMany({ where: { schoolId }, include: { class: true } }),
     ]);
     const allUserIds = allProfiles.map((profile) => profile.userId);
-    const [enrollments, responses] = await Promise.all([
-      prisma.programEnrollment.findMany({
-        where: { schoolId, programId: program.id },
-        include: { progress: true },
-      }),
-      prisma.moduleResponse.findMany({
-        where: { userId: { in: allUserIds }, module: { programId: program.id } },
+    const enrollments = await prisma.programEnrollment.findMany({
+      where: { schoolId, programId: program.id, userId: { in: allUserIds } },
+      include: { progress: true },
+    });
+    const responses = enrollments.length
+      ? await prisma.moduleResponse.findMany({
+        where: { enrollmentId: { in: enrollments.map((enrollment) => enrollment.id) } },
         include: { module: true },
-      }),
-    ]);
+      })
+      : [];
     const enrollmentByUser = new Map(enrollments.map((enrollment) => [enrollment.userId, enrollment]));
     const completedTotal = enrollments.reduce((sum, enrollment) => sum + enrollment.progress.filter((item) => item.status === ModuleStatus.completed).length, 0);
     const averageProgress = allProfiles.length ? Math.round((completedTotal / (allProfiles.length * totalModules)) * 100) : 0;

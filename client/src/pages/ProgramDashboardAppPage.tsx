@@ -1,5 +1,5 @@
-import { ArrowRight, CheckCircle2, LockKeyhole, PlayCircle } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ArrowRight, CheckCircle2, LockKeyhole, PlayCircle, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { StudentAppLayout } from '../components/StudentAppLayout';
 import { workflows } from '../data/program-workflows';
@@ -19,11 +19,17 @@ export function ProgramDashboardAppPage() {
   const workflow = workflows[programSlug as keyof typeof workflows];
   const [dashboard, setDashboard] = useState<StudentProgramDashboard | null>(null);
   const [error, setError] = useState('');
+  const [lockedModule, setLockedModule] = useState<{ title: string; order: number } | null>(null);
 
   useEffect(() => {
     if (!workflow) return;
     api<StudentProgramDashboard>(`/api/student/programs/${workflow.programSlug}`).then(setDashboard).catch((requestError: Error) => setError(requestError.message));
   }, [workflow]);
+
+  const previousModuleSlug = useMemo(() => {
+    if (!lockedModule || !dashboard) return null;
+    return dashboard.program.modules.find((module) => module.order === lockedModule.order - 1)?.slug ?? null;
+  }, [dashboard, lockedModule]);
 
   if (!workflow) return <Navigate to="/app" replace />;
 
@@ -64,12 +70,35 @@ export function ProgramDashboardAppPage() {
                   <Link className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700" to={`/app/programs/${workflow.programSlug}/modules/${module.slug}`}>
                     {module.status === 'completed' ? 'Lihat kembali' : 'Buka modul'} <ArrowRight className="size-4" />
                   </Link>
-                ) : <span className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-slate-400"><LockKeyhole className="size-4" /> Selesaikan tahap sebelumnya</span>}
+                ) : (
+                  <button className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm text-slate-400 hover:bg-slate-50" onClick={() => setLockedModule({ title: module.title, order: module.order })} type="button">
+                    <LockKeyhole className="size-4" /> Selesaikan tahap sebelumnya
+                  </button>
+                )}
               </article>
             );
           })}
         </section>
       </div>
+
+      {lockedModule && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 px-5">
+          <div className="w-full max-w-md rounded-lg bg-white p-5 shadow-xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-[#101b3f]">Modul Masih Terkunci</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">Selesaikan tahap sebelumnya terlebih dahulu agar modul ini terbuka.</p>
+              </div>
+              <button className="grid size-8 place-items-center rounded-lg text-slate-400 hover:bg-slate-100" onClick={() => setLockedModule(null)} title="Tutup" type="button"><X className="size-4" /></button>
+            </div>
+            <p className="mt-4 rounded-lg bg-slate-50 p-3 text-sm font-semibold text-slate-700">Modul {lockedModule.order}: {lockedModule.title}</p>
+            <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-end">
+              <button className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700" onClick={() => setLockedModule(null)} type="button">Kembali</button>
+              <Link className="rounded-lg bg-[#101b3f] px-4 py-2.5 text-center text-sm font-semibold text-white" onClick={() => setLockedModule(null)} to={previousModuleSlug ? `/app/programs/${workflow.programSlug}/modules/${previousModuleSlug}` : `/app/programs/${workflow.programSlug}`}>Ke Modul Sebelumnya</Link>
+            </div>
+          </div>
+        </div>
+      )}
     </StudentAppLayout>
   );
 }

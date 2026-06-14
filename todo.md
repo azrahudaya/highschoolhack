@@ -1,6 +1,6 @@
 # HighschoolHack Todo
 
-Updated: 2026-06-13
+Updated: 2026-06-14
 
 Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highschoolhack-technical-plan.md`, current React + Express + Prisma implementation.
 
@@ -103,13 +103,86 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 
 - [x] `npm.cmd run build`
 - [x] `npm.cmd run test:e2e`
-- [x] 80 Playwright tests passed across desktop and mobile Chromium.
+- [x] 84 Playwright tests passed across desktop and mobile Chromium.
+- [x] `npm.cmd audit --omit=dev --audit-level=high`
+- [x] 0 production dependency vulnerabilities after `npm audit fix`.
+
+## Audit 2026-06-14
+
+### P0 - Data Integrity and Access Control
+
+- [ ] Add active school/class context instead of always using the first membership. Current student, teacher, and admin flows can pick the wrong school when one user has multiple memberships.
+- [x] Scope `ModuleResponse` by school/enrollment, not only `userId + moduleId`, so the same student cannot accidentally share answers across different schools or repeated enrollments.
+- [x] Add backend validation schemas per module for Setting Goal and Smart Financial. Generic payload validation can mark modules complete even when required fields are still shallow or default-only.
+- [x] Decide and enforce completed-module edit behavior for Setting Goal and Smart Financial. Current generic modules are still editable after completion, while Bekal 10 is read-only.
+- [ ] Add backend permission tests for cross-school isolation: student, teacher BK, school admin, and super admin.
+
+### P0 - Production Security and Stability
+
+- [x] Fix npm package tree / package-lock health so `npm audit --omit=dev --audit-level=high` can run successfully.
+- [x] Resolve the high-severity dependency warning shown during Heroku deploy before school pilot.
+- [x] Add CSRF or strict origin protection for cookie-authenticated state-changing routes.
+- [x] Strengthen chatbot PII guard for Indonesian phone formats with spaces/dashes, addresses, NISN variants, and pasted student identity text.
+- [ ] Add password reset, email verification, and clearer Google/email account-linking behavior before inviting real schools.
+- [ ] Add Sentry or equivalent error monitoring, structured logs, and log redaction for auth, onboarding, module save, PDF export, and chatbot errors.
+- [ ] Add Heroku Postgres backup/restore runbook and confirm automated backups before pilot.
+
+### P1 - UX Bugs and Product Fit
+
+- [x] Make the student dashboard grade-aware. A class XII student should land on Smart Financial by default, class XI on Setting Goal, and class X on Bekal 10.
+- [ ] Add school/role switcher for users who belong to multiple schools or roles.
+- [x] Add a clearer locked-module experience with a direct back/go-to-previous-module action.
+- [ ] Add autosave timestamp, retry state, and navigation guard for Setting Goal and Smart Financial, matching the Bekal 10 safety feel.
+- [x] Remove or route stale `PortalPage.tsx` protected shell code from Phase 0C.
+- [ ] Refactor very large JSX blocks in `ProgramModuleAppPage`, `Bekal10AdvancedModules`, and `AdminSchoolPage` into smaller components before adding more feature depth.
+
+### P1 - Prompt/PRD Feature Gaps
+
+- [ ] Expand Setting Goal with a real study-program reference database: what is studied, supporting subjects, skills, career paths, and campus examples.
+- [ ] Expand Setting Goal with a career reference database: job description, competencies, education path, prospects, and suggested majors.
+- [ ] Upgrade Setting Goal gap analysis into a real current-vs-target table with recommended actions.
+- [ ] Upgrade Setting Goal action planning into an interactive calendar/board with P1-P4 priorities and multiple action items.
+- [ ] Add recurring reflection/journal history for Setting Goal.
+- [ ] Expand Smart Financial city database beyond the MVP cities, with source and last-updated date.
+- [ ] Replace Smart Financial city select with search/autocomplete.
+- [ ] Make Future Ready Board closer to the prompt/reference: 3 choices per step, randomized emergency events, stronger consequence narration, and clearer end-state summary.
+- [ ] Add Smart Financial fields that are still missing from the reference flow: nickname, school, class, city origin, and interest/major target.
+- [ ] Expand scholarship portal with deadlines, coverage, country/region, eligibility, status, and last-verified date.
+- [ ] Decide whether leaderboard should ship. If yes, design it carefully so it motivates without exposing sensitive student ranking.
+- [ ] Add Guru BK detailed analytics for Setting Goal and Smart Financial: distributions, high-risk students, popular cities, targets, and class progress.
+- [ ] Add school report export for Guru BK/admin, including CSV/XLSX and PDF summary.
+
+### P1 - Portfolio and PDF Quality
+
+- [ ] Replace the simple one-page PDF writer with a multi-page PDF renderer. Current PDF can silently truncate long content.
+- [ ] Add cover, student profile, school/class, date, score summary, recommendation, conclusion, and QR code to Smart Financial PDF as described in the prompt.
+- [ ] Verify A4 print/export visually on mobile and desktop for Bekal 10, Setting Goal, and Smart Financial.
+- [ ] Add automated PDF content tests so key answers and recommendations are not missing from exports.
+
+### P2 - Content and Operations
+
+- [ ] Add content freshness process for articles, scholarship links, city costs, majors, careers, and external references.
+- [ ] Add admin content management or a safer structured data workflow so articles/program references are not hardcoded forever.
+- [ ] Add school-level feature flags: enable/disable programs, chatbot, scholarships, and experimental modules per school.
+- [ ] Add data retention, data export, and student data deletion workflows aligned with the public privacy page.
+- [x] Fix seed consistency: Smart Financial module title should match `Future Ready Board`, and seed log should print the actual demo school slug.
+
+### Testing Debt From Audit
+
+- [ ] Add unit tests for school/class find-or-create normalization.
+- [ ] Add duplicate NISN conflict test.
+- [ ] Add backend tests for chatbot sensitive-data guard.
+- [ ] Add backend tests for module completion validation and completed-module edit rules.
+- [ ] Add backend tests for PDF export content and long-response behavior.
+- [ ] Add visual regression screenshots for home, articles, onboarding, dashboards, module results, and portfolio print.
+- [ ] Add load/performance test data for teacher/admin dashboards with hundreds of students.
+- [ ] Add production logged-in smoke checklist for `https://highschoolhack.my.id` after every deploy.
 
 ## Remaining Before Production Pilot
 
 ### Deploy and Config
 
-- [x] Run `npm run prisma:deploy` on Heroku after pushing the new migration.
+- [ ] Push and deploy current audit-fix changes, then run `npm run prisma:deploy` on Heroku for migration `20260614000000_scope_module_response_by_enrollment`.
 - [ ] Set Heroku config vars:
   - `DEEPSEEK_API_KEY`
   - `DEEPSEEK_BASE_URL=https://api.deepseek.com`
@@ -149,4 +222,4 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 
 ## Next Phase
 
-The next phase should be **Production Hardening and Heroku Deploy**, not more feature expansion. The product now has enough feature surface for a serious demo; adding more features before deploy will increase risk faster than it increases product quality.
+The next phase should be **Audit Fix Sprint and Pilot Readiness**, not new feature expansion. The product now has enough feature surface for a serious demo; the highest-value work is fixing data isolation, validation, security, PDF quality, and production smoke checks before inviting real schools.

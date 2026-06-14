@@ -5,7 +5,7 @@ import { cityCosts, scholarships } from '../data/smart-financial';
 import { prisma } from '../db/prisma';
 import { asyncHandler } from '../middleware/async-handler';
 import { requireRole } from '../middleware/auth';
-import { ensureProgramEnrollment, saveModuleResponse } from '../services/bekal10';
+import { ensureProgramEnrollment, getStudentContext, saveModuleResponse } from '../services/bekal10';
 import { createSimplePdf, currency as pdfCurrency } from '../services/simple-pdf';
 
 const router = Router();
@@ -17,6 +17,125 @@ const autosaveSchema = z.object({
 const supportedPrograms: Record<string, ProgramSlug> = {
   'setting-goal': ProgramSlug.setting_goal,
   'smart-financial': ProgramSlug.smart_financial,
+};
+
+const programMeta = {
+  [ProgramSlug.bekal_10]: {
+    pathSlug: 'bekal-10',
+    title: 'Bekal 10',
+    gradeLabel: 'Kelas X',
+    theme: 'Adaptasi SMA, potensi diri, target akademik, dan portofolio awal.',
+    accent: '#5b21b6',
+    portfolioPath: '/app/portfolio',
+  },
+  [ProgramSlug.setting_goal]: {
+    pathSlug: 'setting-goal',
+    title: 'Setting Goal',
+    gradeLabel: 'Kelas XI',
+    theme: 'Rancang pilihan jurusan, karier, dan langkah nyata sejak kelas XI.',
+    accent: '#087f5b',
+    portfolioPath: '/app/programs/setting-goal/portfolio',
+  },
+  [ProgramSlug.smart_financial]: {
+    pathSlug: 'smart-financial',
+    title: 'Smart Financial',
+    gradeLabel: 'Kelas XII',
+    theme: 'Latih keputusan finansial sebelum hidup mandiri setelah lulus.',
+    accent: '#b45309',
+    portfolioPath: '/app/programs/smart-financial/portfolio',
+  },
+} as const;
+
+function pathSlugForProgram(slug: ProgramSlug) {
+  return programMeta[slug].pathSlug;
+}
+
+function recommendedProgramForGrade(grade: number | null | undefined) {
+  if (grade === 12) return ProgramSlug.smart_financial;
+  if (grade === 11) return ProgramSlug.setting_goal;
+  return ProgramSlug.bekal_10;
+}
+
+const requiredText = z.string().trim().min(10);
+const requiredShortText = z.string().trim().min(2);
+const requiredStringArray = z.array(z.string().trim().min(1)).min(1);
+const requiredNumber = z.preprocess((value) => value === '' ? undefined : value, z.coerce.number().min(0));
+const requiredRange = (min: number, max: number) => z.preprocess((value) => value === '' ? undefined : value, z.coerce.number().min(min).max(max));
+const requiredSimulationStepIds = ['target', 'housing', 'food', 'transport', 'books', 'laundry', 'phone', 'organization', 'emergency', 'side-income', 'review', 'ready'];
+const requiredSimulationDecisions = z.record(z.string(), z.string()).refine(
+  (value) => requiredSimulationStepIds.every((stepId) => typeof value[stepId] === 'string' && value[stepId].trim().length > 0),
+  { message: 'Pilih satu keputusan pada semua 12 langkah simulasi.' },
+);
+
+const moduleCompletionSchemas: Record<string, Record<string, z.ZodTypeAny>> = {
+  'setting-goal': {
+    'kenali-diriku': z.object({
+      strengths: requiredStringArray,
+      values: requiredStringArray,
+      selfNarrative: requiredText,
+    }).passthrough(),
+    'eksplorasi-program-studi': z.object({
+      studyPrograms: requiredStringArray,
+      programReason: requiredText,
+      proofToFind: requiredText,
+    }).passthrough(),
+    'eksplorasi-karier': z.object({
+      careerOptions: requiredStringArray,
+      careerActivities: requiredText,
+      skillsNeeded: requiredStringArray,
+    }).passthrough(),
+    'mata-pelajaran-pendukung': z.object({
+      supportSubjects: requiredStringArray,
+      currentGap: requiredText,
+      supportPlan: requiredText,
+    }).passthrough(),
+    'goal-setting': z.object({
+      smartSpecific: requiredText,
+      smartMeasurable: requiredText,
+      smartDeadline: requiredShortText,
+      goalConfidence: requiredRange(1, 5),
+    }).passthrough(),
+    'rencana-aksi': z.object({
+      priorityOne: requiredText,
+      priorityTwo: requiredText,
+      calendarPlan: requiredText,
+    }).passthrough(),
+    'dashboard-perkembangan': z.object({
+      progress: requiredRange(0, 100),
+      blockers: requiredStringArray,
+      nextCheckpoint: requiredShortText,
+    }).passthrough(),
+    refleksi: z.object({
+      bestInsight: requiredText,
+      decision: requiredText,
+      supportNeeded: requiredText,
+    }).passthrough(),
+  },
+  'smart-financial': {
+    'identitas-dan-target': z.object({
+      afterGraduationTarget: requiredShortText,
+      monthlyAllowance: requiredNumber,
+      currentSavings: requiredNumber,
+      emergencyFund: requiredNumber,
+      financialConcern: requiredText,
+    }).passthrough(),
+    'pilih-kota-tujuan': z.object({
+      destinationCity: requiredShortText,
+      livingStrategy: requiredShortText,
+      costNotes: requiredText,
+    }).passthrough(),
+    'simulasi-financial-readiness': z.object({
+      monthlySavingPlan: requiredNumber,
+      simulationDecisions: requiredSimulationDecisions,
+      simulationReflection: requiredText,
+    }).passthrough(),
+    'hasil-dan-rekomendasi': z.object({
+      academicRecommendation: requiredText,
+      careerRecommendation: requiredText,
+      financialRecommendation: requiredText,
+      socialRecommendation: requiredText,
+    }).passthrough(),
+  },
 };
 
 function resolveProgramSlug(value: string) {
@@ -34,10 +153,11 @@ function serializeDashboard(context: Awaited<ReturnType<typeof ensureProgramEnro
     student: {
       name: context.profile.fullName,
       className: context.profile.class?.name ?? null,
+      grade: context.profile.class?.grade ?? null,
       schoolName: context.membership.school.name,
     },
     program: {
-      slug: context.program.slug,
+      slug: pathSlugForProgram(context.program.slug),
       title: context.program.title,
       description: context.program.description,
       progressPercentage,
@@ -56,6 +176,13 @@ function serializeDashboard(context: Awaited<ReturnType<typeof ensureProgramEnro
   };
 }
 
+function serializeHomeDashboard(context: Awaited<ReturnType<typeof ensureProgramEnrollment>>) {
+  return {
+    ...serializeDashboard(context),
+    recommendedProgram: programMeta[context.program.slug],
+  };
+}
+
 function ensurePayloadHasContent(data: Record<string, unknown>) {
   const hasContent = Object.values(data).some((value) => {
     if (typeof value === 'string') return value.trim().length >= 2;
@@ -65,6 +192,13 @@ function ensurePayloadHasContent(data: Record<string, unknown>) {
     return false;
   });
   if (!hasContent) throw Object.assign(new Error('Isi modul terlebih dahulu sebelum menyelesaikannya.'), { statusCode: 400 });
+}
+
+function validateModuleCompletion(programSlug: string, moduleSlug: string, data: Record<string, unknown>) {
+  const schema = moduleCompletionSchemas[programSlug]?.[moduleSlug];
+  if (schema) return schema.parse(data) as Prisma.InputJsonValue;
+  ensurePayloadHasContent(data);
+  return data as Prisma.InputJsonValue;
 }
 
 function formatPdfValue(value: unknown) {
@@ -82,6 +216,15 @@ router.get('/smart-financial/cities', (_req, res) => {
 });
 
 router.get(
+  '/home',
+  asyncHandler(async (req, res) => {
+    const { profile } = await getStudentContext(req.user!.id);
+    const context = await ensureProgramEnrollment(req.user!.id, recommendedProgramForGrade(profile.class?.grade));
+    res.json(serializeHomeDashboard(context));
+  }),
+);
+
+router.get(
   '/:programSlug',
   asyncHandler(async (req, res) => {
     const programSlug = z.string().min(1).parse(req.params.programSlug);
@@ -96,7 +239,7 @@ router.get(
     const programSlug = z.string().min(1).parse(req.params.programSlug);
     const context = await ensureProgramEnrollment(req.user!.id, resolveProgramSlug(programSlug));
     const responses = await prisma.moduleResponse.findMany({
-      where: { userId: req.user!.id, module: { programId: context.program.id } },
+      where: { enrollmentId: context.enrollment.id },
       include: { module: true },
     });
     const responseByModuleId = new Map(responses.map((response) => [response.moduleId, response]));
@@ -131,7 +274,7 @@ router.get(
     const programSlug = z.string().min(1).parse(req.params.programSlug);
     const context = await ensureProgramEnrollment(req.user!.id, resolveProgramSlug(programSlug));
     const responses = await prisma.moduleResponse.findMany({
-      where: { userId: req.user!.id, module: { programId: context.program.id } },
+      where: { enrollmentId: context.enrollment.id },
       include: { module: true },
     });
     const modules = context.progress.map((item) => ({
@@ -231,7 +374,7 @@ router.get(
     }
 
     const response = await prisma.moduleResponse.findUnique({
-      where: { userId_moduleId: { userId: req.user!.id, moduleId: progress.moduleId } },
+      where: { enrollmentId_moduleId: { enrollmentId: context.enrollment.id, moduleId: progress.moduleId } },
     });
 
     res.json({
@@ -267,7 +410,12 @@ router.put(
       return;
     }
 
-    await saveModuleResponse(req.user!.id, progress.moduleId, payload.data as Prisma.InputJsonValue);
+    if (progress.status === ModuleStatus.completed) {
+      res.status(409).json({ error: 'ModuleCompleted', message: 'Modul yang sudah selesai hanya dapat dilihat kembali.' });
+      return;
+    }
+
+    await saveModuleResponse(req.user!.id, context.enrollment.id, progress.moduleId, payload.data as Prisma.InputJsonValue);
     if (progress.status === ModuleStatus.not_started) {
       await prisma.moduleProgress.update({ where: { id: progress.id }, data: { status: ModuleStatus.in_progress } });
     }
@@ -295,8 +443,13 @@ router.post(
       return;
     }
 
+    if (progress.status === ModuleStatus.completed) {
+      res.json(serializeDashboard(context));
+      return;
+    }
+
     const stored = await prisma.moduleResponse.findUnique({
-      where: { userId_moduleId: { userId: req.user!.id, moduleId: progress.moduleId } },
+      where: { enrollmentId_moduleId: { enrollmentId: context.enrollment.id, moduleId: progress.moduleId } },
     });
 
     if (!stored?.data || typeof stored.data !== 'object' || Array.isArray(stored.data)) {
@@ -304,9 +457,14 @@ router.post(
       return;
     }
 
-    ensurePayloadHasContent(stored.data as Record<string, unknown>);
+    const finalData = validateModuleCompletion(programSlug, moduleSlug, stored.data as Record<string, unknown>);
 
     await prisma.$transaction(async (transaction) => {
+      await transaction.moduleResponse.upsert({
+        where: { enrollmentId_moduleId: { enrollmentId: context.enrollment.id, moduleId: progress.moduleId } },
+        update: { data: finalData },
+        create: { userId: req.user!.id, enrollmentId: context.enrollment.id, moduleId: progress.moduleId, data: finalData },
+      });
       await transaction.moduleProgress.update({
         where: { id: progress.id },
         data: { status: ModuleStatus.completed, completedAt: new Date() },
