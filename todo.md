@@ -192,7 +192,7 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 - [ ] Verify Google OAuth sign-in on:
   - `https://highschoolhack.my.id`
   - `https://www.highschoolhack.my.id`
-- [ ] Resolve duplicate Heroku PostgreSQL add-on. Current app has `DATABASE` and `HEROKU_POSTGRESQL_SILVER`, both `essential-0`.
+- [x] Resolve duplicate Heroku PostgreSQL add-on. Production now only has `DATABASE` / `postgresql-objective-97839`.
 - [x] Run production HTTP smoke test after deploy: health, public page, auth config.
 - [ ] Run production logged-in smoke test after deploy: register/login, onboarding, one module autosave, admin page, chatbot fallback/API response.
 
