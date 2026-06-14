@@ -108,6 +108,7 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 - [x] 0 production dependency vulnerabilities after `npm audit fix`.
 - [x] Heroku release `v24` deployed from commit `b320c20`.
 - [x] Heroku release command applied migration `20260614000000_scope_module_response_by_enrollment`.
+- [x] Production logged-in smoke test passed on `https://highschoolhack.my.id` with Smart Financial PDF export artifact.
 
 ## Audit 2026-06-14
 
@@ -194,7 +195,7 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
   - `https://www.highschoolhack.my.id`
 - [x] Resolve duplicate Heroku PostgreSQL add-on. Production now only has `DATABASE` / `postgresql-objective-97839`.
 - [x] Run production HTTP smoke test after deploy: health, public page, auth config.
-- [ ] Run production logged-in smoke test after deploy: register/login, onboarding, one module autosave, admin page, chatbot fallback/API response.
+- [x] Run production logged-in smoke test after deploy: register/login, onboarding, one module autosave, Smart Financial completion, portfolio PDF export, chatbot PII guard.
 
 ### Data Privacy and AI Safety
 
