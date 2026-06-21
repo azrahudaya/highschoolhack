@@ -2,7 +2,6 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpenCheck,
-  Check,
   CheckCircle2,
   CircleAlert,
   LoaderCircle,
@@ -14,27 +13,14 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Cell, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { StudentAppLayout } from '../components/StudentAppLayout';
 import { advancedInitialBySlug, Bekal10AdvancedModule, type AdvancedModuleData } from '../components/Bekal10AdvancedModules';
+import { ModuleOne, moduleOneInitial, type ModuleOneData } from '../components/Bekal10ModuleOne';
+import { categoryHex, moduleDescriptions, revisableSlugs, riasecProfiles, varkProfiles } from '../data/bekal10-module';
 import { api } from '../lib/api';
 import type { Bekal10ModuleResponse, RiasecCategory, VarkCategory } from '../types/bekal10';
 
 type SaveState = 'idle' | 'dirty' | 'saving' | 'saved' | 'error';
 type UpdateData = (key: string, value: unknown) => void;
 type AnyModuleData = ModuleOneData | ModuleTwoData | AdvancedModuleData;
-
-type ModuleOneData = {
-  learningEnvironment: string;
-  preferredStudyPlaces: string[];
-  studyCompany: string;
-  excitement: string[];
-  challenges: string[];
-  friendRelation: number;
-  teacherRelation: number;
-  improvements: string[];
-  reflectionExperience: string;
-  reflectionChallenge: string;
-  reflectionStrategy: string;
-  targets: string[];
-};
 
 type ModuleTwoData = {
   riasecAnswers: Record<string, number>;
@@ -57,21 +43,6 @@ type ModuleTwoData = {
 type ModuleTwoResults = NonNullable<ModuleTwoData['results']>;
 type ModuleTwoConfig = NonNullable<Bekal10ModuleResponse['config']>;
 
-const moduleOneInitial: ModuleOneData = {
-  learningEnvironment: '',
-  preferredStudyPlaces: [],
-  studyCompany: '',
-  excitement: [],
-  challenges: [],
-  friendRelation: 3,
-  teacherRelation: 3,
-  improvements: [],
-  reflectionExperience: '',
-  reflectionChallenge: '',
-  reflectionStrategy: '',
-  targets: [],
-};
-
 const moduleTwoInitial: ModuleTwoData = {
   riasecAnswers: {},
   varkAnswers: {},
@@ -79,98 +50,6 @@ const moduleTwoInitial: ModuleTwoData = {
   favoriteActivities: '',
   developmentWish: '',
   selfInsight: '',
-};
-
-const excitementOptions = ['Pelajaran baru', 'Teman baru', 'Kegiatan sekolah', 'Guru baru', 'Lebih mandiri', 'Mencoba hal baru'];
-const challengeOptions = ['Mengatur waktu', 'Beradaptasi', 'Memahami pelajaran', 'Berani bertanya', 'Membangun pertemanan', 'Menjaga motivasi'];
-const improvementOptions = ['Disiplin belajar', 'Percaya diri', 'Komunikasi', 'Manajemen waktu', 'Kerja sama', 'Konsistensi'];
-const targetOptions = ['Mengenal lingkungan sekolah', 'Punya rutinitas belajar', 'Aktif di kelas', 'Menemukan kegiatan yang disukai', 'Menambah teman', 'Lebih berani mencoba'];
-const indoorStudyPlaces = ['Kelas', 'Perpustakaan', 'Ruang belajar rumah', 'Laboratorium', 'Ruang BK'];
-const outdoorStudyPlaces = ['Taman sekolah', 'Lapangan', 'Kantin saat diskusi', 'Kegiatan lapangan', 'Komunitas luar sekolah'];
-const relationLabels = ['Sangat sulit', 'Sulit', 'Cukup', 'Baik', 'Sangat baik'];
-const categoryHex: Record<RiasecCategory | VarkCategory, string> = {
-  R: '#f59e0b',
-  I: '#3b82f6',
-  A: '#d946ef',
-  S: '#10b981',
-  E: '#f97316',
-  C: '#0891b2',
-  V: '#3b82f6',
-  K: '#f59e0b',
-};
-const revisableSlugs = new Set(['vision-board-sma-ku', 'target-pengembangan-diri']);
-const moduleDescriptions: Record<string, string> = {
-  'langkah-awalku-di-sma': 'Petakan pengalaman awalmu dan tentukan langkah kecil untuk beradaptasi.',
-  'mengenal-diriku-lebih-dekat': 'Kenali kecenderungan minat serta preferensi belajarmu melalui refleksi terarah.',
-  'vision-board-sma-ku': 'Susun gambaran tujuan, kegiatan, dan harapanmu selama SMA.',
-  'target-pengembangan-diri': 'Ubah area pengembangan pilihanmu menjadi SMART goal yang dapat dipantau.',
-  'belajar-dari-perjalanan': 'Tarik kekuatan dan pelajaran dari pengalaman yang sudah kamu lalui.',
-  'merancang-target-prestasi': 'Petakan prioritas pelajaran dan strategi untuk target akademik semester.',
-  'komitmen-akademikku': 'Tutup perjalanan Bekal 10 dengan kontrak belajar yang konkret.',
-};
-
-const riasecProfiles: Record<RiasecCategory, { summary: string; strengths: string; majors: string[]; careers: string[]; nextStep: string }> = {
-  R: {
-    summary: 'Realistic menunjukkan ketertarikan pada kegiatan praktik, alat, benda nyata, aktivitas lapangan, dan hasil yang bisa terlihat langsung.',
-    strengths: 'Kuat di praktik langsung, observasi konkret, ketahanan kerja, dan menyelesaikan tugas yang punya bentuk nyata.',
-    majors: ['Teknik', 'Vokasi/terapan', 'Arsitektur', 'Pertanian', 'Ilmu olahraga'],
-    careers: ['Engineer', 'Teknisi', 'Arsitek', 'Desainer produk', 'Analis lapangan'],
-    nextStep: 'Coba ikut proyek praktik, eksperimen, kegiatan lapangan, atau membuat karya fisik/digital sederhana.',
-  },
-  I: {
-    summary: 'Investigative menunjukkan minat pada analisis, riset, eksperimen, data, dan mencari alasan di balik suatu masalah.',
-    strengths: 'Kuat di berpikir kritis, membaca pola, bertanya mendalam, dan membandingkan bukti sebelum mengambil kesimpulan.',
-    majors: ['Sains', 'Kedokteran', 'Informatika', 'Data science', 'Psikologi riset'],
-    careers: ['Peneliti', 'Data analyst', 'Dokter', 'Analis laboratorium', 'Software engineer'],
-    nextStep: 'Coba proyek riset kecil, membaca sumber tepercaya, eksperimen, atau diskusi berbasis data.',
-  },
-  A: {
-    summary: 'Artistic menunjukkan minat pada ekspresi ide, desain, cerita, visual, musik, tulisan, dan cara baru menyelesaikan sesuatu.',
-    strengths: 'Kuat di imajinasi, orisinalitas, komunikasi visual, bercerita, dan melihat kemungkinan yang belum terpikir orang lain.',
-    majors: ['DKV', 'Desain produk', 'Seni', 'Sastra', 'Ilmu komunikasi'],
-    careers: ['Desainer', 'Penulis', 'Content creator', 'Illustrator', 'Creative strategist'],
-    nextStep: 'Coba membuat portofolio kecil berisi desain, tulisan, video, musik, presentasi, atau karya kreatif lain.',
-  },
-  S: {
-    summary: 'Social menunjukkan minat membantu, mengajar, mendampingi, mendengarkan, dan membuat orang lain berkembang.',
-    strengths: 'Kuat di empati, komunikasi, kerja kelompok, mentoring, dan membaca kebutuhan orang lain.',
-    majors: ['Pendidikan', 'Psikologi', 'Kesehatan masyarakat', 'Keperawatan', 'Konseling'],
-    careers: ['Guru', 'Konselor', 'HR', 'Pekerja sosial', 'Community officer'],
-    nextStep: 'Coba menjadi tutor sebaya, terlibat komunitas, organisasi pelayanan, atau kegiatan mentoring.',
-  },
-  E: {
-    summary: 'Enterprising menunjukkan minat memimpin, memengaruhi, menyusun strategi, bernegosiasi, dan menggerakkan orang.',
-    strengths: 'Kuat di inisiatif, keberanian mengambil keputusan, presentasi, persuasi, dan membangun peluang.',
-    majors: ['Manajemen', 'Bisnis', 'Ilmu komunikasi', 'Hukum', 'Hubungan internasional'],
-    careers: ['Entrepreneur', 'Project manager', 'Marketing strategist', 'Sales lead', 'Public relations'],
-    nextStep: 'Coba memimpin proyek kecil, membuat acara, latihan presentasi, debat, atau simulasi bisnis sederhana.',
-  },
-  C: {
-    summary: 'Conventional menunjukkan minat pada keteraturan, data, angka, administrasi, dokumen, prosedur, dan pekerjaan yang butuh ketelitian.',
-    strengths: 'Kuat di konsistensi, detail, membuat sistem rapi, mengelola data, mengikuti aturan, dan menjaga kualitas pekerjaan.',
-    majors: ['Akuntansi', 'Statistika', 'Administrasi bisnis', 'Sistem informasi', 'Perpajakan'],
-    careers: ['Akuntan', 'Auditor', 'Data administrator', 'Finance operations', 'Analis administrasi'],
-    nextStep: 'Coba membuat sistem catatan, spreadsheet sederhana, checklist proyek, atau dokumentasi kegiatan sekolah.',
-  },
-};
-
-const varkProfiles: Record<VarkCategory, { summary: string; strategies: string[] }> = {
-  V: {
-    summary: 'Visual berarti kamu lebih mudah menangkap hubungan antarkonsep lewat gambar, warna, diagram, peta konsep, dan tampilan terstruktur.',
-    strategies: ['Ubah catatan menjadi mind map atau flowchart.', 'Gunakan warna untuk menandai ide utama.', 'Cari diagram, infografik, atau video visual saat materi terasa abstrak.'],
-  },
-  A: {
-    summary: 'Aural berarti kamu terbantu oleh suara, penjelasan lisan, diskusi, tanya jawab, dan mengulang materi dengan berbicara.',
-    strategies: ['Jelaskan ulang materi dengan suara sendiri.', 'Belajar lewat diskusi atau tanya jawab.', 'Rekam rangkuman singkat lalu dengarkan kembali.'],
-  },
-  R: {
-    summary: 'Read/write berarti kamu nyaman memahami materi lewat teks, catatan, daftar, rangkuman, instruksi tertulis, dan kata kunci.',
-    strategies: ['Buat rangkuman satu halaman setelah belajar.', 'Susun daftar istilah dan contoh soal.', 'Baca instruksi/rubrik lalu tulis ulang dengan bahasamu sendiri.'],
-  },
-  K: {
-    summary: 'Kinesthetic berarti kamu lebih paham saat mencoba langsung, memakai contoh nyata, simulasi, latihan soal, atau proyek praktik.',
-    strategies: ['Mulai dari contoh soal atau studi kasus.', 'Gunakan simulasi, eksperimen, atau praktik kecil.', 'Hubungkan materi dengan pengalaman sehari-hari.'],
-  },
 };
 
 function mergeModuleData<T extends object>(initial: T, response: Record<string, unknown> | null): T {
@@ -189,44 +68,6 @@ function Section({ children, description, title }: { children: ReactNode; descri
 
 function FieldLabel({ children }: { children: ReactNode }) {
   return <span className="mb-2 block text-sm font-semibold text-slate-700">{children}</span>;
-}
-
-function ChoiceGrid({
-  disabled,
-  onChange,
-  options,
-  selected,
-}: {
-  disabled: boolean;
-  onChange: (value: string[]) => void;
-  options: string[];
-  selected: string[];
-}) {
-  function toggle(option: string) {
-    onChange(selected.includes(option) ? selected.filter((item) => item !== option) : [...selected, option]);
-  }
-
-  return (
-    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-      {options.map((option) => {
-        const active = selected.includes(option);
-        return (
-          <label
-            className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition ${
-              active ? 'border-violet-300 bg-violet-50 text-violet-900' : 'border-slate-200 bg-white text-slate-600'
-            } ${disabled ? 'cursor-default opacity-70' : 'hover:border-violet-300'}`}
-            key={option}
-          >
-            <input checked={active} className="sr-only" disabled={disabled} onChange={() => toggle(option)} type="checkbox" />
-            <span className={`grid size-5 shrink-0 place-items-center rounded border ${active ? 'border-violet-600 bg-violet-600 text-white' : 'border-slate-300'}`}>
-              {active && <Check className="size-3.5" />}
-            </span>
-            {option}
-          </label>
-        );
-      })}
-    </div>
-  );
 }
 
 function TextArea({
@@ -251,32 +92,6 @@ function TextArea({
   );
 }
 
-function ModuleOneSummary({ data }: { data: ModuleOneData }) {
-  const relationAverage = Math.round(((data.friendRelation + data.teacherRelation) / 2) * 10) / 10;
-  const mainChallenge = data.challenges[0] ?? 'Belum ada tantangan utama yang dipilih';
-  const support = [...data.excitement, ...data.improvements].slice(0, 3);
-  const recommendation = data.challenges.includes('Mengatur waktu')
-    ? 'Mulai dari jadwal belajar mingguan yang ringan dan evaluasi setiap akhir pekan.'
-    : data.challenges.includes('Membangun pertemanan')
-      ? 'Coba mulai dari satu interaksi kecil setiap hari, misalnya menyapa atau bertanya tugas.'
-      : data.challenges.includes('Berani bertanya')
-        ? 'Siapkan satu pertanyaan sebelum kelas selesai agar kamu lebih mudah meminta bantuan.'
-        : 'Pilih satu langkah kecil yang bisa dilakukan konsisten selama empat minggu pertama.';
-
-  return (
-    <section className="rounded-lg border border-emerald-200 bg-emerald-50 p-5">
-      <h2 className="text-lg font-semibold text-emerald-950">Ringkasan adaptasi awal</h2>
-      <div className="mt-4 grid gap-3 md:grid-cols-2">
-        <div className="rounded-lg bg-white p-4"><p className="text-xs font-semibold text-emerald-700">Profil adaptasi</p><p className="mt-1 text-sm leading-6 text-emerald-950">Relasi awal berada di skor {relationAverage}/5 dengan preferensi belajar {data.learningEnvironment || 'belum dipilih'}.</p></div>
-        <div className="rounded-lg bg-white p-4"><p className="text-xs font-semibold text-emerald-700">Tantangan utama</p><p className="mt-1 text-sm leading-6 text-emerald-950">{mainChallenge}</p></div>
-        <div className="rounded-lg bg-white p-4"><p className="text-xs font-semibold text-emerald-700">Faktor pendukung</p><p className="mt-1 text-sm leading-6 text-emerald-950">{support.length ? support.join(', ') : 'Belum tersedia'}</p></div>
-        <div className="rounded-lg bg-white p-4"><p className="text-xs font-semibold text-emerald-700">Rekomendasi adaptasi</p><p className="mt-1 text-sm leading-6 text-emerald-950">{recommendation}</p></div>
-      </div>
-      <p className="mt-4 rounded-lg bg-white p-4 text-sm leading-6 text-emerald-950">Target adaptasi semester pertama: {data.targets.length ? data.targets.join(', ') : 'pilih satu target kecil dan jalankan secara konsisten.'}</p>
-    </section>
-  );
-}
-
 function SaveIndicator({ state }: { state: SaveState }) {
   const meta = {
     idle: { icon: Save, label: 'Autosave aktif', className: 'text-slate-400' },
@@ -291,69 +106,6 @@ function SaveIndicator({ state }: { state: SaveState }) {
       <Icon className={`size-3.5 ${state === 'saving' ? 'animate-spin' : ''}`} />
       {meta.label}
     </span>
-  );
-}
-
-function ModuleOne({ data, disabled, update }: { data: ModuleOneData; disabled: boolean; update: UpdateData }) {
-  const placeOptions = data.learningEnvironment === 'Outdoor' ? outdoorStudyPlaces : data.learningEnvironment === 'Keduanya' ? [...indoorStudyPlaces, ...outdoorStudyPlaces] : indoorStudyPlaces;
-
-  return (
-    <div className="space-y-5">
-      {disabled && <ModuleOneSummary data={data} />}
-      <Section description="Ceritakan bagaimana kamu mengalami masa awal SMA. Tidak ada jawaban benar atau salah." title="Peta awal perjalananku">
-        <div className="grid gap-5 md:grid-cols-2">
-          <label>
-            <FieldLabel>Lingkungan belajar yang paling nyaman</FieldLabel>
-            <select className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:border-violet-500" disabled={disabled} onChange={(event) => update('learningEnvironment', event.target.value)} value={data.learningEnvironment}>
-              <option value="">Pilih satu</option>
-              <option>Indoor</option>
-              <option>Outdoor</option>
-              <option>Keduanya</option>
-            </select>
-          </label>
-          <label>
-            <FieldLabel>Saya paling nyaman belajar...</FieldLabel>
-            <select className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:border-violet-500" disabled={disabled} onChange={(event) => update('studyCompany', event.target.value)} value={data.studyCompany}>
-              <option value="">Pilih satu</option>
-              <option>Sendiri</option>
-              <option>Dengan satu atau dua teman</option>
-              <option>Dalam kelompok</option>
-              <option>Dengan pendampingan guru</option>
-            </select>
-          </label>
-        </div>
-        <div className="mt-6"><FieldLabel>Tempat belajar yang paling mendukung</FieldLabel><ChoiceGrid disabled={disabled} onChange={(value) => update('preferredStudyPlaces', value)} options={placeOptions} selected={data.preferredStudyPlaces} /></div>
-        <div className="mt-6"><FieldLabel>Hal yang membuatku bersemangat</FieldLabel><ChoiceGrid disabled={disabled} onChange={(value) => update('excitement', value)} options={excitementOptions} selected={data.excitement} /></div>
-        <div className="mt-6"><FieldLabel>Tantangan yang sedang kuhadapi</FieldLabel><ChoiceGrid disabled={disabled} onChange={(value) => update('challenges', value)} options={challengeOptions} selected={data.challenges} /></div>
-      </Section>
-
-      <Section description="Nilai hubunganmu saat ini dari 1 sampai 5." title="Relasi dan adaptasi">
-        <div className="grid gap-6 md:grid-cols-2">
-          {([['friendRelation', 'Hubunganku dengan teman'], ['teacherRelation', 'Hubunganku dengan guru']] as const).map(([key, label]) => (
-            <div key={key}>
-              <FieldLabel>{label}</FieldLabel>
-              <div className="grid grid-cols-5 gap-2">
-                {[1, 2, 3, 4, 5].map((value) => <button className={`h-11 rounded-lg border text-sm font-semibold ${data[key] === value ? 'border-violet-600 bg-violet-600 text-white' : 'border-slate-200 text-slate-500'} disabled:opacity-70`} disabled={disabled} key={value} onClick={() => update(key, value)} type="button">{value}</button>)}
-              </div>
-              <p className="mt-2 text-xs text-slate-400">{relationLabels[data[key] - 1]}</p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-6"><FieldLabel>Kemampuan yang ingin kutingkatkan</FieldLabel><ChoiceGrid disabled={disabled} onChange={(value) => update('improvements', value)} options={improvementOptions} selected={data.improvements} /></div>
-      </Section>
-
-      <Section description="Tuliskan dengan jujur agar jawaban ini bisa menjadi titik awal perkembanganmu." title="Refleksi minggu-minggu pertamaku">
-        <div className="space-y-5">
-          <label><FieldLabel>Pengalaman awal yang paling berkesan</FieldLabel><TextArea disabled={disabled} onChange={(value) => update('reflectionExperience', value)} placeholder="Ceritakan satu pengalaman yang membuatmu senang, penasaran, atau bangga..." value={data.reflectionExperience} /></label>
-          <label><FieldLabel>Tantangan yang paling terasa</FieldLabel><TextArea disabled={disabled} onChange={(value) => update('reflectionChallenge', value)} placeholder="Apa yang membuatmu kesulitan dan mengapa?" value={data.reflectionChallenge} /></label>
-          <label><FieldLabel>Strategi yang ingin kucoba</FieldLabel><TextArea disabled={disabled} onChange={(value) => update('reflectionStrategy', value)} placeholder="Langkah kecil apa yang akan kamu lakukan?" value={data.reflectionStrategy} /></label>
-        </div>
-      </Section>
-
-      <Section description="Pilih target paling relevan untuk empat minggu ke depan." title="Target awal">
-        <ChoiceGrid disabled={disabled} onChange={(value) => update('targets', value)} options={targetOptions} selected={data.targets} />
-      </Section>
-    </div>
   );
 }
 

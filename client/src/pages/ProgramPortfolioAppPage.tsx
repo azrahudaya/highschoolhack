@@ -13,9 +13,19 @@ type ProgramPortfolio = {
 };
 
 function valueText(value: unknown) {
-  if (Array.isArray(value)) return value.join(', ');
+  if (Array.isArray(value)) {
+    return value.map((item) => {
+      if (item && typeof item === 'object' && !Array.isArray(item)) {
+        const record = item as Record<string, unknown>;
+        if (record.title && record.date && record.priority) return `${record.title} (${record.date}, ${record.priority})`;
+        return JSON.stringify(record);
+      }
+      return String(item);
+    }).join('\n');
+  }
   if (typeof value === 'number') return String(value);
   if (typeof value === 'string') return value;
+  if (value && typeof value === 'object') return JSON.stringify(value);
   return '';
 }
 

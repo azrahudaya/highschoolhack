@@ -1,4 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
+import { simulationSteps } from '../../client/src/data/smart-financial';
+import { smartFinancialSimulationStepIds } from '../../server/src/data/smart-financial';
 
 const student = {
   id: 'student-1',
@@ -19,6 +21,10 @@ const admin = {
 async function mockStudent(page: Page) {
   await page.route('**/api/auth/me', (route) => route.fulfill({ json: { user: student, authenticated: true, googleAuthConfigured: false } }));
 }
+
+test('Smart Financial simulation contract matches client steps', () => {
+  expect(simulationSteps.map((step) => step.id)).toEqual([...smartFinancialSimulationStepIds]);
+});
 
 test('Setting Goal dashboard renders real module shell', async ({ page }) => {
   await mockStudent(page);
@@ -87,6 +93,83 @@ test('Setting Goal module autosaves choices', async ({ page }) => {
   await expect(page.getByText('Tersimpan otomatis')).toBeVisible();
 });
 
+test('Setting Goal captures four macro targets', async ({ page }) => {
+  await mockStudent(page);
+  await page.route('**/api/student/programs/setting-goal/portfolio', (route) => route.fulfill({ json: { modules: [] } }));
+  await page.route('**/api/student/programs/setting-goal/modules/goal-setting', async (route) => {
+    if (route.request().method() === 'PUT') return route.fulfill({ json: { savedAt: new Date().toISOString() } });
+    return route.fulfill({ json: { module: { id: 'sg5', slug: 'goal-setting', title: 'Buat Tujuanmu Sekarang', order: 5, status: 'not_started' }, response: null, config: null } });
+  });
+
+  await page.goto('/app/programs/setting-goal/modules/goal-setting');
+  await expect(page.getByRole('heading', { name: 'Buat Tujuanmu Sekarang' })).toBeVisible();
+
+  const autosave = page.waitForRequest((request) => request.method() === 'PUT' && request.url().includes('/setting-goal/modules/goal-setting'));
+  await page.getByLabel('Target Akademik').fill('abc akademik');
+  await page.getByLabel('Target Karier').fill('abc karier');
+  await page.getByLabel('Target Pribadi').fill('abc pribadi');
+  await page.getByLabel('Target Sosial').fill('abc sosial');
+
+  expect((await autosave).postDataJSON()).toMatchObject({
+    data: {
+      academicTarget: 'abc akademik',
+      careerTarget: 'abc karier',
+      personalTarget: 'abc pribadi',
+      socialTarget: 'abc sosial',
+    },
+  });
+});
+
+test('Setting Goal action plan adds calendar items, opens detail, and deletes plans', async ({ page }) => {
+  await mockStudent(page);
+  await page.route('**/api/student/programs/setting-goal/portfolio', (route) => route.fulfill({
+    json: {
+      modules: [
+        { slug: 'goal-setting', data: { academicTarget: 'Nilai Biologi 90', careerTarget: 'Psikologi', personalTarget: 'Disiplin', socialTarget: 'Aktif organisasi' } },
+      ],
+    },
+  }));
+  await page.route('**/api/student/programs/setting-goal/modules/rencana-aksi', async (route) => {
+    if (route.request().method() === 'PUT') return route.fulfill({ json: { savedAt: new Date().toISOString() } });
+    return route.fulfill({ json: { module: { id: 'sg6', slug: 'rencana-aksi', title: 'Langkah Nyata Menuju Tujuanmu', order: 6, status: 'not_started' }, response: null, config: null } });
+  });
+
+  await page.goto('/app/programs/setting-goal/modules/rencana-aksi');
+  await expect(page.getByRole('heading', { name: 'Langkah Nyata Menuju Tujuanmu' })).toBeVisible();
+
+  await page.getByLabel('Nama Rencana').fill('belajar sosiologi agar nilai 89');
+  await page.getByLabel('Tanggal').fill('2026-06-25');
+  await page.getByLabel('Prioritas').selectOption('P2');
+
+  const addSave = page.waitForRequest((request) => request.method() === 'PUT' && request.url().includes('/setting-goal/modules/rencana-aksi'));
+  await page.getByRole('button', { name: /Tambah Rencana/ }).click();
+  expect((await addSave).postDataJSON()).toMatchObject({
+    data: {
+      actionPlans: [
+        {
+          title: 'belajar sosiologi agar nilai 89',
+          date: '2026-06-25',
+          priority: 'P2',
+        },
+      ],
+    },
+  });
+
+  await expect(page.getByRole('heading', { name: 'Semua Rencana' })).toBeVisible();
+  await expect(page.getByText('belajar sosiologi agar nilai 89')).toBeVisible();
+  await expect(page.getByText('Juni 2026', { exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: /Lihat belajar sosiologi agar nilai 89/ }).click();
+  await expect(page.getByText('Detail Rencana')).toBeVisible();
+  await expect(page.getByText('P2: Penting').last()).toBeVisible();
+  await page.getByTitle('Tutup').click();
+
+  const deleteSave = page.waitForRequest((request) => request.method() === 'PUT' && request.url().includes('/setting-goal/modules/rencana-aksi'));
+  await page.getByTitle('Hapus rencana').click();
+  expect((await deleteSave).postDataJSON()).toMatchObject({ data: { actionPlans: [] } });
+  await expect(page.getByText('Belum ada rencana.')).toBeVisible();
+});
+
 test('Smart Financial Future Ready Board is interactive and autosaves decisions', async ({ page }) => {
   await mockStudent(page);
   await page.route('**/api/student/programs/smart-financial/portfolio', (route) => route.fulfill({
@@ -114,6 +197,12 @@ test('Smart Financial Future Ready Board is interactive and autosaves decisions'
   await page.goto('/app/programs/smart-financial/modules/simulasi-financial-readiness');
   await expect(page.getByRole('heading', { name: 'Simulasi 12 langkah' })).toBeVisible();
   await expect(page.getByText('Rekomendasi keputusan akhir')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Langkah 1-3' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Laundry' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Langkah 4-6' }).click();
+  await expect(page.getByRole('heading', { name: 'Laundry' })).toBeVisible();
+  await page.getByRole('button', { name: 'Langkah 1-3' }).click();
+  await expect(page.getByRole('button', { name: /Diskusi opsi dengan keluarga/ })).toBeVisible();
 
   const savingInput = page.getByLabel('Rencana menabung per bulan');
   await expect(savingInput).toHaveValue('');
@@ -130,8 +219,37 @@ test('Smart Financial Future Ready Board is interactive and autosaves decisions'
 
   const emergencySave = page.waitForRequest((request) => request.method() === 'PUT' && request.url().includes('/smart-financial/modules/simulasi-financial-readiness'));
   await page.getByRole('button', { name: /Ambil emergency card/ }).click();
-  await expect(page.getByText('Laptop rusak saat minggu ujian.')).toBeVisible();
-  expect((await emergencySave).postDataJSON()).toMatchObject({ data: { emergencyCards: ['laptop'] } });
+  const emergencyPayload = (await emergencySave).postDataJSON();
+  expect(emergencyPayload.data.emergencyCards).toHaveLength(1);
+  await expect(page.getByText('Belum ada kartu darurat yang diambil.')).toHaveCount(0);
+});
+
+test('Smart Financial financial inputs can remove leading zeroes and be cleared', async ({ page }) => {
+  await mockStudent(page);
+  await page.route('**/api/student/programs/smart-financial/portfolio', (route) => route.fulfill({ json: { modules: [] } }));
+  await page.route('**/api/student/programs/smart-financial/modules/identitas-dan-target', async (route) => {
+    if (route.request().method() === 'PUT') return route.fulfill({ json: { savedAt: new Date().toISOString() } });
+    return route.fulfill({
+      json: {
+        module: { id: 'sf1', slug: 'identitas-dan-target', title: 'Identitas dan Target', order: 1, status: 'not_started' },
+        response: null,
+        config: { cities: [], scholarships: [], student: { schoolName: 'SMA Nusantara', className: 'XII IPA 2' } },
+      },
+    });
+  });
+
+  await page.goto('/app/programs/smart-financial/modules/identitas-dan-target');
+  await expect(page.getByRole('heading', { name: 'Konsep Modul' })).toBeVisible();
+  await expect(page.getByLabel('Nama panggilan')).toBeVisible();
+  await expect(page.getByLabel('Sekolah')).toHaveValue('SMA Nusantara');
+  await expect(page.getByLabel('Kelas')).toHaveValue('XII IPA 2');
+
+  const allowanceInput = page.getByLabel('Uang saku per bulan');
+  await expect(allowanceInput).toHaveValue('');
+  await allowanceInput.fill('0500000');
+  await expect(allowanceInput).toHaveValue('500000');
+  await allowanceInput.fill('');
+  await expect(allowanceInput).toHaveValue('');
 });
 
 test('Smart Financial scholarship portal and PDF portfolio entry points are available', async ({ page }) => {
@@ -139,8 +257,19 @@ test('Smart Financial scholarship portal and PDF portfolio entry points are avai
 
   await page.goto('/app/programs/smart-financial/scholarships');
   await expect(page.getByRole('heading', { name: 'Portal Beasiswa' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'KIP Kuliah' })).toBeVisible();
-  await expect(page.getByRole('link', { name: /Resmi/ }).first()).toHaveAttribute('href', 'https://kip-kuliah.kemdikbud.go.id/');
+  await expect(page.getByText('26 dari 26 beasiswa ditampilkan')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'KIP Kuliah', exact: true })).toBeVisible();
+  await expect(page.getByText('Terakhir dicek: 21 Juni 2026').first()).toBeVisible();
+  const kipCard = page.getByRole('article').filter({ has: page.getByRole('heading', { name: 'KIP Kuliah', exact: true }) });
+  await expect(kipCard.getByRole('link', { name: /Resmi/ })).toHaveAttribute('href', 'https://kip-kuliah.kemdiktisaintek.go.id/');
+  await expect(page.getByRole('heading', { name: 'Beasiswa BCA PPBP/PPTI' })).toBeVisible();
+  await page.getByPlaceholder('Cari nama, penyelenggara, atau kecocokan...').fill('MEXT');
+  await expect(page.getByRole('heading', { name: 'MEXT Undergraduate / Gakubu' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'KIP Kuliah', exact: true })).toHaveCount(0);
+  await page.getByPlaceholder('Cari nama, penyelenggara, atau kecocokan...').fill('tidak-ada-beasiswa-ini');
+  await expect(page.getByRole('heading', { name: 'Tidak ada beasiswa yang cocok' })).toBeVisible();
+  await page.getByRole('button', { name: 'Reset filter' }).click();
+  await expect(page.getByRole('heading', { name: 'KIP Kuliah', exact: true })).toBeVisible();
 
   await page.route('**/api/student/programs/smart-financial/portfolio', (route) => route.fulfill({
     json: {

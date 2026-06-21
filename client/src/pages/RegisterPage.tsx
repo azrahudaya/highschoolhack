@@ -40,8 +40,12 @@ export function RegisterPage() {
         body: JSON.stringify({ name, email, password }),
       });
       setNotice(response.emailVerificationQueued ? 'Email verifikasi sudah dikirim.' : 'Akun dibuat. Verifikasi email belum dikirim karena SMTP belum dikonfigurasi.');
-      await refresh();
       storePostOnboardingNext(nextPath);
+      if (response.redirectTo.startsWith('/login')) {
+        navigate(response.redirectTo);
+        return;
+      }
+      await refresh();
       navigate(response.redirectTo);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Registrasi gagal.');

@@ -87,3 +87,12 @@ test('school settings explain manual student onboarding', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Onboarding siswa' })).toBeVisible();
   await expect(page.getByText('Siswa mengisi nama sekolah dan kelas secara manual saat onboarding.')).toBeVisible();
 });
+
+test('admin bulk import explains first password setup', async ({ page }) => {
+  await mockAdmin(page);
+  await page.route('**/api/admin/overview', (route) => route.fulfill({ json: overview }));
+  await page.route('**/api/admin/students?*', (route) => route.fulfill({ json: { students: [] } }));
+  await page.goto('/admin/students');
+
+  await expect(page.getByText('Siswa dapat membuat password pertama lewat menu lupa password')).toBeVisible();
+});

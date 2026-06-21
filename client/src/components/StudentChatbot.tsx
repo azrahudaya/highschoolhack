@@ -15,7 +15,7 @@ const quickPrompts = [
   'Apa yang harus aku diskusikan dengan Guru BK?',
 ];
 
-export function StudentChatbot() {
+export function StudentChatbot({ avoidModuleAction = false }: { avoidModuleAction?: boolean }) {
   const [open, setOpen] = useState(false);
   const [consented, setConsented] = useState(() => (typeof window === 'undefined' ? false : window.localStorage.getItem('hsh-chatbot-ai-consent') === 'accepted'));
   const [input, setInput] = useState('');
@@ -65,7 +65,7 @@ export function StudentChatbot() {
   }
 
   return (
-    <div className="no-print fixed bottom-5 right-5 z-50">
+    <div className={`no-print fixed right-5 z-50 ${avoidModuleAction ? 'bottom-24' : 'bottom-5'}`}>
       {open && (
         <section className="mb-3 flex h-[min(34rem,calc(100vh-7rem))] w-[min(24rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xl">
           <header className="flex items-center justify-between border-b border-slate-200 bg-[#101b3f] px-4 py-3 text-white">

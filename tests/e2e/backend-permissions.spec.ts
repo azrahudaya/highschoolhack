@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { expect, request, test, type APIRequestContext } from '@playwright/test';
 import { ProgramSlug, UserRole, ModuleStatus, PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';

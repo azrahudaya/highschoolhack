@@ -38,7 +38,7 @@ export function ForgotPasswordPage() {
   }
 
   return (
-    <AuthShell title="Reset password" subtitle="Masukkan email akun. Jika terdaftar, kami kirim instruksi reset password.">
+    <AuthShell title="Reset password" subtitle="Masukkan email akun. Jika terdaftar, kami kirim instruksi reset atau pembuatan password pertama.">
       <form className="space-y-4" onSubmit={handleSubmit}>
         <label className="block text-sm font-medium text-slate-700">
           Email

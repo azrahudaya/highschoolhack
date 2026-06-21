@@ -19,6 +19,7 @@ export function StudentAppLayout({ children, eyebrow = 'Dashboard siswa', title 
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const school = user?.memberships.find((membership) => membership.role === 'student')?.school.name ?? 'Sekolahmu';
+  const hasModuleAction = /^\/app\/programs\/[^/]+\/modules\/[^/]+/.test(location.pathname);
 
   async function handleLogout() {
     await logout();
@@ -61,7 +62,7 @@ export function StudentAppLayout({ children, eyebrow = 'Dashboard siswa', title 
         </header>
         {children}
       </main>
-      <StudentChatbot />
+      <StudentChatbot avoidModuleAction={hasModuleAction} />
     </div>
   );
 }

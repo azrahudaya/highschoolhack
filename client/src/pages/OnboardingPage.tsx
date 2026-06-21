@@ -3,7 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { AuthShell } from '../components/AuthShell';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api';
-import { consumePostOnboardingNext } from '../lib/navigation';
+import { consumePostOnboardingNext, getPostOnboardingNext } from '../lib/navigation';
+
+const nextProgramLabel: Record<string, string> = {
+  '/app/programs/bekal-10': 'Bekal 10',
+  '/app/programs/setting-goal': 'Setting Goal',
+  '/app/programs/smart-financial': 'Smart Financial',
+};
 
 export function OnboardingPage() {
   const { user, refresh } = useAuth();
@@ -15,6 +21,8 @@ export function OnboardingPage() {
   const [error, setError] = useState('');
   const [nisnError, setNisnError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const nextPath = typeof window === 'undefined' ? '' : getPostOnboardingNext();
+  const nextLabel = nextProgramLabel[nextPath] ?? 'Bekal 10';
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -100,7 +108,7 @@ export function OnboardingPage() {
           disabled={submitting}
           type="submit"
         >
-          {submitting ? 'Menyimpan...' : 'Masuk ke Bekal 10'}
+          {submitting ? 'Menyimpan...' : `Masuk ke ${nextLabel}`}
         </button>
       </form>
     </AuthShell>

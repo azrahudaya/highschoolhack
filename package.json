@@ -21,13 +21,22 @@
     "db:seed": "node prisma/seed.cjs",
     "admin:assign": "node scripts/assign-admin.cjs",
     "teacher:assign": "node scripts/assign-teacher.cjs",
-    "test:e2e": "playwright test"
+    "typecheck": "npm run prisma:generate && npm run build --workspace client && npm run build --workspace server",
+    "eslint": "eslint . --max-warnings=0",
+    "lint": "npm run eslint && npm run typecheck && git diff --check",
+    "audit:prod": "npm audit --omit=dev",
+    "test:e2e": "playwright test",
+    "test:e2e:permissions": "node scripts/require-env.cjs DATABASE_URL && playwright test tests/e2e/backend-permissions.spec.ts --project=chromium"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.60.0",
     "concurrently": "^10.0.3",
+    "eslint": "^10.5.0",
+    "globals": "^17.6.0",
     "prisma": "6.19.3",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.61.1"
   },
   "dependencies": {
     "@prisma/client": "6.19.3"

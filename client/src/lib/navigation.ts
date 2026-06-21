@@ -19,6 +19,10 @@ export function storePostOnboardingNext(path: string) {
   window.localStorage.setItem('hsh-post-onboarding-next', path);
 }
 
+export function getPostOnboardingNext() {
+  return safeNextPath(window.localStorage.getItem('hsh-post-onboarding-next'));
+}
+
 export function consumePostOnboardingNext() {
   const value = safeNextPath(window.localStorage.getItem('hsh-post-onboarding-next'));
   window.localStorage.removeItem('hsh-post-onboarding-next');

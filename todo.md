@@ -50,6 +50,8 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 - [x] Setting Goal portfolio.
 - [x] Setting Goal badge labels.
 - [x] Guru BK cross-program summary MVP.
+- [x] Class XI Goal Setting revision: four macro targets for academic, career, personal, and social goals.
+- [x] Class XI Rencana Aksi revision: dated action plan list, P1-P4 priorities, calendar markers, detail pop-up, and delete action.
 
 ### Phase 3 - Smart Financial MVP
 
@@ -145,13 +147,13 @@ Source compared: `highschoolhack-prompt_1.md`, `highschoolhack-prd.md`, `highsch
 - [ ] Expand Setting Goal with a real study-program reference database: what is studied, supporting subjects, skills, career paths, and campus examples.
 - [ ] Expand Setting Goal with a career reference database: job description, competencies, education path, prospects, and suggested majors.
 - [ ] Upgrade Setting Goal gap analysis into a real current-vs-target table with recommended actions.
-- [ ] Upgrade Setting Goal action planning into an interactive calendar/board with P1-P4 priorities and multiple action items.
+- [x] Upgrade Setting Goal action planning into an interactive calendar/board with P1-P4 priorities and multiple action items.
 - [ ] Add recurring reflection/journal history for Setting Goal.
 - [ ] Expand Smart Financial city database beyond the MVP cities, with source and last-updated date.
 - [ ] Replace Smart Financial city select with search/autocomplete.
-- [ ] Make Future Ready Board closer to the prompt/reference: 3 choices per step, randomized emergency events, stronger consequence narration, and clearer end-state summary.
-- [ ] Add Smart Financial fields that are still missing from the reference flow: nickname, school, class, city origin, and interest/major target.
-- [ ] Expand scholarship portal with deadlines, coverage, country/region, eligibility, status, and last-verified date.
+- [x] Make Future Ready Board closer to the prompt/reference: 3 choices per step, randomized emergency events, stronger consequence narration, and clearer end-state summary.
+- [x] Add Smart Financial fields that are still missing from the reference flow: nickname, school, class, city origin, and interest/major target.
+- [x] Expand scholarship portal with deadlines, coverage, country/region, eligibility, status, and last-verified date.
 - [ ] Decide whether leaderboard should ship. If yes, design it carefully so it motivates without exposing sensitive student ranking.
 - [ ] Add Guru BK detailed analytics for Setting Goal and Smart Financial: distributions, high-risk students, popular cities, targets, and class progress.
 - [ ] Add school report export for Guru BK/admin, including CSV/XLSX and PDF summary.

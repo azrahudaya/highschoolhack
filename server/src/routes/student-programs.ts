@@ -1,4 +1,4 @@
-import { ModuleStatus, Prisma, ProgramSlug } from '@prisma/client';
+import { ModuleStatus, Prisma } from '@prisma/client';
 import { Router } from 'express';
 import { z } from 'zod';
 import { cityCosts, scholarships } from '../data/smart-financial';
@@ -8,6 +8,8 @@ import { requireRole } from '../middleware/auth';
 import { ensureProgramEnrollment, getStudentContext, saveModuleResponse } from '../services/bekal10';
 import { createFutureReadyBoardPdf } from '../services/future-ready-pdf';
 import { createSimplePdf } from '../services/simple-pdf';
+import { pathSlugForProgram, programMeta, recommendedProgramForGrade, resolveProgramSlug } from '../services/student-program-meta';
+import { validateModuleCompletion } from '../services/student-program-validation';
 import { env } from '../config/env';
 import { logger } from '../utils/logger';
 
@@ -16,136 +18,6 @@ const router = Router();
 const autosaveSchema = z.object({
   data: z.record(z.string(), z.unknown()),
 });
-
-const supportedPrograms: Record<string, ProgramSlug> = {
-  'setting-goal': ProgramSlug.setting_goal,
-  'smart-financial': ProgramSlug.smart_financial,
-};
-
-const programMeta = {
-  [ProgramSlug.bekal_10]: {
-    pathSlug: 'bekal-10',
-    title: 'Bekal 10',
-    gradeLabel: 'Kelas X',
-    theme: 'Adaptasi SMA, potensi diri, target akademik, dan portofolio awal.',
-    accent: '#5b21b6',
-    portfolioPath: '/app/portfolio',
-  },
-  [ProgramSlug.setting_goal]: {
-    pathSlug: 'setting-goal',
-    title: 'Setting Goal',
-    gradeLabel: 'Kelas XI',
-    theme: 'Rancang pilihan jurusan, karier, dan langkah nyata sejak kelas XI.',
-    accent: '#087f5b',
-    portfolioPath: '/app/programs/setting-goal/portfolio',
-  },
-  [ProgramSlug.smart_financial]: {
-    pathSlug: 'smart-financial',
-    title: 'Smart Financial',
-    gradeLabel: 'Kelas XII',
-    theme: 'Latih keputusan finansial sebelum hidup mandiri setelah lulus.',
-    accent: '#b45309',
-    portfolioPath: '/app/programs/smart-financial/portfolio',
-  },
-} as const;
-
-function pathSlugForProgram(slug: ProgramSlug) {
-  return programMeta[slug].pathSlug;
-}
-
-function recommendedProgramForGrade(grade: number | null | undefined) {
-  if (grade === 12) return ProgramSlug.smart_financial;
-  if (grade === 11) return ProgramSlug.setting_goal;
-  return ProgramSlug.bekal_10;
-}
-
-const requiredText = z.string().trim().min(10);
-const requiredShortText = z.string().trim().min(2);
-const requiredStringArray = z.array(z.string().trim().min(1)).min(1);
-const requiredNumber = z.preprocess((value) => value === '' ? undefined : value, z.coerce.number().min(0));
-const requiredRange = (min: number, max: number) => z.preprocess((value) => value === '' ? undefined : value, z.coerce.number().min(min).max(max));
-const requiredSimulationStepIds = ['target', 'housing', 'food', 'transport', 'study-tools', 'laundry', 'phone', 'community', 'emergency', 'side-income', 'review', 'ready'];
-const requiredSimulationDecisions = z.record(z.string(), z.string()).refine(
-  (value) => requiredSimulationStepIds.every((stepId) => typeof value[stepId] === 'string' && value[stepId].trim().length > 0),
-  { message: 'Pilih satu keputusan pada semua 12 langkah simulasi.' },
-);
-
-const moduleCompletionSchemas: Record<string, Record<string, z.ZodTypeAny>> = {
-  'setting-goal': {
-    'kenali-diriku': z.object({
-      strengths: requiredStringArray,
-      values: requiredStringArray,
-      selfNarrative: requiredText,
-    }).passthrough(),
-    'eksplorasi-program-studi': z.object({
-      studyPrograms: requiredStringArray,
-      programReason: requiredText,
-      proofToFind: requiredText,
-    }).passthrough(),
-    'eksplorasi-karier': z.object({
-      careerOptions: requiredStringArray,
-      careerActivities: requiredText,
-      skillsNeeded: requiredStringArray,
-    }).passthrough(),
-    'mata-pelajaran-pendukung': z.object({
-      supportSubjects: requiredStringArray,
-      currentGap: requiredText,
-      supportPlan: requiredText,
-    }).passthrough(),
-    'goal-setting': z.object({
-      smartSpecific: requiredText,
-      smartMeasurable: requiredText,
-      smartDeadline: requiredShortText,
-      goalConfidence: requiredRange(1, 5),
-    }).passthrough(),
-    'rencana-aksi': z.object({
-      priorityOne: requiredText,
-      priorityTwo: requiredText,
-      calendarPlan: requiredText,
-    }).passthrough(),
-    'dashboard-perkembangan': z.object({
-      progress: requiredRange(0, 100),
-      blockers: requiredStringArray,
-      nextCheckpoint: requiredShortText,
-    }).passthrough(),
-    refleksi: z.object({
-      bestInsight: requiredText,
-      decision: requiredText,
-      supportNeeded: requiredText,
-    }).passthrough(),
-  },
-  'smart-financial': {
-    'identitas-dan-target': z.object({
-      afterGraduationTarget: requiredShortText,
-      monthlyAllowance: requiredNumber,
-      currentSavings: requiredNumber,
-      emergencyFund: requiredNumber,
-      financialConcern: requiredText,
-    }).passthrough(),
-    'pilih-kota-tujuan': z.object({
-      destinationCity: requiredShortText,
-      livingStrategy: requiredShortText,
-      costNotes: requiredText,
-    }).passthrough(),
-    'simulasi-financial-readiness': z.object({
-      monthlySavingPlan: requiredNumber,
-      simulationDecisions: requiredSimulationDecisions,
-      simulationReflection: requiredText,
-    }).passthrough(),
-    'hasil-dan-rekomendasi': z.object({
-      academicRecommendation: requiredText,
-      careerRecommendation: requiredText,
-      financialRecommendation: requiredText,
-      socialRecommendation: requiredText,
-    }).passthrough(),
-  },
-};
-
-function resolveProgramSlug(value: string) {
-  const slug = supportedPrograms[value];
-  if (!slug) throw Object.assign(new Error('Program tidak tersedia.'), { statusCode: 404 });
-  return slug;
-}
 
 function serializeDashboard(context: Awaited<ReturnType<typeof ensureProgramEnrollment>>) {
   const completedCount = context.progress.filter((item) => item.status === ModuleStatus.completed).length;
@@ -186,26 +58,17 @@ function serializeHomeDashboard(context: Awaited<ReturnType<typeof ensureProgram
   };
 }
 
-function ensurePayloadHasContent(data: Record<string, unknown>) {
-  const hasContent = Object.values(data).some((value) => {
-    if (typeof value === 'string') return value.trim().length >= 2;
-    if (typeof value === 'number') return true;
-    if (Array.isArray(value)) return value.length > 0;
-    if (value && typeof value === 'object') return Object.keys(value).length > 0;
-    return false;
-  });
-  if (!hasContent) throw Object.assign(new Error('Isi modul terlebih dahulu sebelum menyelesaikannya.'), { statusCode: 400 });
-}
-
-function validateModuleCompletion(programSlug: string, moduleSlug: string, data: Record<string, unknown>) {
-  const schema = moduleCompletionSchemas[programSlug]?.[moduleSlug];
-  if (schema) return schema.parse(data) as Prisma.InputJsonValue;
-  ensurePayloadHasContent(data);
-  return data as Prisma.InputJsonValue;
-}
-
 function formatPdfValue(value: unknown) {
-  if (Array.isArray(value)) return value.join(', ');
+  if (Array.isArray(value)) {
+    return value.map((item) => {
+      if (item && typeof item === 'object' && !Array.isArray(item)) {
+        const record = item as Record<string, unknown>;
+        if (record.title && record.date && record.priority) return `${record.title} (${record.date}, ${record.priority})`;
+        return JSON.stringify(record);
+      }
+      return String(item);
+    }).join(', ');
+  }
   if (typeof value === 'number') return String(value);
   if (typeof value === 'string') return value;
   if (value && typeof value === 'object') return JSON.stringify(value);
@@ -374,7 +237,16 @@ router.get(
         status: progress.status,
       },
       response: response?.data ?? null,
-      config: programSlug === 'smart-financial' ? { cities: cityCosts, scholarships } : null,
+      config: programSlug === 'smart-financial'
+        ? {
+            cities: cityCosts,
+            scholarships,
+            student: {
+              schoolName: context.membership.school.name,
+              className: context.profile.class?.name ?? null,
+            },
+          }
+        : null,
     });
   }),
 );

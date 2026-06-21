@@ -24,8 +24,12 @@ Platform pengembangan diri dan perencanaan masa depan untuk siswa SMA Indonesia.
 npm install
 npm run dev
 npm run build
+npm run typecheck
+npm run lint
+npm run audit:prod
 npm start
 npm run test:e2e
+npm run test:e2e:permissions
 ```
 
 ## Local URLs
@@ -49,91 +53,27 @@ CLIENT_URL=
 
 ## Current Phase
 
-Phase 0A is complete:
+Current MVP is implemented across the public site, student programs, Guru BK dashboard, and school admin area.
 
-- npm workspaces are configured.
-- React/Vite client is configured.
-- Express/TypeScript server is configured.
-- Prisma schema baseline is available.
-- Heroku `Procfile` and root build/start scripts are available.
-- Express can serve the React production build.
+Student programs:
 
-Phase 0B foundation is scaffolded:
+- Bekal 10: adaptation, RIASEC/VARK-style assessment, vision board, SMART target, reflection, academic target, learning commitment, and portfolio.
+- Setting Goal: class XI exploration, four macro targets, P1-P4 action-plan calendar, progress dashboard, and portfolio.
+- Smart Financial: class XII profile, destination city cost simulation, Future Ready Board stepper, emergency cards, scholarship portal, final recommendation, and downloadable Future Ready Board PDF.
 
-- Multi-school schema has `schools`, `classes`, `school_memberships`, and school-scoped student profiles.
-- School list and class list API routes are scaffolded.
-- Student onboarding by manual school and class input is scaffolded.
-- Seed script is available at `npm run db:seed`.
+Operational features:
 
-Phase 0C auth foundation is scaffolded:
+- Session auth with email/password, optional Google OAuth, email verification, password reset, and rate limiting on sensitive auth endpoints.
+- Multi-school data scoping for student, teacher, and admin roles.
+- Admin school overview, class management, student profile management, bulk import, Guru BK assignment, and audit log.
+- Guru BK dashboard with school metrics, student search/filter, portfolio detail, notes, and CSV export.
 
-- Email/password registration and login with hashed passwords.
-- Conditional Google OAuth through Passport.js.
-- PostgreSQL-backed sessions when `DATABASE_URL` is configured.
-- Development-only memory session fallback when no database is configured.
-- Protected student, teacher, and admin API routes.
-- Real session-based student onboarding.
-- React login, register, onboarding, and protected portal shells.
+Important verification:
 
-Auth API:
-
-- `GET /api/auth/me`
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `POST /api/auth/logout`
-- `GET /api/auth/google`
-- `GET /api/auth/google/callback`
-- `GET /api/protected/student`
-- `GET /api/protected/teacher`
-- `GET /api/protected/admin`
-
-Pending runtime validation:
-
-- Set a real `DATABASE_URL`.
-- Create and deploy the initial Prisma migration.
-- Run seed data.
-- Configure Google OAuth credentials.
-
-Phase 0D public website and program shell is implemented:
-
-- Final landing page with project hero visual.
-- Responsive public navbar and footer.
-- Article listing, search/filter, and article detail pages.
-- About page.
-- Detail pages for Bekal 10, Setting Goal, and Smart Financial.
-- Student dashboard shell with program progress and portfolio preview.
-- Desktop and mobile public route smoke tests.
-
-Phase 1A Bekal 10 core is implemented:
-
-- Real Bekal 10 enrollment, module progress, completion, and sequential unlock APIs.
-- Student dashboard and Bekal 10 program dashboard backed by PostgreSQL.
-- Modul 1 adaptation and reflection workflow.
-- Modul 2 original RIASEC and VARK-style learning preference assessments.
-- Database autosave with visible save state and read-only completed modules.
-- Reflective assessment result summaries.
-- Authenticated UI flows are covered with mocked Playwright API fixtures; production database flow requires deployed seed data.
-
-Bekal 10 API:
-
-- `GET /api/student/programs/bekal-10`
-- `GET /api/student/programs/bekal-10/modules/:moduleSlug`
-- `PUT /api/student/programs/bekal-10/modules/:moduleSlug`
-- `POST /api/student/programs/bekal-10/modules/:moduleSlug/complete`
-- `GET /api/student/programs/bekal-10/portfolio`
-
-Phase 1B Bekal 10 complete is implemented:
-
-- Modul 3-7: vision board, SMART development target, journey reflection, academic target, and digital learning commitment.
-- Sequential module completion through Modul 7.
-- Student portfolio with badges and print/PDF-friendly A4 layout.
-- Basic Guru BK dashboard with school metrics, result distributions, search, class filter, and read-only student detail.
-- Guru BK attention indicator combines low progress with high adaptation challenges.
-
-Guru BK API:
-
-- `GET /api/teacher/bekal-10/dashboard`
-- `GET /api/teacher/bekal-10/students/:userId`
+- `npm run build` checks Prisma generation, client build, and server TypeScript build.
+- `npm run audit:prod` checks production dependency vulnerabilities.
+- `npm run test:e2e` runs mocked UI/API flow tests on desktop and mobile.
+- `npm run test:e2e:permissions` runs cross-school permission tests. The command fails fast when `DATABASE_URL` is missing, then reads `.env` via `dotenv/config` for the test run.
 
 Provision a Guru BK account after the teacher has registered or logged in once:
 
@@ -147,14 +87,6 @@ For Heroku:
 heroku run 'npm run teacher:assign -- guru@sekolah.id sma-nusantara "Nama Guru"' -a highschoolhack-app
 ```
 
-Phase 1C Admin Sekolah Basic is implemented:
-
-- School overview and manual student onboarding guidance.
-- Class create, update, and guarded delete.
-- Student profile, NISN, and class management without access to module answers.
-- Assign and revoke Guru BK access from registered accounts.
-- All admin operations are scoped to the admin's school membership.
-
 Admin API:
 
 - `GET /api/admin/overview`
@@ -163,6 +95,7 @@ Admin API:
 - `PATCH|DELETE /api/admin/classes/:classId`
 - `GET /api/admin/students`
 - `PATCH /api/admin/students/:userId`
+- `POST /api/admin/students/bulk-import`
 - `GET|POST /api/admin/teachers`
 - `DELETE /api/admin/teachers/:userId`
 

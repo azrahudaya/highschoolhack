@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { Router } from 'express';
+import type { Request } from 'express';
 import type { AuthenticateOptions } from 'passport';
 import { z } from 'zod';
 import { getDefaultAppPath } from '../auth/user';
@@ -8,6 +9,7 @@ import { env } from '../config/env';
 import { prisma } from '../db/prisma';
 import { asyncHandler } from '../middleware/async-handler';
 import { requireAuth } from '../middleware/auth';
+import { createRateLimit } from '../middleware/rate-limit';
 import { consumeEmailVerificationToken, consumePasswordResetToken, createEmailVerificationToken, createPasswordResetToken } from '../services/auth-tokens';
 import { sendEmailVerificationEmail, sendPasswordResetEmail } from '../services/email';
 import { logger } from '../utils/logger';
@@ -36,6 +38,31 @@ const tokenSchema = z.object({
   token: z.string().trim().min(20),
 });
 
+function authKey(req: Request) {
+  return req.ip ?? req.socket.remoteAddress ?? 'unknown';
+}
+
+const authMutationRateLimit = createRateLimit({
+  key: (req) => `auth:${authKey(req)}`,
+  max: 30,
+  windowMs: 15 * 60 * 1000,
+  message: 'Terlalu banyak percobaan autentikasi. Tunggu sebentar sebelum mencoba lagi.',
+});
+
+const loginRateLimit = createRateLimit({
+  key: (req) => `login:${authKey(req)}:${typeof req.body?.email === 'string' ? req.body.email.toLowerCase() : 'unknown'}`,
+  max: 8,
+  windowMs: 15 * 60 * 1000,
+  message: 'Terlalu banyak percobaan login. Tunggu sebentar sebelum mencoba lagi.',
+});
+
+const passwordResetRateLimit = createRateLimit({
+  key: (req) => `password-reset:${authKey(req)}:${typeof req.body?.email === 'string' ? req.body.email.toLowerCase() : 'unknown'}`,
+  max: 5,
+  windowMs: 60 * 60 * 1000,
+  message: 'Terlalu banyak permintaan reset password. Coba lagi nanti.',
+});
+
 function authDevTokenResponse(token: string | null, extra: Record<string, unknown> = {}) {
   return {
     ...extra,
@@ -53,6 +80,7 @@ router.get('/me', (req, res) => {
 
 router.post(
   '/register',
+  authMutationRateLimit,
   asyncHandler(async (req, res, next) => {
     const payload = registerSchema.parse(req.body);
     const email = payload.email.toLowerCase();
@@ -98,6 +126,15 @@ router.post(
     const delivery = await sendEmailVerificationEmail(user.email, verification.token, verification.expiresInHours);
     logger.info('auth.register', { userId: user.id, email: user.email, emailVerificationQueued: delivery.queued });
 
+    if (env.REQUIRE_EMAIL_VERIFICATION) {
+      res.status(201).json({
+        user,
+        redirectTo: '/login?verify-email=1',
+        ...authDevTokenResponse(verification.token, { emailVerificationQueued: delivery.queued }),
+      });
+      return;
+    }
+
     req.login(user, (error) => {
       if (error) {
         next(error);
@@ -113,7 +150,7 @@ router.post(
   }),
 );
 
-router.post('/login', (req, res, next) => {
+router.post('/login', authMutationRateLimit, loginRateLimit, (req, res, next) => {
   credentialsSchema.parse(req.body);
 
   const options: AuthenticateOptions = {
@@ -169,17 +206,18 @@ router.post('/logout', (req, res, next) => {
 
 router.post(
   '/password-reset/request',
+  passwordResetRateLimit,
   asyncHandler(async (req, res) => {
     const payload = emailSchema.parse(req.body);
     const user = await prisma.user.findUnique({ where: { email: payload.email.toLowerCase() } });
     let devToken: string | null = null;
 
-    if (user?.passwordHash) {
+    if (user) {
       const reset = await createPasswordResetToken(user.id);
       devToken = reset.token;
       await sendPasswordResetEmail(user.email, reset.token, reset.expiresInMinutes);
     }
-    logger.info('auth.passwordResetRequested', { email: payload.email, matchedUser: Boolean(user?.passwordHash) });
+    logger.info('auth.passwordResetRequested', { email: payload.email, matchedUser: Boolean(user), existingPassword: Boolean(user?.passwordHash) });
 
     res.status(202).json(authDevTokenResponse(devToken, {
       message: 'Jika email terdaftar, instruksi reset password akan dikirim.',

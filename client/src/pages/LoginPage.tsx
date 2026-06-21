@@ -26,9 +26,11 @@ export function LoginPage() {
   const [searchParams] = useSearchParams();
   const nextPath = safeNextPath(searchParams.get('next'));
   const googleError = searchParams.get('error');
+  const verifyEmailNotice = searchParams.get('verify-email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(googleError ? googleErrorMessages[googleError] ?? 'Login Google gagal.' : '');
+  const [notice] = useState(verifyEmailNotice ? 'Akun berhasil dibuat. Cek email verifikasi sebelum login.' : '');
   const [submitting, setSubmitting] = useState(false);
 
   if (!loading && user) return <Navigate to={nextPath && user.memberships.length ? nextPath : getUserHomePath(user)} replace />;
@@ -103,6 +105,7 @@ export function LoginPage() {
             Lupa password?
           </Link>
         </div>
+        {notice && <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{notice}</p>}
         {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
         <button
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#15224a] px-4 py-3 text-sm font-semibold text-white hover:bg-[#22346a] disabled:opacity-60"
