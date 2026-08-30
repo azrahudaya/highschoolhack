@@ -520,7 +520,7 @@ Menampilkan:
 
 ## Dashboard Guru BK (Bekal 10)
 
-**Login:** Username `bkadmin` | Password `bk123`
+**Login demo:** gunakan akun Guru BK yang diprovision melalui script assignment. Jangan menyimpan atau membagikan credential default di dokumentasi.
 
 **Monitoring Siswa – Dashboard menampilkan:**
 - Total Siswa
@@ -724,7 +724,7 @@ Menampilkan: Profil Diri, Program Studi Pilihan, Karier Pilihan, SMART Goals, Re
 
 ## Dashboard Guru BK (Setting Goal)
 
-**Login:** Username `bkadmin` | Password `bk123`
+**Login demo:** gunakan akun Guru BK yang diprovision melalui script assignment. Jangan menyimpan atau membagikan credential default di dokumentasi.
 
 **Monitoring Siswa – Dashboard menampilkan:**
 - Total Siswa
