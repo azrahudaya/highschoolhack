@@ -1,4 +1,4 @@
-# HighschoolHack – Prompt Website Platform Pengembangan Diri SMA
+# HighschoolHack  -  Prompt Website Platform Pengembangan Diri SMA
 
 > Platform pengembangan diri dan perencanaan masa depan untuk siswa SMA Indonesia.
 
@@ -10,7 +10,7 @@
 - **Nuansa:** Clean, minimalis, profesional
 - **Target pengguna:** Siswa SMA (Gen Z)
 - **Palet warna:** Dominasi putih, navy, ungu muda, dan aksen kuning pastel
-- **Layout:** Banyak whitespace, rounded corners (16–24px), soft shadow, subtle gradient
+- **Layout:** Banyak whitespace, rounded corners (16 - 24px), soft shadow, subtle gradient
 - **Typography:** Poppins atau Plus Jakarta Sans
 - **Ilustrasi:** Flat design modern atau semi-3D
 - **Referensi UI:** Coursera, Notion, Ruangguru, Cakap, Duolingo
@@ -94,66 +94,66 @@ Halaman berisi konten edukatif dan inspiratif.
 ### 🎓 Pendidikan
 
 **Tips belajar efektif:**
-- [6 Tips Belajar Efektif Cocok untuk Anak SMA Agar Berprestasi](https://www.smadwiwarna.sch.id/tips-belajar-efektif/) – Cara menjadikan belajar menyenangkan dengan target dan latihan soal.
-- [Tips Belajar Efektif untuk Siswa SMP dan SMA Agar Berprestasi](https://iibs-ri.com/tips-belajar-efektif-untuk-siswa-smp-dan-sma-agar-berprestasi/) – Strategi belajar berbasis gaya belajar dan teknik Pomodoro.
-- [Strategi Efektif Belajar untuk Siswa SMA di Indonesia](https://blog.smadcstdo.sch.id/strategi-efektif-belajar-untuk-siswa-sma-di-indonesia/) – Cara membuat jadwal belajar realistis dan terstruktur.
-- [Tips Belajar Efektif Siswa SMA Menjelang Ujian Akhir Semester](https://sman3kotacilegon.sch.id/tips-belajar-efektif-untuk-siswa-sma-menjelang-ujian-akhir-semester/) – Panduan membagi waktu dan menetapkan target harian menjelang UAS.
+- [6 Tips Belajar Efektif Cocok untuk Anak SMA Agar Berprestasi](https://www.smadwiwarna.sch.id/tips-belajar-efektif/)  -  Cara menjadikan belajar menyenangkan dengan target dan latihan soal.
+- [Tips Belajar Efektif untuk Siswa SMP dan SMA Agar Berprestasi](https://iibs-ri.com/tips-belajar-efektif-untuk-siswa-smp-dan-sma-agar-berprestasi/)  -  Strategi belajar berbasis gaya belajar dan teknik Pomodoro.
+- [Strategi Efektif Belajar untuk Siswa SMA di Indonesia](https://blog.smadcstdo.sch.id/strategi-efektif-belajar-untuk-siswa-sma-di-indonesia/)  -  Cara membuat jadwal belajar realistis dan terstruktur.
+- [Tips Belajar Efektif Siswa SMA Menjelang Ujian Akhir Semester](https://sman3kotacilegon.sch.id/tips-belajar-efektif-untuk-siswa-sma-menjelang-ujian-akhir-semester/)  -  Panduan membagi waktu dan menetapkan target harian menjelang UAS.
 
 **Cara meningkatkan nilai:**
-- [Cara Meningkatkan Nilai Rapor SMA dengan Cepat](https://www.smamdua.com/cara-meningkatkan-nilai-rapor-sma-dengan-cepat/) – Langkah praktis mengidentifikasi mata pelajaran lemah dan menyusun jadwal belajar.
-- [Cara Belajar Efektif untuk Meningkatkan Prestasi di Sekolah](https://sma-iihs.sch.id/cara-belajar-efektif-untuk-meningkatkan-prestasi-di-sekolah/) – Mengenal gaya belajar dan strategi meningkatkan prestasi secara menyeluruh.
+- [Cara Meningkatkan Nilai Rapor SMA dengan Cepat](https://www.smamdua.com/cara-meningkatkan-nilai-rapor-sma-dengan-cepat/)  -  Langkah praktis mengidentifikasi mata pelajaran lemah dan menyusun jadwal belajar.
+- [Cara Belajar Efektif untuk Meningkatkan Prestasi di Sekolah](https://sma-iihs.sch.id/cara-belajar-efektif-untuk-meningkatkan-prestasi-di-sekolah/)  -  Mengenal gaya belajar dan strategi meningkatkan prestasi secara menyeluruh.
 
 ---
 
 ### 💼 Karier
 
 **Profesi masa depan:**
-- [15 Daftar Pekerjaan Masa Depan 2030 yang Paling Dicari](https://www.cakrawala.ac.id/blog/pekerjaan-masa-depan-2030) – Profesi berbasis AI, data, dan teknologi yang akan mendominasi pasar kerja.
-- [Ingin Berkarier di Profesi Paling Dibutuhkan 2025–2030?](https://news.nusamandiri.ac.id/artikel-ilmiah/ingin-berkarier-di-profesi-paling-dibutuhkan-2025-2030/) – Panduan memilih karier berdasarkan tren ketenagakerjaan global.
-- [20 Pekerjaan yang Dibutuhkan di Masa Depan](https://id.jobstreet.com/id/career-advice/article/pekerjaan-dibutuhkan-di-masa-depan) – Daftar profesi dengan permintaan tertinggi beserta gambaran soft skill yang dibutuhkan.
+- [15 Daftar Pekerjaan Masa Depan 2030 yang Paling Dicari](https://www.cakrawala.ac.id/blog/pekerjaan-masa-depan-2030)  -  Profesi berbasis AI, data, dan teknologi yang akan mendominasi pasar kerja.
+- [Ingin Berkarier di Profesi Paling Dibutuhkan 2025 - 2030?](https://news.nusamandiri.ac.id/artikel-ilmiah/ingin-berkarier-di-profesi-paling-dibutuhkan-2025-2030/)  -  Panduan memilih karier berdasarkan tren ketenagakerjaan global.
+- [20 Pekerjaan yang Dibutuhkan di Masa Depan](https://id.jobstreet.com/id/career-advice/article/pekerjaan-dibutuhkan-di-masa-depan)  -  Daftar profesi dengan permintaan tertinggi beserta gambaran soft skill yang dibutuhkan.
 
 **Skill yang dibutuhkan dunia kerja:**
-- [10 Skill Masa Depan yang Wajib Dimiliki Mahasiswa](https://jakarta.ciputra.ac.id/10-skill-masa-depan-yang-wajib-dimiliki-mahasiswa/) – Berdasarkan WEF Future of Jobs Report 2025: AI literacy, critical thinking, dan lebih banyak.
-- [Soft Skills yang Dibutuhkan Dunia Kerja Tahun 2025](https://www.unpak.ac.id/rubrik/soft-skills-yang-dibutuhkan-dunia-kerja-tahun-2025-bukan-lagi-soal-ipk-tinggi) – Kenapa analytical thinking dan adaptabilitas lebih penting dari IPK.
-- [10 Keterampilan Penting Dunia Kerja di Tahun 2025](https://www.gamelab.id/news/4005-ini-dia-10-keterampilan-penting-dunia-kerja-di-tahun-2025) – Hard skill dan soft skill yang relevan di era digital berdasarkan Future of Jobs Report 2025.
-- [Skill Masa Depan 2025: 10 Keterampilan Wajib Agar Karier Tetap Relevan di Era AI](https://berijalan.co.id/article-detail/skill-masa-depan-2025-10-keterampilan-wajib-agar-karier-tetap-relevan-di-era-ai) – Skill digital dan interpersonal yang dicari perusahaan di era AI.
+- [10 Skill Masa Depan yang Wajib Dimiliki Mahasiswa](https://jakarta.ciputra.ac.id/10-skill-masa-depan-yang-wajib-dimiliki-mahasiswa/)  -  Berdasarkan WEF Future of Jobs Report 2025: AI literacy, critical thinking, dan lebih banyak.
+- [Soft Skills yang Dibutuhkan Dunia Kerja Tahun 2025](https://www.unpak.ac.id/rubrik/soft-skills-yang-dibutuhkan-dunia-kerja-tahun-2025-bukan-lagi-soal-ipk-tinggi)  -  Kenapa analytical thinking dan adaptabilitas lebih penting dari IPK.
+- [10 Keterampilan Penting Dunia Kerja di Tahun 2025](https://www.gamelab.id/news/4005-ini-dia-10-keterampilan-penting-dunia-kerja-di-tahun-2025)  -  Hard skill dan soft skill yang relevan di era digital berdasarkan Future of Jobs Report 2025.
+- [Skill Masa Depan 2025: 10 Keterampilan Wajib Agar Karier Tetap Relevan di Era AI](https://berijalan.co.id/article-detail/skill-masa-depan-2025-10-keterampilan-wajib-agar-karier-tetap-relevan-di-era-ai)  -  Skill digital dan interpersonal yang dicari perusahaan di era AI.
 
 ---
 
 ### 🏛️ Kuliah
 
 **Tips memilih jurusan:**
-- [10 Tips Memilih Jurusan Kuliah yang Tepat untuk Lulusan SMA](https://daftarsekolah.spmb.teknokrat.ac.id/2026/02/10-tips-memilih-jurusan-kuliah-yang-tepat-untuk-lulusan-sma/) – Panduan lengkap dari mengenali minat hingga mempertimbangkan prospek kerja.
-- [Panduan Memilih Jurusan Kuliah Setelah Lulus SMA 2025 dengan Tepat](https://www.sevenstarindonesia.com/2025/10/panduan-memilih-jurusan-kuliah-setelah-lulus-sma-2025.html) – Cara membuat keputusan jurusan yang matang dan tidak disesali.
-- [Jurusan Kuliah 2025: Pengertian, Jenis, Prospek Kerja, dan Cara Memilih](https://kab-pegununganbintang.kpu.go.id/blog/read/8791_jurusan-kuliah-2025-pengertian-jenis-prospek-kerja-dan-cara-memilih-jurusan-kuliah-yang-tepat) – Panduan lengkap jenis jurusan, prospek kerja, dan tips memilih berdasarkan minat.
+- [10 Tips Memilih Jurusan Kuliah yang Tepat untuk Lulusan SMA](https://daftarsekolah.spmb.teknokrat.ac.id/2026/02/10-tips-memilih-jurusan-kuliah-yang-tepat-untuk-lulusan-sma/)  -  Panduan lengkap dari mengenali minat hingga mempertimbangkan prospek kerja.
+- [Panduan Memilih Jurusan Kuliah Setelah Lulus SMA 2025 dengan Tepat](https://www.sevenstarindonesia.com/2025/10/panduan-memilih-jurusan-kuliah-setelah-lulus-sma-2025.html)  -  Cara membuat keputusan jurusan yang matang dan tidak disesali.
+- [Jurusan Kuliah 2025: Pengertian, Jenis, Prospek Kerja, dan Cara Memilih](https://kab-pegununganbintang.kpu.go.id/blog/read/8791_jurusan-kuliah-2025-pengertian-jenis-prospek-kerja-dan-cara-memilih-jurusan-kuliah-yang-tepat)  -  Panduan lengkap jenis jurusan, prospek kerja, dan tips memilih berdasarkan minat.
 
 **Gap Year:**
-- [Gap Year: Definisi, Durasi, dan Manfaatnya](https://www.cakrawala.ac.id/blog/gap-year-adalah) – Penjelasan lengkap tentang gap year dan peluang beasiswa bagi siswa gap year.
-- [Gap Year Itu Apa? Pengertian, Manfaat, dan Penjelasan untuk Calon Mahasiswa](https://masoemuniversity.ac.id/artikel/gap-year-itu-apa-pengertian-manfaat-dan-penjelasan-untuk-calon-mahasiswa/) – Alasan siswa memilih gap year dan cara memanfaatkannya dengan baik.
+- [Gap Year: Definisi, Durasi, dan Manfaatnya](https://www.cakrawala.ac.id/blog/gap-year-adalah)  -  Penjelasan lengkap tentang gap year dan peluang beasiswa bagi siswa gap year.
+- [Gap Year Itu Apa? Pengertian, Manfaat, dan Penjelasan untuk Calon Mahasiswa](https://masoemuniversity.ac.id/artikel/gap-year-itu-apa-pengertian-manfaat-dan-penjelasan-untuk-calon-mahasiswa/)  -  Alasan siswa memilih gap year dan cara memanfaatkannya dengan baik.
 
 ---
 
 ### 💰 Finansial
 
 **Cara menabung:**
-- [14 Tips Menabung untuk Pelajar SD–SMA, Mudah!](https://www.bizhare.id/media/keuangan/tips-menabung-untuk-pelajar) – Cara menyisihkan uang jajan secara rutin dan menetapkan target tabungan.
-- [9 Cara Mengelola Keuangan bagi Pelajar yang Patut Dicoba](https://sahabat.pegadaian.co.id/artikel/keuangan/cara-mengelola-keuangan-bagi-pelajar) – Tips hemat dan frugal living untuk pelajar yang hidup merantau.
+- [14 Tips Menabung untuk Pelajar SD - SMA, Mudah!](https://www.bizhare.id/media/keuangan/tips-menabung-untuk-pelajar)  -  Cara menyisihkan uang jajan secara rutin dan menetapkan target tabungan.
+- [9 Cara Mengelola Keuangan bagi Pelajar yang Patut Dicoba](https://sahabat.pegadaian.co.id/artikel/keuangan/cara-mengelola-keuangan-bagi-pelajar)  -  Tips hemat dan frugal living untuk pelajar yang hidup merantau.
 
 **Literasi keuangan:**
-- [Soft Skills: Bijak Berkeuangan di Usia Muda](https://www.unpak.ac.id/rubrik/soft-skills-yang-dibutuhkan-dunia-kerja-tahun-2025-bukan-lagi-soal-ipk-tinggi) – Pentingnya literasi keuangan sejak usia muda untuk masa depan finansial yang sehat.
+- [Soft Skills: Bijak Berkeuangan di Usia Muda](https://www.unpak.ac.id/rubrik/soft-skills-yang-dibutuhkan-dunia-kerja-tahun-2025-bukan-lagi-soal-ipk-tinggi)  -  Pentingnya literasi keuangan sejak usia muda untuk masa depan finansial yang sehat.
 
 ---
 
 ### 🌟 Inspirasi
 
 **Kisah sukses alumni:**
-- [Kisah Sukses Alumni SMA: Inspirasi Menuju Masa Depan](https://smadcstdo.sch.id/contoh-kisah-sukses-alumni-sma-yang-menginspirasi/) – Pelajaran hidup dari alumni SMA yang membuktikan bahwa kerja keras membawa hasil.
-- [Kisah Inspiratif Pelajar Sukses](https://www.fatihinspira.com/kisah-inspiratif-pelajar-sukses/) – Kisah nyata pelajar Indonesia yang meraih beasiswa ke luar negeri dari nol.
-- [Inspirasi Alumni: Dari Bangku Kuliah Menuju Dunia Profesional](https://uncri.ac.id/read/11/inspirasi-alumni-dari-bangku-kuliah-menuju-dunia-profesional) – Perjalanan alumni sukses dari dunia kampus ke karier profesional.
+- [Kisah Sukses Alumni SMA: Inspirasi Menuju Masa Depan](https://smadcstdo.sch.id/contoh-kisah-sukses-alumni-sma-yang-menginspirasi/)  -  Pelajaran hidup dari alumni SMA yang membuktikan bahwa kerja keras membawa hasil.
+- [Kisah Inspiratif Pelajar Sukses](https://www.fatihinspira.com/kisah-inspiratif-pelajar-sukses/)  -  Kisah nyata pelajar Indonesia yang meraih beasiswa ke luar negeri dari nol.
+- [Inspirasi Alumni: Dari Bangku Kuliah Menuju Dunia Profesional](https://uncri.ac.id/read/11/inspirasi-alumni-dari-bangku-kuliah-menuju-dunia-profesional)  -  Perjalanan alumni sukses dari dunia kampus ke karier profesional.
 
 **Motivasi belajar:**
-- [Cara Belajar Efektif untuk Meningkatkan Prestasi di Sekolah](https://sma-iihs.sch.id/cara-belajar-efektif-untuk-meningkatkan-prestasi-di-sekolah/) – Pesan utama: belajar efektif bukan bakat, tapi kebiasaan.
-- [Strategi Meningkatkan Kemampuan dan Keterampilan Lulusan SMA](https://mediaindonesia.com/humaniora/886499/strategi-meningkatkan-kemampuan-dan-keterampilan-lulusan-sma) – Pentingnya upskilling bagi lulusan SMA di era digital.
+- [Cara Belajar Efektif untuk Meningkatkan Prestasi di Sekolah](https://sma-iihs.sch.id/cara-belajar-efektif-untuk-meningkatkan-prestasi-di-sekolah/)  -  Pesan utama: belajar efektif bukan bakat, tapi kebiasaan.
+- [Strategi Meningkatkan Kemampuan dan Keterampilan Lulusan SMA](https://mediaindonesia.com/humaniora/886499/strategi-meningkatkan-kemampuan-dan-keterampilan-lulusan-sma)  -  Pentingnya upskilling bagi lulusan SMA di era digital.
 
 ---
 
@@ -174,10 +174,10 @@ Halaman berisi konten edukatif dan inspiratif.
 
 ### Sumber Data Beasiswa (Referensi Halaman Beasiswa)
 
-- [INDBeasiswa – Info Beasiswa SMA/SMK Terbaru](https://indbeasiswa.com/beasiswa-sma-smk/) – Database beasiswa terupdate dari dalam dan luar negeri untuk siswa SMA.
-- [SantriHub – Info Beasiswa Terlengkap](https://santrihub.id/info-beasiswa/) – Platform beasiswa dengan filter jenjang, jenis, dan deadline.
-- [Lima Beasiswa Dalam Negeri yang Dibuka Tahun 2025](https://fahum.umsu.ac.id/info/lima-beasiswa-dalam-negeri-yang-dibuka-tahun-2025-ini-cara-daftar-persyaratan-hingga-benefitnya/) – Beasiswa Smart, Pertamina, Cendekia Muda, DataPrint, dan Ruang Edukasi.
-- [Daftar Lengkap Beasiswa S1 2026–2027 untuk Lulusan SMA](https://indbeasiswa.com/daftar-beasiswa-s1/) – Daftar beasiswa kuliah terlengkap beserta deadline pendaftaran.
+- [INDBeasiswa  -  Info Beasiswa SMA/SMK Terbaru](https://indbeasiswa.com/beasiswa-sma-smk/)  -  Database beasiswa terupdate dari dalam dan luar negeri untuk siswa SMA.
+- [SantriHub  -  Info Beasiswa Terlengkap](https://santrihub.id/info-beasiswa/)  -  Platform beasiswa dengan filter jenjang, jenis, dan deadline.
+- [Lima Beasiswa Dalam Negeri yang Dibuka Tahun 2025](https://fahum.umsu.ac.id/info/lima-beasiswa-dalam-negeri-yang-dibuka-tahun-2025-ini-cara-daftar-persyaratan-hingga-benefitnya/)  -  Beasiswa Smart, Pertamina, Cendekia Muda, DataPrint, dan Ruang Edukasi.
+- [Daftar Lengkap Beasiswa S1 2026 - 2027 untuk Lulusan SMA](https://indbeasiswa.com/daftar-beasiswa-s1/)  -  Daftar beasiswa kuliah terlengkap beserta deadline pendaftaran.
 
 ---
 
@@ -198,7 +198,7 @@ HighschoolHack hadir karena banyak siswa SMA yang masih bingung menentukan arah 
 
 ---
 
-# BEKAL 10 – Perjalanan Awalku di SMA *(Kelas X)*
+# BEKAL 10  -  Perjalanan Awalku di SMA *(Kelas X)*
 
 > Membantu siswa kelas X beradaptasi di lingkungan SMA, mengenali potensi diri, merefleksikan pengalaman belajar, menetapkan target akademik dan pengembangan diri, serta membangun portofolio perkembangan diri secara berkelanjutan.
 
@@ -271,7 +271,7 @@ Setelah login:
 
 ---
 
-## Alur Program – 7 Modul Sequential
+## Alur Program  -  7 Modul Sequential
 
 | # | Modul | Status Awal |
 |---|-------|-------------|
@@ -287,7 +287,7 @@ Setelah login:
 
 ---
 
-## Modul 1 – Langkah Awalku di SMA
+## Modul 1  -  Langkah Awalku di SMA
 
 **Syarat:** Terbuka otomatis.
 
@@ -295,13 +295,13 @@ Setelah login:
 1. Lebih nyaman belajar di... (Indoor / Outdoor / Keduanya)
 2. Jika indoor, tempat yang nyaman... (Kamar / Perpustakaan / Ruang kelas / Kafe / Lainnya)
 3. Jika outdoor, tempat yang nyaman... (Taman sekolah / Taman kota / Halaman rumah / Gazebo / Lainnya)
-4. Lebih nyaman belajar... (Sendiri / Bersama 1–2 teman / Kelompok kecil / Kelompok besar / Fleksibel)
+4. Lebih nyaman belajar... (Sendiri / Bersama 1 - 2 teman / Kelompok kecil / Kelompok besar / Fleksibel)
 
 ### Fitur: Adaptasi Lingkungan SMA
 1. Yang paling membuatmu bersemangat masuk SMA? *(multi-select)*
 2. Tantangan terbesar sebagai siswa baru? *(multi-select)*
-3. Hubunganmu dengan teman: Skala 1–5
-4. Hubunganmu dengan guru: Skala 1–5
+3. Hubunganmu dengan teman: Skala 1 - 5
+4. Hubunganmu dengan guru: Skala 1 - 5
 5. Yang ingin ditingkatkan: Percaya diri / Komunikasi / Prestasi akademik / Manajemen waktu / dll.
 
 ### Fitur: Refleksi Adaptasi
@@ -327,7 +327,7 @@ Setelah login:
 
 ---
 
-## Modul 2 – Mengenal Diriku Lebih Dekat
+## Modul 2  -  Mengenal Diriku Lebih Dekat
 
 **Syarat:** Modul 1 selesai.
 
@@ -357,7 +357,7 @@ Visualisasi: **Diagram Lingkaran**
 
 ---
 
-## Modul 3 – Vision Board SMA-ku
+## Modul 3  -  Vision Board SMA-ku
 
 **Syarat:** Modul 2 selesai.
 
@@ -377,7 +377,7 @@ Visualisasi: **Diagram Lingkaran**
 
 ---
 
-## Modul 4 – Target Pengembangan Diri
+## Modul 4  -  Target Pengembangan Diri
 
 **Syarat:** Modul 3 selesai.
 
@@ -385,13 +385,13 @@ Visualisasi: **Diagram Lingkaran**
 Kepercayaan diri, Komunikasi, Kepemimpinan, Kedisiplinan, Manajemen waktu, Kemampuan belajar, Kemampuan sosial, Pengelolaan emosi, Kemandirian, Kreativitas
 
 ### Tingkat Keyakinan Mencapai Target
-Skala 1–5
+Skala 1 - 5
 
 ### Hambatan yang Diperkirakan *(multi-select)*
 Kurang motivasi, Sulit membagi waktu, Kurang dukungan lingkungan, Kurang percaya diri, Belum memiliki strategi yang tepat, Lainnya
 
 ### Konsep SMART Goals
-- **S**pecific – **M**easurable – **A**chievable – **R**elevant – **T**ime-Bound
+- **S**pecific  -  **M**easurable  -  **A**chievable  -  **R**elevant  -  **T**ime-Bound
 
 ### Output
 - Daftar target pengembangan diri
@@ -403,7 +403,7 @@ Kurang motivasi, Sulit membagi waktu, Kurang dukungan lingkungan, Kurang percaya
 
 ---
 
-## Modul 5 – Belajar dari Perjalanan
+## Modul 5  -  Belajar dari Perjalanan
 
 **Syarat:** Modul 4 selesai.
 
@@ -424,7 +424,7 @@ Kurang motivasi, Sulit membagi waktu, Kurang dukungan lingkungan, Kurang percaya
 
 ---
 
-## Modul 6 – Merancang Target Prestasi
+## Modul 6  -  Merancang Target Prestasi
 
 **Syarat:** Modul 5 selesai.
 
@@ -451,13 +451,13 @@ Kurang motivasi, Sulit membagi waktu, Kurang dukungan lingkungan, Kurang percaya
 
 ---
 
-## Modul 7 – Komitmen Akademikku
+## Modul 7  -  Komitmen Akademikku
 
 **Syarat:** Modul 6 selesai.
 
 ### Pertanyaan
 1. Langkah yang akan dilakukan untuk mencapai target *(multi-select)*
-2. Seberapa yakin kamu dapat mencapai target? *(Skala 1–5)*
+2. Seberapa yakin kamu dapat mencapai target? *(Skala 1 - 5)*
 3. Komitmen yang ingin diberikan pada diri sendiri *(isian teks)*
 
 ### Output
@@ -522,7 +522,7 @@ Menampilkan:
 
 **Login demo:** gunakan akun Guru BK yang diprovision melalui script assignment. Jangan menyimpan atau membagikan credential default di dokumentasi.
 
-**Monitoring Siswa – Dashboard menampilkan:**
+**Monitoring Siswa  -  Dashboard menampilkan:**
 - Total Siswa
 - Rata-rata Progress
 - Distribusi Minat RIASEC
@@ -545,7 +545,7 @@ Floating chatbot kanan bawah. Topik: Adaptasi di SMA, Mengenal Potensi Diri, Gay
 
 ## Ketentuan Teknis (Bekal 10)
 
-- **Stack:** HTML + CSS + Vanilla JavaScript – **Satu file**
+- **Stack:** HTML + CSS + Vanilla JavaScript  -  **Satu file**
 - **Storage:** `localStorage` + `sessionStorage`
 - Setiap siswa memiliki data terpisah berdasarkan NIS/NISN
 
@@ -553,7 +553,7 @@ Floating chatbot kanan bawah. Topik: Adaptasi di SMA, Mengenal Potensi Diri, Gay
 
 ---
 
-# MY FUTURE JOURNEY – Setting Goal *(Kelas XI)*
+# MY FUTURE JOURNEY  -  Setting Goal *(Kelas XI)*
 
 > Membantu siswa kelas XI memahami dirinya, mengeksplorasi pilihan studi dan karier, menetapkan tujuan masa depan, menyusun rencana aksi, serta memantau perkembangan dirinya secara berkelanjutan.
 
@@ -581,7 +581,7 @@ Floating chatbot kanan bawah. Topik: Adaptasi di SMA, Mengenal Potensi Diri, Gay
 
 ---
 
-## Alur Program – 8 Modul Sequential
+## Alur Program  -  8 Modul Sequential
 
 | # | Modul | Status Awal |
 |---|-------|-------------|
@@ -596,7 +596,7 @@ Floating chatbot kanan bawah. Topik: Adaptasi di SMA, Mengenal Potensi Diri, Gay
 
 ---
 
-## Modul 1 – Kenali Diriku
+## Modul 1  -  Kenali Diriku
 
 ### Fitur
 - **Minat Saya** *(checklist):* Psikologi, Teknologi, Pendidikan, Bisnis, Kesehatan, Seni, Hukum, Komunikasi
@@ -610,7 +610,7 @@ Floating chatbot kanan bawah. Topik: Adaptasi di SMA, Mengenal Potensi Diri, Gay
 
 ---
 
-## Modul 2 – Eksplorasi Program Studi
+## Modul 2  -  Eksplorasi Program Studi
 
 Siswa memilih minimal 1 program studi:
 Psikologi, Kedokteran, Teknik Informatika, Hukum, Akuntansi, Pendidikan, Ilmu Komunikasi, Manajemen, DKV, Hubungan Internasional
@@ -621,7 +621,7 @@ Psikologi, Kedokteran, Teknik Informatika, Hukum, Akuntansi, Pendidikan, Ilmu Ko
 
 ---
 
-## Modul 3 – Eksplorasi Karier
+## Modul 3  -  Eksplorasi Karier
 
 Siswa memilih karier:
 Psikolog, Guru BK, Konselor, HRD, Dosen, Programmer, Dokter, Akuntan, Pengusaha, Desainer
@@ -636,7 +636,7 @@ Psikolog, Guru BK, Konselor, HRD, Dosen, Programmer, Dokter, Akuntan, Pengusaha,
 
 ---
 
-## Modul 4 – Mata Pelajaran Pendukung
+## Modul 4  -  Mata Pelajaran Pendukung
 
 Siswa mengisi tabel:
 
@@ -654,7 +654,7 @@ Siswa mengisi tabel:
 
 ---
 
-## Modul 5 – Goal Setting
+## Modul 5  -  Goal Setting
 
 Menggunakan konsep **SMART Goals**.
 
@@ -668,7 +668,7 @@ Menggunakan konsep **SMART Goals**.
 
 ---
 
-## Modul 6 – Rencana Aksi
+## Modul 6  -  Rencana Aksi
 
 Siswa dapat membuat banyak rencana.
 
@@ -686,7 +686,7 @@ Setelah tersimpan → tampilkan **Kalender Interaktif** (tanggal berwarna sesuai
 
 ---
 
-## Modul 7 – Dashboard Perkembangan
+## Modul 7  -  Dashboard Perkembangan
 
 Menampilkan:
 - Progress Keseluruhan
@@ -699,7 +699,7 @@ Menampilkan:
 
 ---
 
-## Modul 8 – Refleksi
+## Modul 8  -  Refleksi
 
 **Pertanyaan:**
 - Hal yang sudah aku capai
@@ -726,7 +726,7 @@ Menampilkan: Profil Diri, Program Studi Pilihan, Karier Pilihan, SMART Goals, Re
 
 **Login demo:** gunakan akun Guru BK yang diprovision melalui script assignment. Jangan menyimpan atau membagikan credential default di dokumentasi.
 
-**Monitoring Siswa – Dashboard menampilkan:**
+**Monitoring Siswa  -  Dashboard menampilkan:**
 - Total Siswa
 - Rata-rata Progress
 - Jumlah Goal Aktif
@@ -745,7 +745,7 @@ Floating chatbot kanan bawah. Topik: Goal Setting, Program Studi, Karier, Perenc
 
 ## Ketentuan Teknis (Setting Goal)
 
-- **Stack:** HTML + CSS + Vanilla JavaScript – **Satu file**
+- **Stack:** HTML + CSS + Vanilla JavaScript  -  **Satu file**
 - **Storage:** `localStorage` + `sessionStorage`
 - Setiap siswa memiliki data terpisah berdasarkan NIS/NISN
 - Website harus responsive, modern, interaktif
@@ -786,7 +786,7 @@ Floating chatbot kanan bawah. Topik: Goal Setting, Program Studi, Karier, Perenc
 
 ## Halaman Simulasi
 
-### Step 1 – Identitas Singkat
+### Step 1  -  Identitas Singkat
 - Nama Panggilan
 - Kelas & Nama Sekolah
 - Kota Asal
@@ -798,7 +798,7 @@ Floating chatbot kanan bawah. Topik: Goal Setting, Program Studi, Karier, Perenc
 
 ---
 
-### Step 2 – Pilih Kota Tujuan
+### Step 2  -  Pilih Kota Tujuan
 
 Database mencakup seluruh wilayah Indonesia. Pilih kota dengan mengetik nama (search/autocomplete).
 
@@ -815,7 +815,7 @@ Database mencakup seluruh wilayah Indonesia. Pilih kota dengan mengetik nama (se
 
 ---
 
-### Step 3 – Board Game Simulation (12 Langkah)
+### Step 3  -  Board Game Simulation (12 Langkah)
 
 Setiap langkah berisi **kartu keputusan** dengan 3 pilihan.
 
@@ -830,7 +830,7 @@ Contoh kejadian: Laptop rusak | Dompet hilang | Sakit | Kenaikan biaya kos | Ora
 
 ---
 
-## Perhitungan Financial Readiness Score (0–100)
+## Perhitungan Financial Readiness Score (0 - 100)
 
 | Komponen | Bobot |
 |----------|-------|
@@ -843,11 +843,11 @@ Contoh kejadian: Laptop rusak | Dompet hilang | Sakit | Kenaikan biaya kos | Ora
 
 | Skor | Kategori |
 |------|----------|
-| 90–100 | 🟢 Sangat Siap |
-| 75–89 | 🔵 Siap |
-| 60–74 | 🟡 Cukup Siap |
-| 40–59 | 🟠 Perlu Persiapan |
-| 0–39 | 🔴 Risiko Tinggi |
+| 90 - 100 | 🟢 Sangat Siap |
+| 75 - 89 | 🔵 Siap |
+| 60 - 74 | 🟡 Cukup Siap |
+| 40 - 59 | 🟠 Perlu Persiapan |
+| 0 - 39 | 🔴 Risiko Tinggi |
 
 ---
 
@@ -857,8 +857,8 @@ Contoh kejadian: Laptop rusak | Dompet hilang | Sakit | Kenaikan biaya kos | Ora
 
 **Analisis Otomatis:**
 - Skor ≥ 90: *"Kondisi finansialmu sangat baik..."*
-- Skor 75–89: *"Kondisi finansialmu cukup baik..."*
-- Skor 60–74: *"Kamu masih perlu meningkatkan perencanaan keuangan..."*
+- Skor 75 - 89: *"Kondisi finansialmu cukup baik..."*
+- Skor 60 - 74: *"Kamu masih perlu meningkatkan perencanaan keuangan..."*
 - Skor < 60: *"Kondisi finansialmu berisiko..."*
 
 ---
@@ -939,19 +939,19 @@ Ranking berdasarkan Financial Readiness Score.
 - Jumlah siswa dengan risiko tinggi
 - Jumlah siswa belum memiliki target setelah lulus
 
-**Monitoring Siswa – Kolom Tabel:**
+**Monitoring Siswa  -  Kolom Tabel:**
 Nama | Kelas | Sekolah | Kota Asal | Kota Tujuan | Target Setelah Lulus | Minat | Financial Score | Decision Score | Risk Score | Status Kesiapan | Tanggal Simulasi
 
 **Status Kesiapan:**
 
 | Skor | Status | Warna |
 |------|--------|-------|
-| 90–100 | Future Ready | 🟢 Hijau |
-| 75–89 | Siap Berkembang | 🔵 Biru |
-| 60–74 | Perlu Pengembangan | 🟡 Kuning |
+| 90 - 100 | Future Ready | 🟢 Hijau |
+| 75 - 89 | Siap Berkembang | 🔵 Biru |
+| 60 - 74 | Perlu Pengembangan | 🟡 Kuning |
 | < 60 | Perlu Perhatian | 🔴 Merah |
 
-**Early Warning System** – otomatis menandai siswa dengan kondisi:
+**Early Warning System**  -  otomatis menandai siswa dengan kondisi:
 - Financial Readiness Score di bawah 60
 - Risk Score di atas 70
 - Dana darurat kosong
@@ -1004,5 +1004,5 @@ Nama | Kelas | Sekolah | Kota Asal | Kota Tujuan | Target Setelah Lulus | Minat 
 - Layout website utuh dari atas sampai bawah
 - UI modern dan premium
 - High quality startup landing page
-- **Behance quality** – UI/UX competition ready
+- **Behance quality**  -  UI/UX competition ready
 - Responsive web design preview

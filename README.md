@@ -1,112 +1,82 @@
-# HighschoolHack
+# highschoolhack
 
-Platform pengembangan diri dan perencanaan masa depan untuk siswa SMA Indonesia.
+[![ci](https://github.com/azrahudaya/highschoolhack/actions/workflows/ci.yml/badge.svg)](https://github.com/azrahudaya/highschoolhack/actions/workflows/ci.yml)
 
-## Stack
+Platform bimbingan dan perencanaan masa depan untuk siswa SMA Indonesia. HighschoolHack menggabungkan program pengembangan diri, eksplorasi studi dan karier, simulasi kesiapan finansial, portofolio siswa, serta dashboard Guru BK.
 
-- React + Vite + TypeScript
-- Express.js + TypeScript
-- Prisma ORM
-- Heroku Postgres
-- Tailwind CSS
+## status dan positioning
 
-## Struktur
+Project ini adalah prototype produk dan portfolio engineering. Source code menunjukkan arah arsitektur multi-sekolah dengan autentikasi, PostgreSQL, Prisma, React, dan Express, tetapi belum boleh dianggap production-ready atau sebagai pengganti Guru BK, psikolog, konselor profesional, atau penasihat finansial.
 
-- `client/`: React frontend.
-- `server/`: Express API dan static server untuk hasil build React.
-- `prisma/`: schema database.
-- `highschoolhack-prd.md`: PRD produk.
-- `highschoolhack-technical-plan.md`: rencana teknis dan fase implementasi.
+Fitur utama yang sudah ada di source:
 
-## Scripts
+- public website dan artikel edukatif
+- alur program siswa untuk kelas X, XI, dan XII
+- progress tracker dan portofolio perkembangan
+- dashboard Guru BK dan admin sekolah
+- autentikasi email/password dan Google OAuth
+- chatbot berbasis API eksternal yang dikendalikan environment variable
+- export laporan PDF
+
+## stack
+
+- client: React, Vite, TypeScript, Tailwind CSS
+- server: Express 5, TypeScript, Zod
+- database: PostgreSQL dan Prisma
+- auth: express-session, Passport, bcryptjs
+- quality: ESLint, TypeScript, GitHub Actions
+
+## development
+
+Requirements: Node.js 22 atau lebih baru dan npm.
 
 ```bash
-npm install
+npm ci
+cp .env.example .env
+npm run prisma:generate
 npm run dev
+```
+
+Perintah quality gate:
+
+```bash
 npm run build
-npm run typecheck
 npm run lint
-npm run audit:prod
-npm start
-npm run test:e2e
-npm run test:e2e:permissions
 ```
 
-## Local URLs
+`npm run lint` menjalankan ESLint, typecheck, build client/server, dan `git diff --check`. CI juga menginstal Chromium lalu menjalankan E2E test Chromium secara serial pada setiap push ke `main` serta pull request.
 
-- React dev server: `http://localhost:5173`
-- Express production-style server: `http://localhost:4000`
-- Health check: `http://localhost:4000/api/health`
+## konfigurasi
 
-## Environment
+Salin `.env.example` ke `.env`. Jangan commit `.env` atau nilai secret.
 
-Copy `.env.example` to `.env`, then fill the values:
+Environment penting:
 
-```bash
-DATABASE_URL=
-SESSION_SECRET=
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GOOGLE_CALLBACK_URL=
-CLIENT_URL=
-```
+- `DATABASE_URL` untuk PostgreSQL
+- `SESSION_SECRET` untuk session cookie
+- `CLIENT_URL` dan `GOOGLE_*` untuk OAuth
+- `DEEPSEEK_API_KEY` untuk chatbot, jika fitur tersebut diaktifkan
+- `SMTP_*` untuk email verifikasi dan reset password
+- `SENTRY_DSN` untuk error monitoring opsional
 
-## Current Phase
+Pada production, `DATABASE_URL` dan `SESSION_SECRET` wajib dikonfigurasi. Nilai development default tidak boleh digunakan.
 
-Current MVP is implemented across the public site, student programs, Guru BK dashboard, and school admin area.
+## data dan privacy
 
-Student programs:
+Aplikasi dapat memproses nama, email, identitas sekolah, jawaban program, catatan Guru BK, session autentikasi, token reset/verifikasi, serta data simulasi finansial siswa. Data tersebut harus dianggap sensitif.
 
-- Bekal 10: adaptation, RIASEC/VARK-style assessment, vision board, SMART target, reflection, academic target, learning commitment, and portfolio.
-- Setting Goal: class XI exploration, four macro targets, P1-P4 action-plan calendar, progress dashboard, and portfolio.
-- Smart Financial: class XII profile, destination city cost simulation, Future Ready Board stepper, emergency cards, scholarship portal, final recommendation, and downloadable Future Ready Board PDF.
+- gunakan data dummy untuk development dan demo
+- jangan memasukkan data siswa nyata ke repository, issue, log, atau screenshot publik
+- review retention, akses role, backup, penghapusan, dan incident response sebelum pilot sekolah
+- konten chatbot dapat diproses oleh layanan AI eksternal jika `DEEPSEEK_API_KEY` diaktifkan
+- data finansial di aplikasi adalah alat edukasi, bukan nasihat finansial profesional
 
-Operational features:
+Runbook backup PostgreSQL tersedia di `docs/heroku-postgres-backup-runbook.md`. Runbook hanya untuk operator yang berwenang dan tidak boleh dijalankan terhadap production tanpa change approval.
 
-- Session auth with email/password, optional Google OAuth, email verification, password reset, and rate limiting on sensitive auth endpoints.
-- Multi-school data scoping for student, teacher, and admin roles.
-- Admin school overview, class management, student profile management, bulk import, Guru BK assignment, and audit log.
-- Guru BK dashboard with school metrics, student search/filter, portfolio detail, notes, and CSV export.
+## security
 
-Important verification:
+Lihat `SECURITY.md` untuk batasan security dan pelaporan kerentanan secara privat. Jangan membuka issue publik untuk credential, data siswa, atau detail eksploitasi yang belum diperbaiki.
 
-- `npm run build` checks Prisma generation, client build, and server TypeScript build.
-- `npm run audit:prod` checks production dependency vulnerabilities.
-- `npm run test:e2e` runs mocked UI/API flow tests on desktop and mobile.
-- `npm run test:e2e:permissions` runs cross-school permission tests. The command fails fast when `DATABASE_URL` is missing, then reads `.env` via `dotenv/config` for the test run.
+## license
 
-Provision a Guru BK account after the teacher has registered or logged in once:
-
-```bash
-npm run teacher:assign -- guru@sekolah.id sma-nusantara "Nama Guru"
-```
-
-For Heroku:
-
-```bash
-heroku run 'npm run teacher:assign -- guru@sekolah.id sma-nusantara "Nama Guru"' -a highschoolhack-app
-```
-
-Admin API:
-
-- `GET /api/admin/overview`
-- `PATCH /api/admin/school`
-- `GET|POST /api/admin/classes`
-- `PATCH|DELETE /api/admin/classes/:classId`
-- `GET /api/admin/students`
-- `PATCH /api/admin/students/:userId`
-- `POST /api/admin/students/bulk-import`
-- `GET|POST /api/admin/teachers`
-- `DELETE /api/admin/teachers/:userId`
-
-Provision an Admin Sekolah account after the admin has registered or logged in once:
-
-```bash
-npm run admin:assign -- admin@sekolah.id sma-nusantara "Nama Admin"
-```
-
-For Heroku:
-
-```bash
-heroku run 'npm run admin:assign -- admin@sekolah.id sma-nusantara "Nama Admin"' -a highschoolhack-app
-```
+Source ini menggunakan restricted project license. Penggunaan komersial, production, layanan publik, branding, dan data model untuk pihak lain memerlukan izin tertulis. Lihat `LICENSE.md`.

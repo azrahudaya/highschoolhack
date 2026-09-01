@@ -2,6 +2,8 @@
 
 Updated: 2026-06-14
 
+> Operational draft for authorized operators only. This repository is a portfolio prototype. Do not run these commands against a live school environment without explicit change approval, a designated data owner, and a verified restore target. Never download real student data into the repository or an unmanaged workstation.
+
 App: `highschoolhack-app`
 Primary database attachment: `DATABASE`
 Current plan target: Heroku Postgres Essential
@@ -49,14 +51,16 @@ heroku pg:backups -a highschoolhack-app
 heroku pg:backups:info -a highschoolhack-app
 ```
 
-Download the newest backup and store it outside the repo in encrypted/cloud storage:
+Download the newest backup only to an approved managed workstation or encrypted storage location with access control and retention policy. Confirm the destination before starting the download. If the backup is downloaded temporarily, remove the local copy after verifying the managed copy.
 
 ```powershell
-New-Item -ItemType Directory -Force -Path "$HOME\highschoolhack-backups" | Out-Null
-heroku pg:backups:download -a highschoolhack-app -o "$HOME\highschoolhack-backups\highschoolhack-$(Get-Date -Format yyyyMMdd-HHmm).dump"
+$backupDir = "$env:HIGHSCHOOLHACK_MANAGED_BACKUP_DIR"
+if (-not $backupDir) { throw "Set HIGHSCHOOLHACK_MANAGED_BACKUP_DIR to an approved encrypted storage path." }
+New-Item -ItemType Directory -Force -Path $backupDir | Out-Null
+heroku pg:backups:download -a highschoolhack-app -o "$backupDir\highschoolhack-$(Get-Date -Format yyyyMMdd-HHmm).dump"
 ```
 
-Do not commit `.dump` files into GitHub.
+Do not commit `.dump` files into GitHub. Do not use a personal laptop directory as the backup destination.
 
 ## Weekly Verification
 
@@ -108,6 +112,8 @@ heroku maintenance:off -a highschoolhack-app
 ```
 
 Replace `b001` with the exact backup ID chosen from `heroku pg:backups`.
+
+If any restore, migration, or smoke test command fails, stop the procedure, keep maintenance mode enabled, record the failing command and backup ID, and escalate to the designated operator. Do not retry destructive restore commands without confirming the target. After the incident decision is made, explicitly verify the application state and run `heroku maintenance:off -a highschoolhack-app` when it is safe to reopen traffic.
 
 Important: `pg:backups:restore` replaces database contents. Always test restore on staging first when possible.
 

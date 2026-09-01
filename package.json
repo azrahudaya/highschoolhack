@@ -25,6 +25,7 @@
     "eslint": "eslint . --max-warnings=0",
     "lint": "npm run eslint && npm run typecheck && git diff --check",
     "audit:prod": "npm audit --omit=dev",
+    "test": "npm run test:e2e -- --project=chromium --workers=1",
     "test:e2e": "playwright test",
     "test:e2e:permissions": "node scripts/require-env.cjs DATABASE_URL && playwright test tests/e2e/backend-permissions.spec.ts --project=chromium"
   },
